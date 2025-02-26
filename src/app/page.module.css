@@ -1,15 +1,3 @@
-.page {
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  display: flex;
-  flex-direction: row;
-  border-bottom: 1px solid #eaeaea;
-  padding: 1rem;
-}
-
 @media (prefers-color-scheme: dark) {
   .logo {
     filter: invert();
