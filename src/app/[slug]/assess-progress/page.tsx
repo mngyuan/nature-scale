@@ -1,0 +1,53 @@
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {Info} from 'lucide-react';
+import Link from 'next/link';
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{slug: string}>;
+}) {
+  const {slug} = await params;
+  return (
+    <main className="flex flex-col grow w-full">
+      <h2 className="p-8 text-3xl">Assess Progress</h2>
+      <div className="flex flex-row px-8 space-x-6">
+        <div className="flex flex-col grow space-y-4">
+          <div className="flex flex-row items-center space-x-1">
+            <p className="font-semibold text-sm">
+              Enter data to assess if your project is on track
+            </p>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info size={16} />
+              </TooltipTrigger>
+              <TooltipContent>Assess Progress</TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Label>Adopter population estimate</Label>
+            <Input placeholder="118" />
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Label>Target adoption</Label>
+            <Input placeholder="92" />
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Input type="file" />
+          </div>
+          <p className="text-xs text-gray-500 text-center">
+            <a>Download the standard reporting form here</a>
+          </p>
+        </div>
+        <div className="flex flex-col grow">
+          <h2 className="text-sm text-gray-500">Visualisation</h2>
+          <p className="font-semibold text-sm">
+            Scaling ecosystem-based rangeland management in South Africa
+          </p>
+        </div>
+      </div>
+    </main>
+  );
+}
