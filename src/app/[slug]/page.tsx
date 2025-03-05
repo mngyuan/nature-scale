@@ -8,7 +8,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {formatPathCrumb} from '@/lib/utils';
-import {ArrowRight, Flag} from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpenCheck,
+  Flag,
+  TrendingUp,
+  WandSparkles,
+} from 'lucide-react';
 import Link from 'next/link';
 
 export default async function Page({
@@ -49,7 +55,7 @@ export default async function Page({
               <CardHeader>
                 <CardTitle>
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                    <Flag size={48} />
+                    <TrendingUp size={48} />
                   </div>
                   Monitor current progress and trajectory
                 </CardTitle>
@@ -65,7 +71,7 @@ export default async function Page({
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                  <Flag size={48} />
+                  <BookOpenCheck size={48} />
                 </div>
                 Run a context diagnostic
               </CardTitle>
@@ -79,7 +85,7 @@ export default async function Page({
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                  <Flag size={48} />
+                  <WandSparkles size={48} />
                 </div>
                 Get scaling suggestions
               </CardTitle>
