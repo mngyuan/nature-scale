@@ -2,7 +2,6 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {Info} from 'lucide-react';
-import Link from 'next/link';
 
 export default async function Page({
   params,
@@ -46,6 +45,12 @@ export default async function Page({
           <p className="font-semibold text-sm">
             Scaling ecosystem-based rangeland management in South Africa
           </p>
+          <img
+            src="http://127.0.0.1:8000/plot"
+            width={400}
+            height={400}
+            alt="Plot"
+          />
         </div>
       </div>
     </main>
