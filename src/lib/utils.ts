@@ -1,5 +1,6 @@
 import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
+import {titleCase} from 'title-case';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,4 +20,4 @@ export function absoluteUrl(path: string) {
 }
 
 export const formatPathCrumb = (crumb: string): string =>
-  crumb.replace(/-/g, ' ');
+  titleCase(crumb.replace(/-/g, ' '));

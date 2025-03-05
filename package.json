@@ -28,7 +28,8 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.9",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "title-case": "^4.3.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

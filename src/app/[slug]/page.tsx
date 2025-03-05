@@ -19,9 +19,9 @@ export default async function Page({
   const {slug} = await params;
   return (
     <main className="flex flex-col grow w-full">
-      <div className="flex flex-col p-8 w-lg">
+      <div className="flex flex-col p-8 w-lg space-y-2">
         <Badge>Grasslands</Badge>
-        <h2 className="text-3xl capitalize">{formatPathCrumb(slug)}</h2>
+        <h2 className="text-3xl">{formatPathCrumb(slug)}</h2>
         <div>
           Community-driven livestock management model for rangeland restoration,
           biodiversity conservation and improved livelihoods.

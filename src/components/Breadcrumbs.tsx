@@ -22,7 +22,7 @@ export default function Breadcrumbs() {
   const crumbs = pathname.split('/').filter(Boolean);
 
   return (
-    <nav className="w-full flex flex-row p-4 justify-between border-b border-gray-200 capitalize">
+    <nav className="w-full flex flex-row p-4 justify-between border-b border-gray-200">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
