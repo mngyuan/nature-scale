@@ -46,17 +46,17 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <div className="flex flex-col items-center min-h-screen">
-          <header className="flex flex-row w-full p-4 justify-between border-b border-gray-200">
+          <header className="flex flex-row items-center w-full p-4 justify-between border-b border-gray-200">
             <Image
               className={styles.logo}
-              src="/next.svg"
-              alt="Next.js logo"
-              width={135}
-              height={29}
+              src="/scale4nature-logo.png"
+              alt="scale4nature logo"
+              width={880 / 5}
+              height={224 / 5}
               priority
             />
             <div className="flex flex-row space-x-4">
-              <div className="">
+              <div className="flex flex-row items-center text-sm font-semibold">
                 Effective conservation scaling for sustainable impact
               </div>
               <Globe />
@@ -64,7 +64,7 @@ export default function RootLayout({
           </header>
           <Breadcrumbs />
           {children}
-          <footer className="w-full flex flex-row p-4 justify-between border-t border-gray-200">
+          <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200">
             <div className="text-sm flex flex-row space-x-4">
               <a target="_blank" rel="noopener noreferrer">
                 © 2025 Scale4Nature, LTD
@@ -82,7 +82,7 @@ export default function RootLayout({
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="space-x-2">
                     <Globe />
                     English (UK)
                   </NavigationMenuTrigger>

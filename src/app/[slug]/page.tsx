@@ -25,15 +25,17 @@ export default async function Page({
   const {slug} = await params;
   return (
     <main className="flex flex-col grow w-full">
-      <div className="flex flex-col p-8 w-lg space-y-2">
-        <Badge>Grasslands</Badge>
-        <h2 className="text-3xl">{formatPathCrumb(slug)}</h2>
-        <div>
-          Community-driven livestock management model for rangeland restoration,
-          biodiversity conservation and improved livelihoods.
+      <div className="flex flex-col p-8 pt-56 bg-[url(/rangelands.png)] bg-cover bg-center">
+        <div className="w-lg space-y-2 text-white">
+          <Badge>Grasslands</Badge>
+          <h2 className="text-3xl">{formatPathCrumb(slug)}</h2>
+          <div>
+            Community-driven livestock management model for rangeland
+            restoration, biodiversity conservation and improved livelihoods.
+          </div>
         </div>
       </div>
-      <div className="flex flex-col px-8">
+      <div className="flex flex-col p-8">
         <div className="text-xl font-bold mb-4">Choose a module</div>
         <div className="flex flex-row flex-wrap space-x-4 items-center">
           <Card className="mb-4 basis-xs">

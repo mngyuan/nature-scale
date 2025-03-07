@@ -10,9 +10,31 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
+import Image from 'next/image';
+
+const PeopleList = ({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.JSX.Element => (
+  <div className="flex flex-row -space-x-2">{children}</div>
+);
+const ProfileHead = ({src}: {src: string}): React.JSX.Element => (
+  <div className="w-12 h-12 border-grey-500 border-1 rounded-full">
+    <div className="rounded-full overflow-hidden border-white border-3">
+      <Image src={src} alt="Profile picture" width={48} height={48} />
+    </div>
+  </div>
+);
 
 const ProjectCard = () => (
-  <Card className="w-sm">
+  <Card className="w-sm pt-0 overflow-hidden">
+    <Image
+      src="/rangelands.png"
+      alt="Rangelands in South Africa"
+      width={800}
+      height={529}
+    />
     <CardHeader>
       <CardTitle>Rangelands in South Africa</CardTitle>
       <CardDescription>
@@ -20,10 +42,17 @@ const ProjectCard = () => (
         biodiversity conservation and improved livelihoods.
       </CardDescription>
     </CardHeader>
-    <CardContent></CardContent>
+    <CardContent>
+      <PeopleList>
+        <ProfileHead src="/matt.jpeg" />
+        <ProfileHead src="/morena.jpeg" />
+        <ProfileHead src="/marco.jpeg" />
+        <ProfileHead src="/kevin.jpeg" />
+      </PeopleList>
+    </CardContent>
     <CardFooter>
-      <Link href="/rangelands-in-south-africa">
-        <Button>
+      <Link href="/rangelands-in-south-africa" className="w-full">
+        <Button className="w-full">
           <ArrowRight />
           View project
         </Button>
