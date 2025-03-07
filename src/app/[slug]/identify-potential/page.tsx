@@ -10,14 +10,9 @@ import {
 } from '@/components/ui/select';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {ArrowLeft, ArrowRight, Info} from 'lucide-react';
+import {ArrowRight, Info} from 'lucide-react';
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{slug: string}>;
-}) {
-  const {slug} = await params;
+export default async function Page() {
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Identify scaling potential and targets</h2>
