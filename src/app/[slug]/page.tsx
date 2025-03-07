@@ -39,17 +39,19 @@ export default async function Page({
         <div className="text-xl font-bold mb-4">Choose a module</div>
         <div className="flex flex-row flex-wrap space-x-4 items-center">
           <Card className="mb-4 basis-xs">
-            <CardHeader>
-              <CardTitle>
-                <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                  <Flag size={48} />
-                </div>
-                Identify scaling potential and targets
-              </CardTitle>
-              <CardDescription>
-                In this section, you can calculate the number of adopters.
-              </CardDescription>
-            </CardHeader>
+            <Link href={`/${slug}/identify-potential`}>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
+                    <Flag size={48} />
+                  </div>
+                  Identify scaling potential and targets
+                </CardTitle>
+                <CardDescription>
+                  In this section, you can calculate the number of adopters.
+                </CardDescription>
+              </CardHeader>
+            </Link>
           </Card>
           <ArrowRight />
           <Card className="mb-4 basis-xs">
