@@ -16,7 +16,7 @@ export default async function Page() {
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Identify scaling potential and targets</h2>
-      <div className="flex flex-row px-8 space-x-6">
+      <div className="flex flex-row px-8 pb-8 space-x-6">
         <div className="flex flex-col grow space-y-4">
           <div className="flex flex-row items-center space-x-1">
             <p className="font-semibold text-sm">Project boundary</p>
@@ -28,7 +28,7 @@ export default async function Page() {
             </Tooltip>
           </div>
           <Tabs defaultValue="jurisdictional">
-            <TabsList className="grid w-full grid-cols-2 h-full">
+            <TabsList className="grid w-full grid-cols-2 h-full mb-2">
               <TabsTrigger
                 value="jurisdictional"
                 className="flex flex-col items-start p-2 text-wrap whitespace-normal text-left"
@@ -104,7 +104,7 @@ export default async function Page() {
           </Tabs>
         </div>
         <div className="flex flex-col grow">
-          <h2 className="text-sm text-gray-500">Location</h2>
+          <h2 className="text-sm text-muted-foreground">Location</h2>
           <p className="font-semibold text-sm">South Africa</p>
           <img
             src="http://127.0.0.1:8000/plot"

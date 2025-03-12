@@ -66,10 +66,12 @@ export default function Home() {
     <main className="flex flex-col grow w-full">
       <div className="flex flex-row justify-between items-center px-8 py-4">
         <h2 className="text-3xl">Welcome back, Matt!</h2>
-        <Button className="p-6 drop-shadow-lg rounded-lg">
-          <Plus />
-          Create a new project
-        </Button>
+        <Link href="/new-project">
+          <Button className="p-6 drop-shadow-lg rounded-lg">
+            <Plus />
+            Create a new project
+          </Button>
+        </Link>
       </div>
       <div className="px-8">
         <Tabs defaultValue="my-projects">

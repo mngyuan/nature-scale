@@ -13,6 +13,7 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import Link from 'next/link';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -39,14 +40,16 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <div className="flex flex-col items-center min-h-screen">
           <header className="flex flex-row items-center w-full p-4 justify-between border-b border-gray-200">
-            <Image
-              className={styles.logo}
-              src="/scale4nature-logo.png"
-              alt="scale4nature logo"
-              width={880 / 5}
-              height={224 / 5}
-              priority
-            />
+            <Link href="/">
+              <Image
+                className={styles.logo}
+                src="/scale4nature-logo.png"
+                alt="scale4nature logo"
+                width={880 / 5}
+                height={224 / 5}
+                priority
+              />
+            </Link>
             <div className="flex flex-row space-x-4">
               <div className="flex flex-row items-center text-sm font-semibold">
                 Effective conservation scaling for sustainable impact
