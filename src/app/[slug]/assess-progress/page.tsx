@@ -1,6 +1,7 @@
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {API_BASE_URL} from '@/lib/constants';
 import {Info} from 'lucide-react';
 
 export default async function Page() {
@@ -8,7 +9,7 @@ export default async function Page() {
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Assess Progress</h2>
       <div className="flex flex-row px-8 pb-8 space-x-6">
-        <div className="flex flex-col grow space-y-4">
+        <div className="flex flex-col space-y-4">
           <div className="flex flex-row items-center space-x-1">
             <p className="font-semibold text-sm">
               Enter data to assess if your project is on track
@@ -41,7 +42,7 @@ export default async function Page() {
             Scaling ecosystem-based rangeland management in South Africa
           </p>
           <img
-            src="http://127.0.0.1:8000/plot"
+            src={`${API_BASE_URL}/plot`}
             width={400}
             height={400}
             alt="Plot"
