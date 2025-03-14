@@ -1,3 +1,6 @@
+# imports
+source('./PlotAOI.R')
+
 #* @filter cors
 cors <- function(res) {
     res$setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -16,20 +19,31 @@ function() {
   hist(rand)
 }
 
-#* Return regions of South Africa
+#* Return regions of given country
 #* @serializer json
-#* @get /south-africa
-function(region="", district="") {
-  sa<-south_africa
-  if(district!="") {
-    # sa<-sa%>%filter(NAME_1==region)
-    sa<-sa%>%filter(NAME_2==district)
-    return(unique(sa$NAME_3))
+#* @get /boundary-names
+function(country=NA, region=NA, district=NA) {
+  folder<-paste0("./Data/CountryShapes/",country)
+  shp<-list.files(folder,pattern=".shp",full.names = T)
+  shp<-read_sf(shp)
+
+  if(is.na(district)[1]==F){
+    shp<-shp%>%filter(NAME_2 %in% district)
+    return(unique(shp$NAME_3))
   }
-  if(region!="") {
-    sa<-sa%>%filter(NAME_1==region)
-    return(unique(sa$NAME_2))
+  if(is.na(region)[1]==F){
+    shp<-shp%>%filter(NAME_1 %in% region)
+    return(unique(shp$NAME_2))
   }
-  return(unique(sa$NAME_1))
+
+  return(unique(shp$NAME_1))
 }
 
+#* Plot the given area of interest
+#* @serializer png
+#* @get /plot-area-of-interest
+function(country=NA, region=NA, district=NA, ward=NA) {
+  # TODO: does this handle arrays?
+  aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
+  return(plotAoi(aoi=aoi))
+}
