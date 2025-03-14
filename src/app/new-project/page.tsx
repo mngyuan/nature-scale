@@ -18,11 +18,11 @@ export default async function Page() {
       <div className="flex flex-col grow px-8 pb-8 space-y-4">
         <div className="flex flex-col space-y-2">
           <Label>Project Name</Label>
-          <Input placeholder="118" />
+          <Input placeholder="Name of the project" />
         </div>
         <div className="flex flex-col space-y-2">
           <Label>Project Description</Label>
-          <Textarea placeholder="Project Description" />
+          <Textarea placeholder="Add a description to your project" />
         </div>
         <div className="flex flex-col space-y-2">
           <Label htmlFor="project-photo">Project Photo</Label>

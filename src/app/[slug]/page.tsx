@@ -23,8 +23,8 @@ export default async function Page({
   const {slug} = await params;
   return (
     <main className="flex flex-col grow w-full">
-      <div className="flex flex-col p-8 pt-56 bg-[url(/rangelands.png)] bg-cover bg-center">
-        <div className="w-lg space-y-2 text-white">
+      <div className="flex flex-col p-8 bg-[url(/rangelands.png)] bg-cover bg-center grow relative">
+        <div className="w-lg space-y-2 text-white absolute bottom-8">
           <Badge>Grasslands</Badge>
           <h2 className="text-3xl">{formatPathCrumb(slug)}</h2>
           <div>
@@ -35,8 +35,8 @@ export default async function Page({
       </div>
       <div className="flex flex-col p-8">
         <div className="text-xl font-bold mb-4">Choose a module</div>
-        <div className="flex flex-row flex-wrap space-x-4 items-center">
-          <Card className="mb-4 basis-xs">
+        <div className="flex flex-row space-x-4 space-y-4 items-stretch">
+          <Card className="mb-4 basis-3xs grow">
             <Link href={`/${slug}/identify-potential`}>
               <CardHeader>
                 <CardTitle>
@@ -51,8 +51,8 @@ export default async function Page({
               </CardHeader>
             </Link>
           </Card>
-          <ArrowRight />
-          <Card className="mb-4 basis-xs">
+          <ArrowRight className="self-center" />
+          <Card className="mb-4 basis-3xs grow">
             <Link href={`/${slug}/assess-progress`}>
               <CardHeader>
                 <CardTitle>
@@ -68,8 +68,8 @@ export default async function Page({
               </CardHeader>
             </Link>
           </Card>
-          <ArrowRight />
-          <Card className="mb-4 basis-xs">
+          <ArrowRight className="self-center" />
+          <Card className="mb-4 basis-3xs grow">
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
@@ -82,8 +82,8 @@ export default async function Page({
               </CardDescription>
             </CardHeader>
           </Card>
-          <ArrowRight />
-          <Card className="mb-4 basis-xs">
+          <ArrowRight className="self-center" />
+          <Card className="mb-4 basis-3xs grow">
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
