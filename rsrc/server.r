@@ -1,3 +1,3 @@
 library(plumber)
-pr("plot.r") %>%
+pr("api.r") %>%
   pr_run(port = 8000)
