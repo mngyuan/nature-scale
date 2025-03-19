@@ -1,6 +1,6 @@
 'use client';
 
-import {Info} from 'lucide-react';
+import {Info, LoaderIcon} from 'lucide-react';
 import {useState, useEffect} from 'react';
 import {
   Select,
@@ -17,6 +17,7 @@ import {Label} from '@/components/ui/label';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {API_BASE_URL} from '@/lib/constants';
+import {Separator} from '@/components/ui/separator';
 
 export default function Page() {
   const [regions, setRegions] = useState<string[]>([]);
@@ -40,7 +41,11 @@ export default function Page() {
   useEffect(() => {
     const fetchRegions = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/south-africa`);
+        const response = await fetch(
+          `${API_BASE_URL}/boundary-names?${new URLSearchParams({
+            country: 'South Africa',
+          })}`,
+        );
         if (!response.ok) {
           throw new Error('Failed to fetch regions');
         }
@@ -65,10 +70,17 @@ export default function Page() {
     }
 
     const fetchDistricts = async () => {
+      if (selectedRegion === 'Any') {
+        setDistricts([]);
+        return;
+      }
       setLoading((prev) => ({...prev, districts: true}));
       try {
         const response = await fetch(
-          `${API_BASE_URL}/south-africa?region=${encodeURIComponent(selectedRegion)}`,
+          `${API_BASE_URL}/boundary-names?${new URLSearchParams({
+            country: 'South Africa',
+            region: selectedRegion,
+          })}`,
         );
         if (!response.ok) {
           throw new Error('Failed to fetch districts');
@@ -94,14 +106,18 @@ export default function Page() {
     }
 
     const fetchWards = async () => {
+      if (selectedDistrict === 'Any') {
+        setWards([]);
+        return;
+      }
       setLoading((prev) => ({...prev, wards: true}));
       try {
         const response = await fetch(
-          `${API_BASE_URL}/boundary-names?country=${encodeURIComponent(
-            'South Africa',
-          )}&region=${encodeURIComponent(
-            selectedRegion,
-          )}&district=${encodeURIComponent(selectedDistrict)}`,
+          `${API_BASE_URL}/boundary-names?${new URLSearchParams({
+            country: 'South Africa',
+            region: selectedRegion,
+            district: selectedDistrict,
+          })}`,
         );
         if (!response.ok) {
           throw new Error('Failed to fetch wards');
@@ -119,9 +135,25 @@ export default function Page() {
     fetchWards();
   }, [selectedRegion, selectedDistrict]);
 
-  // Fetch image from r API when ward changes
+  // Fetch image from r API when ward changes or selection ends with 'Any'
+  const isValidSelection = (
+    selectedRegion: string,
+    selectedDistrict: string,
+    selectedWard: string,
+  ) => {
+    console.log(selectedRegion, selectedDistrict, selectedWard);
+    return (
+      selectedRegion === 'Any' ||
+      (selectedRegion !== '' && selectedDistrict === 'Any') ||
+      (selectedRegion !== '' &&
+        selectedDistrict !== '' &&
+        selectedWard === 'Any') ||
+      (selectedRegion !== '' && selectedDistrict !== '' && selectedWard !== '')
+    );
+  };
+
   useEffect(() => {
-    if (!selectedRegion || !selectedDistrict || !selectedWard) {
+    if (!isValidSelection(selectedRegion, selectedDistrict, selectedWard)) {
       return;
     }
 
@@ -129,13 +161,12 @@ export default function Page() {
       setLoading((prev) => ({...prev, plotImage: true}));
       try {
         const response = await fetch(
-          `${API_BASE_URL}/plot-area-of-interest?country=${encodeURIComponent(
-            'South Africa',
-          )}&region=${encodeURIComponent(
-            selectedRegion,
-          )}&district=${encodeURIComponent(selectedDistrict)}&ward=${encodeURIComponent(
-            selectedWard,
-          )}`,
+          `${API_BASE_URL}/plot-area-of-interest?${new URLSearchParams({
+            country: 'South Africa',
+            region: selectedRegion === 'Any' ? '' : selectedRegion,
+            district: selectedDistrict === 'Any' ? '' : selectedDistrict,
+            ward: selectedWard === 'Any' ? '' : selectedWard,
+          })}`,
         );
         if (!response.ok) {
           throw new Error('Failed to fetch plot');
@@ -220,6 +251,8 @@ export default function Page() {
                       />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="Any">Any</SelectItem>
+                      <Separator className="my-2" />
                       {regions.map((region) => (
                         <SelectItem key={region} value={region}>
                           {region}
@@ -234,7 +267,11 @@ export default function Page() {
                   <Select
                     value={selectedDistrict}
                     onValueChange={handleDistrictChange}
-                    disabled={!selectedRegion || loading.districts}
+                    disabled={
+                      !selectedRegion ||
+                      loading.districts ||
+                      selectedRegion === 'Any'
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue
@@ -246,6 +283,8 @@ export default function Page() {
                       />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="Any">Any</SelectItem>
+                      <Separator className="my-2" />
                       {districts.map((district) => (
                         <SelectItem key={district} value={district}>
                           {district}
@@ -260,7 +299,11 @@ export default function Page() {
                   <Select
                     value={selectedWard}
                     onValueChange={setSelectedWard}
-                    disabled={!selectedDistrict || loading.wards}
+                    disabled={
+                      !selectedDistrict ||
+                      loading.wards ||
+                      selectedDistrict === 'Any'
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue
@@ -270,6 +313,8 @@ export default function Page() {
                       />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="Any">Any</SelectItem>
+                      <Separator className="my-2" />
                       {wards.map((ward) => (
                         <SelectItem key={ward} value={ward}>
                           {ward}
@@ -280,7 +325,15 @@ export default function Page() {
                 </div>
 
                 <div className="text-right">
-                  <Button disabled={!selectedWard}>
+                  <Button
+                    disabled={
+                      !isValidSelection(
+                        selectedRegion,
+                        selectedDistrict,
+                        selectedWard,
+                      )
+                    }
+                  >
                     <ArrowRight />
                     Next
                   </Button>
@@ -298,11 +351,17 @@ export default function Page() {
         <div className="flex flex-col grow">
           <h2 className="text-sm text-muted-foreground">Location</h2>
           <p className="font-semibold text-sm">South Africa</p>
-          {plotImage ? (
-            <img src={plotImage} width={480} height={480} alt="Plot" />
-          ) : (
-            <Image src="/placeholder.png" width={400} height={400} alt="Plot" />
-          )}
+          <div className="w-[480px] h-[480px] flex items-center justify-center">
+            {loading.plotImage ? (
+              <LoaderIcon className="animate-spin" />
+            ) : plotImage ? (
+              <img src={plotImage} width={480} height={480} alt="Plot" />
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                Select or upload a project boundary
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </main>
