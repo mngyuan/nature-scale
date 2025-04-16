@@ -55,6 +55,12 @@ export default function RootLayout({
                 Effective conservation scaling for sustainable impact
               </div>
               <Globe />
+              <Link
+                href="/login"
+                className="flex flex-row items-center text-sm font-semibold"
+              >
+                Log In
+              </Link>
             </div>
           </header>
           <Breadcrumbs />
