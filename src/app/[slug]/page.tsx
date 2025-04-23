@@ -70,17 +70,19 @@ export default async function Page({
           </Card>
           <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
-            <CardHeader>
-              <CardTitle>
-                <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                  <BookOpenCheck size={48} />
-                </div>
-                Run a context diagnostic
-              </CardTitle>
-              <CardDescription>
-                In this section, you can calculate the number of adopters.
-              </CardDescription>
-            </CardHeader>
+            <Link href={`/${slug}/context-diagnostic`}>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
+                    <BookOpenCheck size={48} />
+                  </div>
+                  Run a context diagnostic
+                </CardTitle>
+                <CardDescription>
+                  In this section, you can calculate the number of adopters.
+                </CardDescription>
+              </CardHeader>
+            </Link>
           </Card>
           <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
