@@ -1,10 +1,20 @@
 # imports
 source('./PlotAOI.R')
+source('./Module2/RunForecast.R')
 
 #* @filter cors
-cors <- function(res) {
-    res$setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
-    plumber::forward()
+cors <- function(req, res) {
+  res$setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
+  res$setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
+  res$setHeader("Access-Control-Allow-Headers", "Content-Type")
+  
+  # If this is a preflight OPTIONS request, return 200 OK immediately
+  if (req$REQUEST_METHOD == "OPTIONS") {
+    res$status <- 200
+    return(list())
+  }
+  
+  plumber::forward()
 }
 
 library(sf)
@@ -46,4 +56,26 @@ function(country=NA, region=NA, district=NA, ward=NA) {
   # TODO: does this handle arrays?
   aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
   return(plotAoi(aoi=aoi))
+}
+
+#* Get the prediction chart
+#* @serializer png
+#* @param potentialAdopters:int
+#* @param totalWeeks:int
+#* @parser csv
+#* @post /run-forecast
+function(req, potentialAdopters, totalWeeks) {
+  potentialAdopters <- as.integer(potentialAdopters)
+  if (is.na(potentialAdopters)) potentialAdopters <- 0L
+  totalWeeks <- as.integer(totalWeeks)
+  if (is.na(totalWeeks)) totalWeeks <- 0L
+  return(RunForecast(req$body, potentialAdopters, totalWeeks))
+}
+
+#* OPTIONS endpoint to handle preflight requests
+#* @options /run-forecast
+function() {
+  # This function will never actually be called because the cors filter
+  # will handle OPTIONS requests, but it's needed to register the endpoint
+  return(NULL)
 }

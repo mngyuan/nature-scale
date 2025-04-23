@@ -1,10 +1,58 @@
+'use client';
+
+import {useEffect, useState} from 'react';
+import {Info, LoaderIcon} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {API_BASE_URL} from '@/lib/constants';
-import {Info} from 'lucide-react';
 
-export default async function Page() {
+export default function AssessProgressPage() {
+  const [plotImage, setPlotImage] = useState<string | null>(null);
+  const [plotImageLoading, setPlotImageLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [adopterPopulation, setAdopterPopulation] = useState<string | null>(
+    null,
+  );
+  const [totalWeeks, setTotalWeeks] = useState<string | null>(null);
+  const [csvFile, setCSVFile] = useState<File | null>(null);
+
+  // Fetch plot image
+  useEffect(() => {
+    const fetchPlot = async () => {
+      setPlotImageLoading(true);
+      try {
+        const csvContent = await csvFile?.text();
+        const response = await fetch(
+          `${API_BASE_URL}/run-forecast?${new URLSearchParams({
+            potentialAdopters: adopterPopulation!,
+            totalWeeks: totalWeeks!,
+          })}`,
+          {
+            method: 'POST',
+            body: csvContent,
+            headers: {
+              'Content-Type': 'application/csv',
+            },
+          },
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch plot');
+        }
+        const objURL = URL.createObjectURL(await response.blob());
+        setPlotImage(objURL);
+      } catch (err) {
+        setError('Failed to load plot. Please try again later.');
+        console.error(err);
+      } finally {
+        setPlotImageLoading(false);
+      }
+    };
+    if (csvFile && adopterPopulation && totalWeeks) {
+      fetchPlot();
+    }
+  }, [csvFile, adopterPopulation, totalWeeks]);
+
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Assess Progress</h2>
@@ -23,14 +71,39 @@ export default async function Page() {
           </div>
           <div className="flex flex-col space-y-2">
             <Label>Adopter population estimate</Label>
-            <Input placeholder="118" />
+            <Input
+              placeholder="118"
+              value={adopterPopulation || ''}
+              onChange={(e) => setAdopterPopulation(e.target.value)}
+            />
           </div>
           <div className="flex flex-col space-y-2">
             <Label>Target adoption</Label>
             <Input placeholder="92" />
           </div>
           <div className="flex flex-col space-y-2">
-            <Input type="file" />
+            <Label>Time (weeks)</Label>
+            <Input
+              placeholder={
+                // TODO: populate default from the project data
+                '52'
+              }
+              value={totalWeeks || ''}
+              onChange={(e) => setTotalWeeks(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Input
+              type="file"
+              accept=".csv"
+              multiple={false}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setCSVFile(file);
+                }
+              }}
+            />
           </div>
           <p className="text-xs text-muted-foreground text-center">
             <a>Download the standard reporting form here</a>
@@ -41,12 +114,13 @@ export default async function Page() {
           <p className="font-semibold text-sm">
             Scaling ecosystem-based rangeland management in South Africa
           </p>
-          <img
-            src={`${API_BASE_URL}/plot`}
-            width={400}
-            height={400}
-            alt="Plot"
-          />
+          {plotImageLoading ? (
+            <LoaderIcon className="animate-spin" />
+          ) : plotImage ? (
+            <img src={plotImage} width={480} height={480} alt="Plot" />
+          ) : (
+            <div className="text-sm text-muted-foreground">Complete form</div>
+          )}
         </div>
       </div>
     </main>
