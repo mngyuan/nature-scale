@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import {auth} from '@/auth';
+import {createClient} from '@/utils/supabase/server';
 
 const PeopleList = ({
   children,
@@ -28,7 +29,10 @@ const ProfileHead = ({src}: {src: string}): React.JSX.Element => (
   </div>
 );
 
-const ProjectCard = () => (
+const ProjectCard = ({
+  name,
+  description,
+}: {name?: string; description?: string} = {}) => (
   <Card className="w-sm pt-0 overflow-hidden">
     <Image
       src="/rangelands.png"
@@ -36,12 +40,9 @@ const ProjectCard = () => (
       width={800}
       height={529}
     />
-    <CardHeader>
-      <CardTitle>Rangelands in South Africa</CardTitle>
-      <CardDescription>
-        Community-driven livestock management model for rangeland restoration,
-        biodiversity conservation and improved livelihoods.
-      </CardDescription>
+    <CardHeader className="grow">
+      <CardTitle>{name}</CardTitle>
+      <CardDescription>{description}</CardDescription>
     </CardHeader>
     <CardContent>
       <PeopleList>
@@ -63,6 +64,8 @@ const ProjectCard = () => (
 );
 
 export default async function Home() {
+  const supabase = await createClient();
+  const {data: projects} = await supabase.from('projects').select();
   const session = await auth();
   return (
     <main className="flex flex-col grow w-full">
@@ -86,8 +89,14 @@ export default async function Home() {
               Projects to update
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="my-projects" className="flex flex-row">
-            <ProjectCard />
+          <TabsContent value="my-projects" className="flex flex-row space-x-2">
+            {projects?.map((project) => (
+              <ProjectCard
+                key={project.id}
+                name={project.name}
+                description={project.description}
+              />
+            ))}
           </TabsContent>
         </Tabs>
       </div>
