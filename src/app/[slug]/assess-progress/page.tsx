@@ -56,7 +56,7 @@ export default function AssessProgressPage() {
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Assess Progress</h2>
-      <div className="flex flex-row px-8 pb-8 space-x-6">
+      <div className="grid grid-cols-2 gap-4 px-8 pb-8 space-x-6">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-row items-center space-x-1">
             <p className="font-semibold text-sm">
@@ -110,17 +110,22 @@ export default function AssessProgressPage() {
           </p>
         </div>
         <div className="flex flex-col grow">
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           <h2 className="text-sm text-muted-foreground">Visualisation</h2>
           <p className="font-semibold text-sm">
             Scaling ecosystem-based rangeland management in South Africa
           </p>
-          {plotImageLoading ? (
-            <LoaderIcon className="animate-spin" />
-          ) : plotImage ? (
-            <img src={plotImage} width={480} height={480} alt="Plot" />
-          ) : (
-            <div className="text-sm text-muted-foreground">Complete form</div>
-          )}
+          <div className="w-[480px] h-[480px] flex items-center justify-center">
+            {plotImageLoading ? (
+              <LoaderIcon className="animate-spin" />
+            ) : plotImage ? (
+              <img src={plotImage} width={480} height={480} alt="Plot" />
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                Complete the form to see an adoption forecast
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </main>

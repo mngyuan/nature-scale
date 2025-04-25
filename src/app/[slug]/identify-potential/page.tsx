@@ -1,6 +1,6 @@
 'use client';
 
-import {ArrowLeft, Info, LoaderIcon} from 'lucide-react';
+import {ArrowLeft, Calculator, Info, LoaderIcon} from 'lucide-react';
 import {useState, useEffect} from 'react';
 import {
   Select,
@@ -382,6 +382,9 @@ const Stage2 = ({
   hidden: boolean | undefined;
   setStage: (stage: number) => void;
 }) => {
+  const [bufferAmount, setBufferAmount] = useState<number>(5);
+  const [economicWellbeing, setEconomicWellbeing] = useState<string>('Any');
+
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
       <div className="flex flex-row items-center space-x-1">
@@ -395,7 +398,7 @@ const Stage2 = ({
       </div>
       <div className="flex flex-col space-y-2">
         <Label>Economic wellbeing of the target</Label>
-        <Select>
+        <Select value={economicWellbeing} onValueChange={setEconomicWellbeing}>
           <SelectTrigger className="w-full">
             <SelectValue
               placeholder={'Select one economic wellbeing category'}
@@ -404,21 +407,39 @@ const Stage2 = ({
           <SelectContent>
             <SelectItem value="Any">Any</SelectItem>
             <Separator className="my-2" />
+            <SelectItem value="High">High</SelectItem>
+            <SelectItem value="Medium">Medium</SelectItem>
+            <SelectItem value="Low">Low</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div className="flex flex-col space-y-2">
-        <Label>Economic wellbeing of the target</Label>
-        <Slider defaultValue={[50]} max={100} step={1} className="py-2" />
+        <div className="flex flex-row items-center justify-between">
+          <Label>Buffer from resources (km)</Label>
+          <Input
+            placeholder="0"
+            className="w-16 text-center border-transparent hover:border-input hover:border text-muted-foreground hover:text-inherit focus:text-inherit"
+            type="number"
+            value={bufferAmount}
+            onChange={(e) => setBufferAmount(parseInt(e.target.value))}
+          />
+        </div>
+        <Slider
+          max={30}
+          step={1}
+          className="py-2"
+          value={[bufferAmount]}
+          onValueChange={(values) => setBufferAmount(values[0])}
+        />
       </div>
       <div className="flex flex-row justify-between">
         <Button onClick={() => setStage(1)}>
           <ArrowLeft />
           Previous
         </Button>
-        <Button disabled>
-          <ArrowRight />
-          Next
+        <Button disabled={!(bufferAmount && economicWellbeing)}>
+          <Calculator />
+          Calculate
         </Button>
       </div>
     </div>
@@ -433,7 +454,7 @@ export default function Page() {
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Identify scaling potential and targets</h2>
-      <div className="flex flex-row px-8 pb-8 space-x-6">
+      <div className="grid grid-cols-2 gap-4 px-8 pb-8 space-x-6">
         <Stages
           setPlotImage={setPlotImage}
           setPlotImageLoading={setPlotImageLoading}
