@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/navigation-menu';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Link from 'next/link';
-import UserButton from '@/components/user-button';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -56,7 +55,12 @@ export default function RootLayout({
                 Effective conservation scaling for sustainable impact
               </div>
               <Globe />
-              <UserButton />
+              <Link
+                href="/login"
+                className="flex flex-row items-center text-sm font-semibold"
+              >
+                Log In
+              </Link>
             </div>
           </header>
           <Breadcrumbs />

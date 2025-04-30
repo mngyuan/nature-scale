@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
-import {auth} from '@/auth';
 import {createClient} from '@/utils/supabase/server';
 
 const PeopleList = ({
@@ -66,13 +65,10 @@ const ProjectCard = ({
 export default async function Home() {
   const supabase = await createClient();
   const {data: projects} = await supabase.from('projects').select();
-  const session = await auth();
   return (
     <main className="flex flex-col grow w-full">
       <div className="flex flex-row justify-between items-center px-8 py-4">
-        <h2 className="text-3xl">
-          Welcome back, {session?.user?.name || 'Matt'}!
-        </h2>
+        <h2 className="text-3xl">Welcome back, Matt</h2>
         <Link href="/new-project">
           <Button className="p-6 drop-shadow-lg rounded-lg">
             <Plus />
