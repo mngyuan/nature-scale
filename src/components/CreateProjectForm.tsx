@@ -1,6 +1,7 @@
 'use client';
 
-import {Plus} from 'lucide-react';
+import {format} from 'date-fns';
+import {Plus, CalendarIcon} from 'lucide-react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -13,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
+import {Calendar} from '@/components/ui/calendar';
 import {
   Select,
   SelectContent,
@@ -23,13 +24,36 @@ import {
 } from '@/components/ui/select';
 import {Separator} from '@/components/ui/separator';
 import {Textarea} from '@/components/ui/textarea';
+import {cn} from '@/lib/utils';
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '@/components/ui/command';
+import {Check, ChevronDown} from 'lucide-react';
+
+const RESOURCE_LABELS: Record<string, string> = {
+  grassland: 'Grassland',
+  'open-forest': 'Open Forest',
+  'closed-forest': 'Closed Forest',
+  mangrove: 'Mangrove',
+  freshwater: 'Freshwater',
+  marine: 'Marine',
+  agriculture: 'Agriculture',
+  wetland: 'Wetland',
+  shrubland: 'Shrubland',
+  other: 'Other',
+};
 
 const CreateProjectFormSchema = z.object({
   projectName: z.string().min(1, {message: 'Project name is required'}),
   projectDescription: z.string().max(200, {message: 'Max 200 characters'}),
   projectPhoto: z.string(),
   resourcesType: z
-    .string()
+    .array(z.string())
     .min(1, {message: 'At least 1 resource type is required'}),
   engagementType: z
     .string()
@@ -46,8 +70,7 @@ export default function CreateProjectForm() {
       projectName: '',
       projectDescription: '',
       projectPhoto: '',
-      // TODO: should be an array, check sersavan/shadcn-multi-select-component
-      resourcesType: '',
+      resourcesType: [],
       engagementType: '',
       monitoringFrequency: '',
       startingDate: '',
@@ -107,17 +130,65 @@ export default function CreateProjectForm() {
           name="resourcesType"
           render={({field}) => (
             <FormItem>
-              <FormLabel>Resources Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select one or more resource types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Region 1</SelectItem>
-                  <SelectItem value="2">Region 2</SelectItem>
-                  <SelectItem value="3">Region 3</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormLabel>Resource(s) Type</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'w-full justify-between h-auto',
+                      !field.value.length && 'text-muted-foreground',
+                    )}
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {field.value.length > 0
+                        ? field.value.map((item) => (
+                            <div
+                              key={item}
+                              className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
+                            >
+                              {RESOURCE_LABELS[item] || item}
+                            </div>
+                          ))
+                        : 'Select resource types'}
+                    </div>
+                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search resource type..." />
+                    <CommandEmpty>No resource type found.</CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                      {Object.entries(RESOURCE_LABELS).map(([value, label]) => (
+                        <CommandItem
+                          key={value}
+                          onSelect={() => {
+                            const newValue = field.value.includes(value)
+                              ? field.value.filter((item) => item !== value)
+                              : [...field.value, value];
+                            field.onChange(newValue);
+                          }}
+                        >
+                          <div
+                            className={cn(
+                              'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                              field.value.includes(value)
+                                ? 'bg-primary text-primary-foreground'
+                                : 'opacity-50',
+                            )}
+                          >
+                            {field.value.includes(value) && (
+                              <Check className="h-3 w-3" />
+                            )}
+                          </div>
+                          {label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}
@@ -133,9 +204,12 @@ export default function CreateProjectForm() {
                   <SelectValue placeholder="Select one engagement type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Region 1</SelectItem>
-                  <SelectItem value="2">Region 2</SelectItem>
-                  <SelectItem value="3">Region 3</SelectItem>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="settlement">
+                    Settlement (Group of houses)
+                  </SelectItem>
+                  <SelectItem value="village">Village</SelectItem>
+                  <SelectItem value="municipality">Municipality</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -153,9 +227,14 @@ export default function CreateProjectForm() {
                   <SelectValue placeholder="Every 2 months" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Region 1</SelectItem>
-                  <SelectItem value="2">Region 2</SelectItem>
-                  <SelectItem value="3">Region 3</SelectItem>
+                  <SelectItem value="daily">Every day</SelectItem>
+                  <SelectItem value="weekly">Every week</SelectItem>
+                  <SelectItem value="bi-weekly">Every 2 weeks</SelectItem>
+                  <SelectItem value="monthly">Every month</SelectItem>
+                  <SelectItem value="bi-monthly">Every 2 months</SelectItem>
+                  <SelectItem value="quarterly">Every quarter</SelectItem>
+                  <SelectItem value="semi-annually">Every half year</SelectItem>
+                  <SelectItem value="annually">Every year</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -163,14 +242,91 @@ export default function CreateProjectForm() {
           )}
         />
         <div className="flex flex-row w-full space-x-4">
-          <div className="grow flex flex-col space-y-2">
-            <Label>Starting Date</Label>
-            <Input placeholder="118" />
-          </div>
-          <div className="grow flex flex-col space-y-2">
-            <Label>Ending Date</Label>
-            <Input placeholder="118" />
-          </div>
+          <FormField
+            control={form.control}
+            name="startingDate"
+            render={({field}) => (
+              <FormItem className="grow">
+                <FormLabel>Starting Date</FormLabel>
+                <div className="flex flex-col">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'w-full justify-start text-left font-normal',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          format(field.value, 'PPP')
+                        ) : (
+                          <span>Select date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) =>
+                          field.onChange(date?.toISOString() ?? '')
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="endingDate"
+            render={({field}) => (
+              <FormItem className="grow">
+                <FormLabel>Ending Date</FormLabel>
+                <div className="flex flex-col">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'w-full justify-start text-left font-normal',
+                          !field.value && 'text-muted-foreground',
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? (
+                          format(field.value, 'PPP')
+                        ) : (
+                          <span>Select date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) =>
+                          field.onChange(date?.toISOString() ?? '')
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <Button className="mt-4" type="submit">
           <Plus />
