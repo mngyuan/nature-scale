@@ -1,11 +1,11 @@
 First, build the docker image
 
 ```
-docker build -t nature-scale .
+docker build --platform linux/amd64 -t nature-scale .
 ```
 
 Then, run the docker image
 
 ```
-docker run -it -p 8000:8000 nature-scale
+docker run --platform linux/amd64 -it -p 8000:8000 nature-scale
 ```
