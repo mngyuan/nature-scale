@@ -35,7 +35,7 @@ import {
   CommandItem,
 } from '@/components/ui/command';
 import {cn} from '@/lib/utils';
-import {createClient} from '@/utils/supabase/client';
+import {createClient} from '@/lib/supabase/client';
 import Link from 'next/link';
 
 const RESOURCE_LABELS: Record<string, string> = {

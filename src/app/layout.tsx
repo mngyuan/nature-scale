@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/navigation-menu';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Link from 'next/link';
+import {createClient} from '@/lib/supabase/server';
+import {getProfile} from '@/lib/utils';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,11 +32,14 @@ export const metadata: Metadata = {
   description: 'Effective conservation scaling for sustainable impact',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {loggedIn, profile} = await getProfile(supabase);
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
@@ -55,12 +60,23 @@ export default function RootLayout({
                 Effective conservation scaling for sustainable impact
               </div>
               <Globe />
-              <Link
-                href="/login"
-                className="flex flex-row items-center text-sm font-semibold"
-              >
-                Log In
-              </Link>
+              {loggedIn ? (
+                <Link
+                  href="/profile"
+                  className="flex flex-row items-center text-sm font-semibold"
+                >
+                  {profile && profile?.first_name && profile.last_name
+                    ? `${profile.first_name} ${profile.last_name}`
+                    : 'Profile'}
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex flex-row items-center text-sm font-semibold"
+                >
+                  Log In
+                </Link>
+              )}
             </div>
           </header>
           <Breadcrumbs />

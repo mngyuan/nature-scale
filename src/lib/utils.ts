@@ -1,3 +1,4 @@
+import {SupabaseClient} from '@supabase/supabase-js';
 import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 import {titleCase} from 'title-case';
@@ -21,3 +22,18 @@ export function absoluteUrl(path: string) {
 
 export const formatPathCrumb = (crumb: string): string =>
   titleCase(crumb.replace(/-/g, ' '));
+
+export const getProfile = async (supabase: SupabaseClient) => {
+  const {data, error} = await supabase.auth.getUser();
+  const loggedIn = data?.user && !error;
+  let profile = null;
+  if (loggedIn) {
+    const {data: profileData} = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', data?.user?.id)
+      .single();
+    profile = profileData;
+  }
+  return {loggedIn, profile};
+};
