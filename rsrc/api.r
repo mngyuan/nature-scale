@@ -1,3 +1,8 @@
+#* @apiTitle scale4nature
+#* @apiDescription R backend API for scale4nature web app
+#* @apiVersion 1.0.0
+#* @apiContact list(name = "Github URL", url = "https://github.com/mngyuan/nature-scale")
+
 # imports
 source('./PlotAOI.R')
 source('./Module2/RunForecast.R')
