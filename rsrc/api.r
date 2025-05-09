@@ -1,6 +1,7 @@
 # imports
 source('./PlotAOI.R')
 source('./Module2/RunForecast.R')
+source('./ProjectSetup/MakeStandardReportingForm.R')
 
 #* @filter cors
 cors <- function(req, res) {
@@ -20,6 +21,14 @@ cors <- function(req, res) {
 library(sf)
 library(dplyr)
 south_africa<-read_sf("./Data/ExampleBoundary/GADM_SouthAfrica/gadm41_ZAF_3.shp")
+
+#* OPTIONS endpoint to handle preflight requests
+#* @options /run-forecast
+function() {
+  # This function will never actually be called because the cors filter
+  # will handle OPTIONS requests, but it's needed to register the endpoint
+  return(NULL)
+}
 
 #* Plot a histogram
 #* @serializer png
@@ -72,10 +81,13 @@ function(req, potentialAdopters, totalWeeks) {
   return(RunForecast(req$body, potentialAdopters, totalWeeks))
 }
 
-#* OPTIONS endpoint to handle preflight requests
-#* @options /run-forecast
-function() {
-  # This function will never actually be called because the cors filter
-  # will handle OPTIONS requests, but it's needed to register the endpoint
-  return(NULL)
+#* Get the standard reporting form
+#* @serializer csv
+#* @get /standard-reporting-form
+#* @param adopterType:string
+#* @param period:string
+#* @param start:string
+#* @param end:string
+function(adopterType, period, start, end) {
+  return(MakeStandardReportingForm(adopterType, period, start, end))
 }

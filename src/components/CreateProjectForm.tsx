@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/command';
 import {cn} from '@/lib/utils';
 import {createClient} from '@/utils/supabase/client';
+import Link from 'next/link';
 
 const RESOURCE_LABELS: Record<string, string> = {
   grassland: 'Grassland',
@@ -359,6 +360,29 @@ export default function CreateProjectForm() {
               </FormItem>
             )}
           />
+        </div>
+        <div className="text-xs hover:underline text-muted-foreground">
+          {form.watch('monitoringFrequency') &&
+            form.watch('engagementType') &&
+            form.watch('startingDate') &&
+            form.watch('endingDate') && (
+              <Link
+                href={`/api/standard-reporting-form?${new URLSearchParams({
+                  adopterType: form.watch('engagementType'),
+                  period: form.watch('monitoringFrequency'),
+                  // format as YYYY-MM-DD
+                  start: format(
+                    new Date(form.watch('startingDate')),
+                    'yyyy-MM-dd',
+                  ),
+                  end: format(new Date(form.watch('endingDate')), 'yyyy-MM-dd'),
+                })}`}
+                download
+              >
+                Download a {form.watch('monitoringFrequency')} standard
+                reporting form for your project here
+              </Link>
+            )}
         </div>
         <Button className="mt-4" type="submit">
           <Plus />
