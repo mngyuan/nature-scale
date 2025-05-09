@@ -39,8 +39,8 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
     options: {
       data: {
-        firstName: formData.get('firstName') as string,
-        lastName: formData.get('lastName') as string,
+        first_name: formData.get('firstName') as string,
+        last_name: formData.get('lastName') as string,
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/complete`,
     },

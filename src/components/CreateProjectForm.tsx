@@ -1,7 +1,9 @@
 'use client';
 
 import {format} from 'date-fns';
-import {Plus, CalendarIcon} from 'lucide-react';
+import {Check, ChevronDown, Plus, CalendarIcon} from 'lucide-react';
+import {useRouter} from 'next/navigation';
+import {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -24,7 +26,6 @@ import {
 } from '@/components/ui/select';
 import {Separator} from '@/components/ui/separator';
 import {Textarea} from '@/components/ui/textarea';
-import {cn} from '@/lib/utils';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {
   Command,
@@ -33,7 +34,8 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import {Check, ChevronDown} from 'lucide-react';
+import {cn} from '@/lib/utils';
+import {createClient} from '@/utils/supabase/client';
 
 const RESOURCE_LABELS: Record<string, string> = {
   grassland: 'Grassland',
@@ -64,6 +66,10 @@ const CreateProjectFormSchema = z.object({
 });
 
 export default function CreateProjectForm() {
+  const router = useRouter();
+  const supabase = createClient();
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof CreateProjectFormSchema>>({
     resolver: zodResolver(CreateProjectFormSchema),
     defaultValues: {
@@ -78,8 +84,34 @@ export default function CreateProjectForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof CreateProjectFormSchema>) {
+  async function onSubmit(data: z.infer<typeof CreateProjectFormSchema>) {
     console.log(data);
+    setLoading(true);
+
+    const {error} = await supabase.from('projects').insert([
+      {
+        name: data.projectName,
+        description: data.projectDescription,
+        // country:
+        // photo:
+        details: {
+          resourcesType: data.resourcesType,
+          engagementType: data.engagementType,
+          monitoringFrequency: data.monitoringFrequency,
+          startingDate: data.startingDate,
+          endingDate: data.endingDate,
+        },
+      },
+    ]);
+
+    if (error) {
+      console.error('Error creating project:', error);
+      alert('Error creating project');
+    } else {
+      // TODO: show a success toast?
+      router.push('/');
+    }
+    setLoading(false);
   }
 
   return (
