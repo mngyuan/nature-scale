@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
+import {Suspense} from 'react';
 
 const errorMessages = {
   email_not_confirmed: [
@@ -10,7 +10,7 @@ const errorMessages = {
   ],
 };
 
-export default function ErrorPage() {
+function ErrorMessage() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const message = searchParams.get('message');
@@ -18,28 +18,33 @@ export default function ErrorPage() {
 
   if (errorMessage) {
     return (
-      <main className="flex flex-col grow w-full">
-        <h2 className="p-8 text-3xl">{errorMessage[0]}</h2>
+      <>
+        <h2 className="p-8 text-3xl">Sorry, something went wrong</h2>
+        <h3 className="p-8 text-2xl">{errorMessage[0]}</h3>
         <div className="pl-8">
           <p>{errorMessage[1]}</p>
-          <Link href="/login" className="font-semibold hover:underline">
-            Return to Login
-          </Link>
         </div>
-      </main>
+      </>
     );
   }
 
   return (
-    <main className="flex flex-col grow w-full">
+    <>
       <h2 className="p-8 text-3xl">Sorry, something went wrong</h2>
+      <h3 className="p-8 text-2xl">{code}</h3>
       <div className="pl-8">
-        <p>Error code: {code}</p>
         <p>{message}</p>
-        <Link href="/login" className="font-semibold hover:underline">
-          Return to Login
-        </Link>
       </div>
+    </>
+  );
+}
+
+export default function ErrorPage() {
+  return (
+    <main className="flex flex-col grow w-full">
+      <Suspense>
+        <ErrorMessage />
+      </Suspense>
     </main>
   );
 }
