@@ -15,9 +15,9 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {API_BASE_URL} from '@/lib/constants';
 import {Separator} from '@/components/ui/separator';
 import {Slider} from '@/components/ui/slider';
+import {getBoundaryNames} from './actions';
 
 const Stages = ({
   setPlotImage,
@@ -71,15 +71,9 @@ const Stage1 = ({
   useEffect(() => {
     const fetchRegions = async () => {
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/boundary-names?${new URLSearchParams({
-            country: 'South Africa',
-          })}`,
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch regions');
-        }
-        const data = await response.json();
+        const data = await getBoundaryNames({
+          country: 'South Africa',
+        });
         setRegions(data); // API returns array directly
       } catch (err) {
         setError('Failed to load regions. Please try again later.');
@@ -106,16 +100,10 @@ const Stage1 = ({
       }
       setLoading((prev) => ({...prev, districts: true}));
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/boundary-names?${new URLSearchParams({
-            country: 'South Africa',
-            region: selectedRegion,
-          })}`,
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch districts');
-        }
-        const data = await response.json();
+        const data = await getBoundaryNames({
+          country: 'South Africa',
+          region: selectedRegion,
+        });
         setDistricts(data); // API returns array directly
       } catch (err) {
         setError('Failed to load districts. Please try again later.');
@@ -142,17 +130,11 @@ const Stage1 = ({
       }
       setLoading((prev) => ({...prev, wards: true}));
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/boundary-names?${new URLSearchParams({
-            country: 'South Africa',
-            region: selectedRegion,
-            district: selectedDistrict,
-          })}`,
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch wards');
-        }
-        const data = await response.json();
+        const data = await getBoundaryNames({
+          country: 'South Africa',
+          region: selectedRegion,
+          district: selectedDistrict,
+        });
         setWards(data); // API returns array directly
       } catch (err) {
         setError('Failed to load wards. Please try again later.');
@@ -190,7 +172,7 @@ const Stage1 = ({
       setPlotImageLoading(true);
       try {
         const response = await fetch(
-          `${API_BASE_URL}/plot-area-of-interest?${new URLSearchParams({
+          `/api/area-of-interest-plot?${new URLSearchParams({
             country: 'South Africa',
             region: selectedRegion === 'Any' ? '' : selectedRegion,
             district: selectedDistrict === 'Any' ? '' : selectedDistrict,

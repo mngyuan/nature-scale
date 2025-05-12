@@ -5,7 +5,6 @@ import {Info, LoaderIcon} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
-import {API_BASE_URL} from '@/lib/constants';
 
 export default function AssessProgressPage() {
   const [plotImage, setPlotImage] = useState<string | null>(null);
@@ -24,7 +23,7 @@ export default function AssessProgressPage() {
       try {
         const csvContent = await csvFile?.text();
         const response = await fetch(
-          `${API_BASE_URL}/run-forecast?${new URLSearchParams({
+          `/api/forecast-graph?${new URLSearchParams({
             potentialAdopters: adopterPopulation!,
             totalWeeks: totalWeeks!,
           })}`,
