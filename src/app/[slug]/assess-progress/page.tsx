@@ -19,6 +19,7 @@ export default function AssessProgressPage() {
   // Fetch plot image
   useEffect(() => {
     const fetchPlot = async () => {
+      setError(null);
       setPlotImageLoading(true);
       try {
         const csvContent = await csvFile?.text();

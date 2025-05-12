@@ -70,6 +70,7 @@ const Stage1 = ({
   // Fetch regions on component mount
   useEffect(() => {
     const fetchRegions = async () => {
+      setError(null);
       try {
         const data = await getBoundaryNames({
           country: 'South Africa',
@@ -99,6 +100,7 @@ const Stage1 = ({
         return;
       }
       setLoading((prev) => ({...prev, districts: true}));
+      setError(null);
       try {
         const data = await getBoundaryNames({
           country: 'South Africa',
@@ -129,6 +131,7 @@ const Stage1 = ({
         return;
       }
       setLoading((prev) => ({...prev, wards: true}));
+      setError(null);
       try {
         const data = await getBoundaryNames({
           country: 'South Africa',
@@ -170,6 +173,7 @@ const Stage1 = ({
 
     const fetchPlot = async () => {
       setPlotImageLoading(true);
+      setError(null);
       try {
         const response = await fetch(
           `/api/area-of-interest-plot?${new URLSearchParams({
