@@ -1,13 +1,13 @@
 'use server';
 
-import {API_BASE_URL} from '@/lib/constants';
+import {R_API_BASE_URL} from '@/lib/constants';
 import {NextRequest, NextResponse} from 'next/server';
 
 export async function POST(request: NextRequest) {
   // just foward all the params and body
   const searchParams = request.nextUrl.searchParams;
   const csvContent = await request.text();
-  const res = await fetch(`${API_BASE_URL}/run-forecast?${searchParams}`, {
+  const res = await fetch(`${R_API_BASE_URL}/run-forecast?${searchParams}`, {
     method: 'POST',
     body: csvContent,
     headers: {

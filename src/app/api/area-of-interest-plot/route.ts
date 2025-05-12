@@ -1,13 +1,13 @@
 'use server';
 
-import {API_BASE_URL} from '@/lib/constants';
+import {R_API_BASE_URL} from '@/lib/constants';
 import {NextRequest, NextResponse} from 'next/server';
 
 export async function GET(request: NextRequest) {
   // just foward all the params
   const searchParams = request.nextUrl.searchParams;
   const res = await fetch(
-    `${API_BASE_URL}/plot-area-of-interest?${searchParams}`,
+    `${R_API_BASE_URL}/plot-area-of-interest?${searchParams}`,
   );
 
   if (!res.ok) {

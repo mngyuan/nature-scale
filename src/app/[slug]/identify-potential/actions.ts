@@ -1,6 +1,6 @@
 'use server';
 
-import {API_BASE_URL} from '@/lib/constants';
+import {R_API_BASE_URL} from '@/lib/constants';
 
 export async function getBoundaryNames({
   country,
@@ -18,7 +18,7 @@ export async function getBoundaryNames({
   });
 
   try {
-    const response = await fetch(`${API_BASE_URL}/boundary-names?${params}`, {
+    const response = await fetch(`${R_API_BASE_URL}/boundary-names?${params}`, {
       headers: {
         Authorization: `Bearer ${process.env.R_API_KEY}`,
         Accept: 'application/json',
