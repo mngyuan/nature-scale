@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
   );
 
   if (!res.ok) {
-    throw new Error('Failed to fetch area of interest plot');
+    throw new Error(
+      `Failed to fetch area of interest plot: R API responded with ${res.status} ${res.statusText}`,
+    );
   }
 
   return new NextResponse(await res.blob(), {

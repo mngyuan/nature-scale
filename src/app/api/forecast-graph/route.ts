@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
   if (!res.ok) {
     throw new Error(
-      `Failed to fetch forecast graph: ${res.status} ${res.statusText}`,
+      `Failed to fetch forecast graph: R API responded with ${res.status} ${res.statusText}`,
     );
   }
 

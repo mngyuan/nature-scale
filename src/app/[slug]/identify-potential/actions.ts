@@ -19,10 +19,11 @@ export async function getBoundaryNames({
 
   try {
     const response = await fetch(`${R_API_BASE_URL}/boundary-names?${params}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.R_API_KEY}`,
-        Accept: 'application/json',
-      },
+      // TODO: add API_KEY, not just security through obscurity
+      // headers: {
+      //   Authorization: `Bearer ${process.env.R_API_KEY}`,
+      //   Accept: 'application/json',
+      // },
       // Use Next.js caching with tag-based revalidation
       next: {
         tags: ['boundaries'],

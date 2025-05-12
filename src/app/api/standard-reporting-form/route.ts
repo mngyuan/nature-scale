@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
   );
 
   if (!res.ok) {
-    throw new Error('Failed to fetch standard reporting form data');
+    throw new Error(
+      `Failed to fetch standard reporting form data: R API responded with ${res.status} ${res.statusText}`,
+    );
   }
 
   return new Response(await res.text(), {
