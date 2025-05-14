@@ -15,13 +15,16 @@ export default function APIStatusIndicator() {
 
   const {apiStatus, apiStatusReason, httpCode, httpBody} = apiResponse;
 
-  useEffect(() => {
-    const fetchAPIStatus = async () => {
-      const response = await wakeRAPI();
-      setAPIResponse({...response});
-    };
+  const fetchAPIStatus = async () => {
+    setAPIResponse({apiStatus: 'loading', apiStatusReason: ''});
+    const response = await wakeRAPI();
+    setAPIResponse({...response});
+  };
 
+  useEffect(() => {
     fetchAPIStatus();
+    const intervalID = setInterval(fetchAPIStatus, 60 * 1000);
+    return () => clearInterval(intervalID);
   }, []);
 
   return (
@@ -49,7 +52,9 @@ export default function APIStatusIndicator() {
           )}
         </TooltipContent>
       </Tooltip>
-      <div>API Status: {apiStatus}</div>
+      <div className="hover:underline cursor-pointer">
+        <a onClick={fetchAPIStatus}>API Status: {apiStatus}</a>
+      </div>
     </div>
   );
 }
