@@ -37,19 +37,7 @@ import {
 import {cn} from '@/lib/utils';
 import {createClient} from '@/lib/supabase/client';
 import Link from 'next/link';
-
-const RESOURCE_LABELS: Record<string, string> = {
-  grassland: 'Grassland',
-  'open-forest': 'Open Forest',
-  'closed-forest': 'Closed Forest',
-  mangrove: 'Mangrove',
-  freshwater: 'Freshwater',
-  marine: 'Marine',
-  agriculture: 'Agriculture',
-  wetland: 'Wetland',
-  shrubland: 'Shrubland',
-  other: 'Other',
-};
+import {RESOURCE_LABELS} from '@/lib/constants';
 
 const CreateProjectFormSchema = z.object({
   projectName: z.string().min(1, {message: 'Project name is required'}),
@@ -93,7 +81,7 @@ export default function CreateProjectForm() {
       {
         name: data.projectName,
         description: data.projectDescription,
-        // country:
+        // country: // should be ISO 2 letter to work nicely with js Intl
         // photo:
         details: {
           resourcesType: data.resourcesType,

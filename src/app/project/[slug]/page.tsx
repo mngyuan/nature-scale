@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {RESOURCE_LABELS} from '@/lib/constants';
 import {formatPathCrumb} from '@/lib/utils';
 import {
   ArrowRight,
@@ -14,23 +15,27 @@ import {
   WandSparkles,
 } from 'lucide-react';
 import Link from 'next/link';
+import {getProject} from './actions';
 
-export default async function Page({
+export default async function ProjectPage({
   params,
 }: {
   params: Promise<{slug: string}>;
 }) {
   const {slug} = await params;
+  const project = await getProject(slug);
+
   return (
     <main className="flex flex-col grow w-full">
       <div className="flex flex-col p-8 bg-[url(/rangelands.png)] bg-cover bg-center grow relative">
         <div className="w-lg space-y-2 text-white absolute bottom-8">
-          <Badge>Grasslands</Badge>
-          <h2 className="text-3xl">{formatPathCrumb(slug)}</h2>
-          <div>
-            Community-driven livestock management model for rangeland
-            restoration, biodiversity conservation and improved livelihoods.
-          </div>
+          {[...project?.details?.resourcesType]?.map((resource: string) => (
+            <Badge key={resource}>
+              {RESOURCE_LABELS[resource] || resource}
+            </Badge>
+          ))}
+          <h2 className="text-3xl">{formatPathCrumb(project.name)}</h2>
+          <div>{project.description}</div>
         </div>
       </div>
       <div className="flex flex-col p-8">

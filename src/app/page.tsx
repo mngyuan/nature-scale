@@ -31,16 +31,16 @@ const ProfileHead = ({src}: {src: string}): React.JSX.Element => (
 );
 
 const ProjectCard = ({
+  id,
   name,
   description,
-}: {name?: string; description?: string} = {}) => (
+}: {
+  id: string;
+  name: string;
+  description: string;
+}) => (
   <Card className="w-sm pt-0 overflow-hidden">
-    <Image
-      src="/rangelands.png"
-      alt="Rangelands in South Africa"
-      width={800}
-      height={529}
-    />
+    <Image src="/rangelands.png" alt="Project photo" width={800} height={529} />
     <CardHeader className="grow">
       <CardTitle>{name}</CardTitle>
       <CardDescription>{description}</CardDescription>
@@ -54,7 +54,7 @@ const ProjectCard = ({
       </PeopleList>
     </CardContent>
     <CardFooter>
-      <Link href="/project/rangelands-in-south-africa" className="w-full">
+      <Link href={`/project/${id}`} className="w-full">
         <Button className="w-full">
           <ArrowRight />
           View project
@@ -97,6 +97,7 @@ export default async function Home() {
             {projects?.map((project) => (
               <ProjectCard
                 key={project.id}
+                id={project.id}
                 name={project.name}
                 description={project.description}
               />
