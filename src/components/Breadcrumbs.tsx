@@ -28,18 +28,21 @@ export default function Breadcrumbs() {
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
           </BreadcrumbItem>
-          {crumbs.slice(0, -1).map((crumb, index) => (
-            <React.Fragment key={crumb}>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  href={`/${crumbs.slice(0, index + 1).join('/')}`}
-                >
-                  {formatPathCrumb(crumb)}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </React.Fragment>
-          ))}
+          {crumbs.slice(0, -1).map(
+            (crumb, index) =>
+              crumb !== 'project' && (
+                <React.Fragment key={crumb}>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink
+                      href={`/${crumbs.slice(0, index + 1).join('/')}`}
+                    >
+                      {formatPathCrumb(crumb)}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </React.Fragment>
+              ),
+          )}
           <BreadcrumbSeparator />
           <BreadcrumbPage>
             {formatPathCrumb(crumbs[crumbs.length - 1])}

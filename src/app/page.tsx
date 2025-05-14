@@ -54,7 +54,7 @@ const ProjectCard = ({
       </PeopleList>
     </CardContent>
     <CardFooter>
-      <Link href="/rangelands-in-south-africa" className="w-full">
+      <Link href="/project/rangelands-in-south-africa" className="w-full">
         <Button className="w-full">
           <ArrowRight />
           View project
