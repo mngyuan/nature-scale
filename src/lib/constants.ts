@@ -2,7 +2,9 @@
  */
 
 export const R_API_BASE_URL =
-  process.env.R_API_BASE_URL || 'http://localhost:8000';
+  process.env.NEXT_PUBLIC_R_API_BASE_URL ||
+  process.env.R_API_BASE_URL ||
+  'http://localhost:8000';
 
 export const RESOURCE_LABELS: Record<string, string> = {
   grassland: 'Grassland',
