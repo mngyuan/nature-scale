@@ -12,7 +12,11 @@ source('./ProjectSetup/MakeStandardReportingForm.R')
 
 #* @filter cors
 cors <- function(req, res) {
-  res$setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
+  allowed_origins <- Sys.getenv("ALLOWED_ORIGINS")
+  if (allowed_origins == "") {
+    allowed_origins <- "http://localhost:3000"
+  }
+  res$setHeader("Access-Control-Allow-Origin", allowed_origins)
   res$setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
   res$setHeader("Access-Control-Allow-Headers", "Content-Type")
   

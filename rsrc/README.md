@@ -31,3 +31,9 @@ docker push $IMAGE_TAG
 ```
 
 see [here](https://medium.com/@taylorhughes/how-to-deploy-an-existing-docker-container-project-to-google-cloud-run-with-the-minimum-amount-of-daca0b5978d8) for more information
+
+Make sure to set the relevant environment variables, i.e.
+
+```
+ALLOWED_ORIGINS=https://frontend-hosted.location
+```
