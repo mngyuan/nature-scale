@@ -7,7 +7,7 @@ RUN apt-get update -qq && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN R -e "install.packages(c('rstan', 'tidybayes', 'ggthemes', 'scales'))"
+RUN R -e "install.packages(c('rstan', 'tidybayes', 'ggthemes', 'scales', 'raster'))"
 RUN R -e "install.packages(c('tidyverse', 'sf'))"
 
 # FROM rstudio/plumber:latest AS runtime
