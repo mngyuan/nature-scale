@@ -13,6 +13,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
+import APIStatusIndicator from '@/components/APIStatusIndicator';
 
 const PeopleList = ({
   children,
@@ -83,7 +84,7 @@ export default async function Home() {
           </Button>
         </Link>
       </div>
-      <div className="px-8">
+      <div className="px-8 pb-4 grow flex flex-col justify-between">
         <Tabs defaultValue="my-projects">
           <TabsList className="grid grid-cols-3">
             <TabsTrigger value="my-projects">My projects</TabsTrigger>
@@ -102,6 +103,7 @@ export default async function Home() {
             ))}
           </TabsContent>
         </Tabs>
+        <APIStatusIndicator />
       </div>
     </main>
   );

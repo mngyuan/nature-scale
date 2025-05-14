@@ -3,6 +3,8 @@
 #* @apiVersion 1.0.0
 #* @apiContact list(name = "Github URL", url = "https://github.com/mngyuan/nature-scale")
 
+library(sf)
+library(dplyr)
 # imports
 source('./PlotAOI.R')
 source('./Module2/RunForecast.R')
@@ -23,8 +25,6 @@ cors <- function(req, res) {
   plumber::forward()
 }
 
-library(sf)
-library(dplyr)
 south_africa<-read_sf("./Data/ExampleBoundary/GADM_SouthAfrica/gadm41_ZAF_3.shp")
 
 #* OPTIONS endpoint to handle preflight requests
@@ -35,12 +35,15 @@ function() {
   return(NULL)
 }
 
-#* Plot a histogram
-#* @serializer png
-#* @get /plot
+#* For pinging from the web app to "wake" the docker container on the cloud
+#* @serializer json
+#* @get /wake
 function() {
-  rand <- rnorm(100)
-  hist(rand)
+  # Return system information and date
+  return(list(
+    system = Sys.info(),
+    date = Sys.time()
+  ))
 }
 
 #* Return regions of given country
