@@ -8,6 +8,9 @@ library(rstan)
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
+# Save model otherwise docker will always recompile
+# This adds ~2min to loading the server
+model = stan_model("./Module2/SIaM.stan")
 RunForecast<-function(csv, potentialAdopters, totalWeeks) {
 
   #### STEP 1: Load adoption data
@@ -69,7 +72,7 @@ RunForecast<-function(csv, potentialAdopters, totalWeeks) {
   #### STEP 5: run model
   
   # Fit and sample from the posterior
-  mod = stan("./Module2/SIaM.stan",
+  mod = sampling(model,
              data = stan_d,
              pars = params_monitor,seed = 123,
              chains = 3,cores=3,
