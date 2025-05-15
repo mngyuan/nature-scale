@@ -1,6 +1,6 @@
-# scale4nature
+# [scale4nature](https://nature-scale.vercel.app/)
 
-Next.js app hosted on Vercel using Supabase for auth and postgres and Docker container for [R API](https://github.com/matthewclark1223/PredictingAdoptionWebTool)
+Next.js app hosted on Vercel using Supabase for auth and postgres and Docker container for [R API](/rsrc/)
 
 # Development
 

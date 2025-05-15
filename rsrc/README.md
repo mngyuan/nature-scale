@@ -1,6 +1,10 @@
 # Nature Scale R API
 
+Built heavily from and with the work of [Matt Clark](https://github.com/matthewclark1223/PredictingAdoptionWebTool)
+
 ## Running locally
+
+Check `Dockerfile` for the R packages that need to be installed.
 
 ```sh
 rscript server.r
