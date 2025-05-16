@@ -2,12 +2,32 @@
 
 import {useSearchParams} from 'next/navigation';
 import {Suspense} from 'react';
+import {titleCase} from 'title-case';
+import errorCodes from '@/lib/supabase/auth-error-codes.json';
 
-const errorMessages = {
-  email_not_confirmed: [
-    'Email not confirmed',
-    'Please check your email inbox and verify your account before logging in.',
-  ],
+// this type is actually AuthError['code'] un-union'd with undefined and empty
+// object from supabase-js; it's not exported so it's been reproduced in JSON
+type ErrorCode = keyof typeof errorCodes;
+
+const errorMessages: Partial<Record<ErrorCode, [string, string]>> = {
+  ...{
+    email_not_confirmed: [
+      'Email not confirmed',
+      'Please check your email inbox and verify your account before logging in.',
+    ],
+    email_address_invalid: [
+      'Invalid email address',
+      errorCodes.email_address_invalid,
+    ],
+    email_exists: [
+      'Email already exists',
+      'The email address you entered is already associated with an account.',
+    ],
+  },
+  // Load default supabase error messages as default fallbacks
+  ...Object.entries(errorCodes).reduce((acc, [key, value]) => {
+    return {...acc, [key]: [titleCase(key.replace(/_/g, ' ')), value]};
+  }, {}),
 };
 
 function ErrorMessage() {
