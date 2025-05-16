@@ -43,6 +43,7 @@ const CreateProjectFormSchema = z.object({
   projectName: z.string().min(1, {message: 'Project name is required'}),
   projectDescription: z.string().max(200, {message: 'Max 200 characters'}),
   projectPhoto: z.string(),
+  countryCode: z.string().min(1, {message: 'Country is required'}).max(2),
   resourcesType: z
     .array(z.string())
     .min(1, {message: 'At least 1 resource type is required'}),
@@ -65,6 +66,7 @@ export default function CreateProjectForm() {
       projectName: '',
       projectDescription: '',
       projectPhoto: '',
+      countryCode: '',
       resourcesType: [],
       engagementType: '',
       monitoringFrequency: '',
@@ -74,14 +76,13 @@ export default function CreateProjectForm() {
   });
 
   async function onSubmit(data: z.infer<typeof CreateProjectFormSchema>) {
-    console.log(data);
     setLoading(true);
 
     const {error} = await supabase.from('projects').insert([
       {
         name: data.projectName,
         description: data.projectDescription,
-        // country: // should be ISO 2 letter to work nicely with js Intl
+        country: data.countryCode,
         // photo:
         details: {
           resourcesType: data.resourcesType,
@@ -146,6 +147,74 @@ export default function CreateProjectForm() {
           )}
         />
         <Separator className="mt-4 mb-6" />
+        <FormField
+          control={form.control}
+          name="countryCode"
+          render={({field}) => (
+            <FormItem>
+              <FormLabel>Country</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="AO">Angola</SelectItem>
+                  <SelectItem value="BJ">Benin</SelectItem>
+                  <SelectItem value="BW">Botswana</SelectItem>
+                  <SelectItem value="BF">Burkina Faso</SelectItem>
+                  <SelectItem value="BI">Burundi</SelectItem>
+                  <SelectItem value="CM">Cameroon</SelectItem>
+                  <SelectItem value="CV">Cape Verde</SelectItem>
+                  <SelectItem value="CF">Central African Republic</SelectItem>
+                  <SelectItem value="TD">Chad</SelectItem>
+                  <SelectItem value="KM">Comoros</SelectItem>
+                  <SelectItem value="CI">Cote d Ivoire</SelectItem>
+                  <SelectItem value="CD">
+                    Democratic Republic of the Congo
+                  </SelectItem>
+                  <SelectItem value="DJ">Djibouti</SelectItem>
+                  <SelectItem value="GQ">Equatorial Guinea</SelectItem>
+                  <SelectItem value="ER">Eritrea</SelectItem>
+                  <SelectItem value="SZ">Eswatini</SelectItem>
+                  <SelectItem value="ET">Ethiopia</SelectItem>
+                  <SelectItem value="GA">Gabon</SelectItem>
+                  <SelectItem value="GH">Ghana</SelectItem>
+                  <SelectItem value="GN">Guinea</SelectItem>
+                  <SelectItem value="GW">Guinea Bissau</SelectItem>
+                  <SelectItem value="KE">Kenya</SelectItem>
+                  <SelectItem value="LS">Lesotho</SelectItem>
+                  <SelectItem value="LR">Liberia</SelectItem>
+                  <SelectItem value="MG">Madagascar</SelectItem>
+                  <SelectItem value="MW">Malawi</SelectItem>
+                  <SelectItem value="ML">Mali</SelectItem>
+                  <SelectItem value="MR">Mauritania</SelectItem>
+                  <SelectItem value="MU">Mauritius</SelectItem>
+                  <SelectItem value="MZ">Mozambique</SelectItem>
+                  <SelectItem value="NA">Namibia</SelectItem>
+                  <SelectItem value="NE">Niger</SelectItem>
+                  <SelectItem value="NG">Nigeria</SelectItem>
+                  <SelectItem value="CG">Republic of the Congo</SelectItem>
+                  <SelectItem value="RW">Rwanda</SelectItem>
+                  <SelectItem value="ST">Sao Tome and Principe</SelectItem>
+                  <SelectItem value="SN">Senegal</SelectItem>
+                  <SelectItem value="SC">Seychelles</SelectItem>
+                  <SelectItem value="SL">Sierra Leone</SelectItem>
+                  <SelectItem value="SO">Somalia</SelectItem>
+                  <SelectItem value="ZA">South Africa</SelectItem>
+                  <SelectItem value="SS">South Sudan</SelectItem>
+                  <SelectItem value="SD">Sudan</SelectItem>
+                  <SelectItem value="TZ">Tanzania</SelectItem>
+                  <SelectItem value="GM">The Gambia</SelectItem>
+                  <SelectItem value="TG">Togo</SelectItem>
+                  <SelectItem value="UG">Uganda</SelectItem>
+                  <SelectItem value="ZM">Zambia</SelectItem>
+                  <SelectItem value="ZW">Zimbabwe</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="resourcesType"

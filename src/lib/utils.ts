@@ -23,13 +23,11 @@ export function absoluteUrl(path: string) {
 export const formatPathCrumb = (crumb: string): string =>
   titleCase(crumb.replace(/-/g, ' '));
 
-export const countryNameFromCode = (
-  code: string,
-): ReturnType<typeof Intl.DisplayNames.prototype.of> => {
+export const countryNameFromCode = (code: string): string => {
   try {
     return new Intl.DisplayNames([navigator.language || 'en'], {
       type: 'region',
-    }).of(code);
+    }).of(code)!;
   } catch (e) {
     // Don't choke the frontend if code is invalid (i.e. ISO 3166-1 alpha-3)
     return code;

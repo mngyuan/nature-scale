@@ -29,8 +29,6 @@ cors <- function(req, res) {
   plumber::forward()
 }
 
-south_africa<-read_sf("./Data/ExampleBoundary/GADM_SouthAfrica/gadm41_ZAF_3.shp")
-
 #* OPTIONS endpoint to handle preflight requests
 #* @options /run-forecast
 function() {
@@ -69,6 +67,7 @@ function(country=NA, region=NA, district=NA) {
 
   return(unique(shp$NAME_1))
 }
+#south_africa<-read_sf("./Data/ExampleBoundary/GADM_SouthAfrica/gadm41_ZAF_3.shp")
 
 #* Plot the given area of interest
 #* @serializer png

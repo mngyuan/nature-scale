@@ -1,11 +1,25 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {Info, LoaderIcon} from 'lucide-react';
+import {Calculator, Info, LoaderIcon} from 'lucide-react';
+import Link from 'next/link';
+import {format} from 'date-fns';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {R_API_BASE_URL} from '@/lib/constants';
+import {Button} from '@/components/ui/button';
+
+const MONITORING_TIME_UNITS = {
+  daily: 'days',
+  weekly: 'weeks',
+  'bi-weekly': 'weeks',
+  monthly: 'month',
+  'bi-monthly': 'months',
+  quarterly: 'months',
+  'semi-annually': 'years',
+  annually: 'years',
+};
 
 export default function AssessProgressClientPage({
   project,
@@ -23,44 +37,38 @@ export default function AssessProgressClientPage({
   const [totalWeeks, setTotalWeeks] = useState<string | null>(null);
   const [csvFile, setCSVFile] = useState<File | null>(null);
 
-  // Fetch plot image
-  useEffect(() => {
-    const fetchPlot = async () => {
-      setError(null);
-      setPlotImageLoading(true);
-      try {
-        const csvContent = await csvFile?.text();
-        const response = await fetch(
-          // Vercel server function times out in 60s so directly call the R API
-          // `/api/forecast-graph?${new URLSearchParams({
-          `${R_API_BASE_URL}/run-forecast?${new URLSearchParams({
-            potentialAdopters: adopterPopulation!,
-            totalWeeks: totalWeeks!,
-          })}`,
-          {
-            method: 'POST',
-            body: csvContent,
-            headers: {
-              'Content-Type': 'application/csv',
-            },
+  const fetchPlot = async () => {
+    setError(null);
+    setPlotImageLoading(true);
+    try {
+      const csvContent = await csvFile?.text();
+      const response = await fetch(
+        // Vercel server function times out in 60s so directly call the R API
+        // `/api/forecast-graph?${new URLSearchParams({
+        `${R_API_BASE_URL}/run-forecast?${new URLSearchParams({
+          potentialAdopters: adopterPopulation!,
+          totalWeeks: totalWeeks!,
+        })}`,
+        {
+          method: 'POST',
+          body: csvContent,
+          headers: {
+            'Content-Type': 'application/csv',
           },
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch plot');
-        }
-        const objURL = URL.createObjectURL(await response.blob());
-        setPlotImage(objURL);
-      } catch (err) {
-        setError('Failed to load plot. Please try again later.');
-        console.error(err);
-      } finally {
-        setPlotImageLoading(false);
+        },
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch plot');
       }
-    };
-    if (csvFile && adopterPopulation && totalWeeks) {
-      fetchPlot();
+      const objURL = URL.createObjectURL(await response.blob());
+      setPlotImage(objURL);
+    } catch (err) {
+      setError('Failed to load plot. Please try again later.');
+      console.error(err);
+    } finally {
+      setPlotImageLoading(false);
     }
-  }, [csvFile, adopterPopulation, totalWeeks]);
+  };
 
   return (
     <>
@@ -93,6 +101,7 @@ export default function AssessProgressClientPage({
           <Input
             placeholder={
               // TODO: populate default from the project data
+              // need to support other than weeks in R API
               '52'
             }
             value={totalWeeks || ''}
@@ -112,9 +121,35 @@ export default function AssessProgressClientPage({
             }}
           />
         </div>
-        <p className="text-xs text-muted-foreground text-center">
-          <a>Download the standard reporting form here</a>
+        <p className="text-xs text-muted-foreground">
+          <Link
+            href={`/api/standard-reporting-form?${new URLSearchParams({
+              adopterType: project.details.engagementType,
+              period: project.details.monitoringFrequency,
+              // format as YYYY-MM-DD
+              start: format(
+                new Date(project.details.startingDate),
+                'yyyy-MM-dd',
+              ),
+              end: format(new Date(project.details.endingDate), 'yyyy-MM-dd'),
+            })}`}
+            download
+          >
+            Download a {project.details.monitoringFrequency} standard reporting
+            form for your project here
+          </Link>
         </p>
+        <div className="text-right">
+          <Button
+            role="submit"
+            disabled={!(csvFile && adopterPopulation && totalWeeks)}
+            className="shrink"
+            onClick={() => fetchPlot()}
+          >
+            <Calculator />
+            Calculate
+          </Button>
+        </div>
       </div>
       <div className="flex flex-col grow">
         {error && <div className="text-red-500 text-sm">{error}</div>}

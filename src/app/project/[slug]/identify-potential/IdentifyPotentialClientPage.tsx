@@ -23,9 +23,13 @@ import {countryNameFromCode} from '@/lib/utils';
 const Stages = ({
   setPlotImage,
   setPlotImageLoading,
+  project,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
+  // TODO: supabase typescript type generation
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  project: any;
 }) => {
   const [stage, setStage] = useState<number>(1);
   return (
@@ -35,6 +39,7 @@ const Stages = ({
         setPlotImage={setPlotImage}
         setPlotImageLoading={setPlotImageLoading}
         setStage={setStage}
+        country={project.country_code}
       />
       <Stage2 hidden={stage !== 2} setStage={setStage} />
     </>
@@ -46,11 +51,13 @@ const Stage1 = ({
   setPlotImageLoading,
   setStage,
   hidden,
+  country,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
   setStage: (stage: number) => void;
   hidden: boolean | undefined;
+  country: string;
 }) => {
   const [regions, setRegions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -74,7 +81,7 @@ const Stage1 = ({
       setError(null);
       try {
         const data = await getBoundaryNames({
-          country: 'South Africa',
+          country: countryNameFromCode(country),
         });
         setRegions(data); // API returns array directly
       } catch (err) {
@@ -104,7 +111,7 @@ const Stage1 = ({
       setError(null);
       try {
         const data = await getBoundaryNames({
-          country: 'South Africa',
+          country: countryNameFromCode(country),
           region: selectedRegion,
         });
         setDistricts(data); // API returns array directly
@@ -135,7 +142,7 @@ const Stage1 = ({
       setError(null);
       try {
         const data = await getBoundaryNames({
-          country: 'South Africa',
+          country: countryNameFromCode(country),
           region: selectedRegion,
           district: selectedDistrict,
         });
@@ -178,7 +185,7 @@ const Stage1 = ({
       try {
         const response = await fetch(
           `/api/area-of-interest-plot?${new URLSearchParams({
-            country: 'South Africa',
+            country: countryNameFromCode(country),
             region: selectedRegion === 'Any' ? '' : selectedRegion,
             district: selectedDistrict === 'Any' ? '' : selectedDistrict,
             ward: selectedWard === 'Any' ? '' : selectedWard,
@@ -448,11 +455,12 @@ export default function IdentifyPotentialClientPage({
       <Stages
         setPlotImage={setPlotImage}
         setPlotImageLoading={setPlotImageLoading}
+        project={project}
       />
       <div className="flex flex-col grow">
         <h2 className="text-sm text-muted-foreground">Location</h2>
         <p className="font-semibold text-sm">
-          {countryNameFromCode(project.country)}
+          {countryNameFromCode(project.country_code)}
         </p>
         <div className="w-[480px] h-[480px] flex items-center justify-center">
           {plotImageLoading ? (
