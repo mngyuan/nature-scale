@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 
 // TODO: supabase typescript type generation
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Project = any;
 type ProjectContextType = {
   projects?: Record<string, Project>;
