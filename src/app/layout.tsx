@@ -16,6 +16,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import Link from 'next/link';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
+import {ProjectProvider} from '@/components/ProjectContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -79,8 +80,10 @@ export default async function RootLayout({
               )}
             </div>
           </header>
-          <Breadcrumbs />
-          {children}
+          <ProjectProvider>
+            <Breadcrumbs />
+            {children}
+          </ProjectProvider>
           <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200">
             <div className="text-sm flex flex-row space-x-4">
               <a target="_blank" rel="noopener noreferrer">

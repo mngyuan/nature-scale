@@ -19,6 +19,7 @@ import {Separator} from '@/components/ui/separator';
 import {Slider} from '@/components/ui/slider';
 import {getBoundaryNames} from './actions';
 import {countryNameFromCode} from '@/lib/utils';
+import {useProjects} from '@/components/ProjectContext';
 
 const Stages = ({
   setPlotImage,
@@ -447,6 +448,14 @@ export default function IdentifyPotentialClientPage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   project: any;
 }) {
+  // Update context store with project data from server
+  const {updateProjects} = useProjects();
+  useEffect(() => {
+    if (project && project.id && updateProjects) {
+      updateProjects({[project.id]: project});
+    }
+  }, [project, updateProjects]);
+
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
 

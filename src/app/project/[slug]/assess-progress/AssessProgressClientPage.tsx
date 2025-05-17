@@ -9,6 +9,7 @@ import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {R_API_BASE_URL} from '@/lib/constants';
 import {Button} from '@/components/ui/button';
+import {useProjects} from '@/components/ProjectContext';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -28,6 +29,14 @@ export default function AssessProgressClientPage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   project: any;
 }) {
+  // Update context store with project data from server
+  const {updateProjects} = useProjects();
+  useEffect(() => {
+    if (project && project.id && updateProjects) {
+      updateProjects({[project.id]: project});
+    }
+  }, [project, updateProjects]);
+
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,24 +130,26 @@ export default function AssessProgressClientPage({
             }}
           />
         </div>
-        <p className="text-xs text-muted-foreground">
-          <Link
-            href={`/api/standard-reporting-form?${new URLSearchParams({
-              adopterType: project.details.engagementType,
-              period: project.details.monitoringFrequency,
-              // format as YYYY-MM-DD
-              start: format(
-                new Date(project.details.startingDate),
-                'yyyy-MM-dd',
-              ),
-              end: format(new Date(project.details.endingDate), 'yyyy-MM-dd'),
-            })}`}
-            download
-          >
-            Download a {project.details.monitoringFrequency} standard reporting
-            form for your project here
-          </Link>
-        </p>
+        {project?.details?.startingDate && project?.details?.endingDate && (
+          <p className="text-xs text-muted-foreground">
+            <Link
+              href={`/api/standard-reporting-form?${new URLSearchParams({
+                adopterType: project.details.engagementType,
+                period: project.details.monitoringFrequency,
+                // format as YYYY-MM-DD
+                start: format(
+                  new Date(project.details.startingDate),
+                  'yyyy-MM-dd',
+                ),
+                end: format(new Date(project.details.endingDate), 'yyyy-MM-dd'),
+              })}`}
+              download
+            >
+              Download a {project.details.monitoringFrequency} standard
+              reporting form for your project here
+            </Link>
+          </p>
+        )}
         <div className="text-right">
           <Button
             role="submit"

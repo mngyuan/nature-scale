@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {getProject} from './actions';
+import {ProjectDataForwarder} from '@/components/ProjectContext';
 
 export default async function ProjectPage({
   params,
@@ -28,6 +29,7 @@ export default async function ProjectPage({
   return (
     <main className="flex flex-col grow w-full">
       <div className="flex flex-col p-8 bg-[url(/rangelands.png)] bg-cover bg-center grow relative">
+        <ProjectDataForwarder project={project} />
         <div className="w-lg space-y-2 text-white absolute bottom-8 space-x-1">
           {[...project?.details?.resourcesType]?.map((resource: string) => (
             <Badge key={resource}>
