@@ -8,17 +8,17 @@ import {User} from '@supabase/supabase-js';
 
 export default function ProfilePictureForm({
   user,
-  uid,
-  url,
+  profile,
   size,
 }: {
   user: User | null;
-  uid: string | null;
-  url: string | undefined;
+  // TODO: supabase typescript type generation
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  profile: any;
   size: number;
 }): JSX.Element {
   const supabase = createClient();
-  const [profilePictureURL, setProfilePictureURL] = useState(url);
+  const [profilePictureURL, setProfilePictureURL] = useState('');
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -27,6 +27,7 @@ export default function ProfilePictureForm({
         const {data, error} = await supabase.storage
           .from('profile-photos')
           .download(path);
+        console.log('Image data: ', data);
         if (error) {
           throw error;
         }
@@ -38,8 +39,9 @@ export default function ProfilePictureForm({
       }
     }
 
-    if (url) downloadImage(url);
-  }, [url, supabase]);
+    if (profile?.profile_picture_url)
+      downloadImage(profile?.profile_picture_url);
+  }, [profile, supabase]);
 
   const uploadProfilePicture = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -53,7 +55,7 @@ export default function ProfilePictureForm({
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${uid}-${Math.random()}.${fileExt}`;
+      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
 
       const {error: uploadError} = await supabase.storage
         .from('profile-photos')
@@ -63,11 +65,13 @@ export default function ProfilePictureForm({
         throw uploadError;
       }
 
-      const {error} = await supabase.from('profiles').upsert({
-        id: user?.id as string,
-        profile_picture_url: filePath,
-        updated_at: new Date().toISOString(),
-      });
+      const {error} = await supabase
+        .from('profiles')
+        .update({
+          profile_picture_url: filePath,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user?.id);
       if (error) throw error;
       // TODO: display to user
       // alert('Profile updated!')
@@ -86,8 +90,9 @@ export default function ProfilePictureForm({
           width={size}
           height={size}
           src={profilePictureURL}
-          alt="profile picture"
+          alt={`${profile.first_name}'s profile picture`}
           style={{height: size, width: size}}
+          className="rounded-md object-cover"
         />
       ) : (
         <div

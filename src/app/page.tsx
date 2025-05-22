@@ -34,13 +34,21 @@ const ProjectCard = ({
   id,
   name,
   description,
+  imageURL,
 }: {
   id: string;
   name: string;
   description: string;
+  imageURL: string;
 }) => (
   <Card className="w-sm pt-0 overflow-hidden">
-    <Image src="/rangelands.png" alt="Project photo" width={800} height={529} />
+    <Image
+      src={imageURL || '/rangelands.png'}
+      alt="Project photo"
+      width={800}
+      height={529}
+      className="object-cover max-h-48 w-full"
+    />
     <CardHeader className="grow">
       <CardTitle>{name}</CardTitle>
       <CardDescription>{description}</CardDescription>
@@ -68,6 +76,24 @@ export default async function Home() {
   const supabase = await createClient();
   const {data: projects} = await supabase.from('projects').select();
   const {loggedIn, profile} = await getProfile(supabase);
+
+  const projectImages: Record<string, string> = {};
+
+  if (projects) {
+    for (const project of projects) {
+      if (project.project_image_url) {
+        const {data} = supabase.storage
+          .from('project-images')
+          .getPublicUrl(project.project_image_url);
+
+        console.log('Project image URL:', data);
+
+        if (data) {
+          projectImages[project.id] = data.publicUrl;
+        }
+      }
+    }
+  }
 
   return (
     <main className="flex flex-col grow w-full">
@@ -100,6 +126,7 @@ export default async function Home() {
                 id={project.id}
                 name={project.name}
                 description={project.description}
+                imageURL={projectImages?.[project.id || ''] || ''}
               />
             ))}
           </TabsContent>

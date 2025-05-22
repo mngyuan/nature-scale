@@ -38,11 +38,12 @@ import {cn} from '@/lib/utils';
 import {createClient} from '@/lib/supabase/client';
 import Link from 'next/link';
 import {RESOURCE_LABELS} from '@/lib/constants';
+import {User} from '@supabase/supabase-js';
 
 const CreateProjectFormSchema = z.object({
   projectName: z.string().min(1, {message: 'Project name is required'}),
   projectDescription: z.string().max(200, {message: 'Max 200 characters'}),
-  projectPhoto: z.string(),
+  projectPhoto: z.instanceof(File).optional(),
   countryCode: z.string().min(1, {message: 'Country is required'}).max(2),
   resourcesType: z
     .array(z.string())
@@ -55,7 +56,7 @@ const CreateProjectFormSchema = z.object({
   endingDate: z.string(),
 });
 
-export default function CreateProjectForm() {
+export default function CreateProjectForm({user}: {user: User | null}) {
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -65,7 +66,7 @@ export default function CreateProjectForm() {
     defaultValues: {
       projectName: '',
       projectDescription: '',
-      projectPhoto: '',
+      projectPhoto: undefined,
       countryCode: '',
       resourcesType: [],
       engagementType: '',
@@ -78,12 +79,31 @@ export default function CreateProjectForm() {
   async function onSubmit(data: z.infer<typeof CreateProjectFormSchema>) {
     setLoading(true);
 
+    let project_image_url = null;
+
+    if (data.projectPhoto) {
+      const file = data.projectPhoto;
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+
+      const {error: uploadError} = await supabase.storage
+        .from('project-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        // TODO: display to user
+        console.error('Error uploading project image:', uploadError);
+      }
+
+      project_image_url = filePath;
+    }
+
     const {error} = await supabase.from('projects').insert([
       {
         name: data.projectName,
         description: data.projectDescription,
-        country: data.countryCode,
-        // photo:
+        country_code: data.countryCode,
+        project_image_url: project_image_url,
         details: {
           resourcesType: data.resourcesType,
           engagementType: data.engagementType,
@@ -139,10 +159,21 @@ export default function CreateProjectForm() {
         <FormField
           control={form.control}
           name="projectPhoto"
-          render={({field}) => (
+          render={({field: {value, onChange, ...fieldProps}}) => (
             <FormItem>
               <FormLabel htmlFor="project-photo">Project Photo</FormLabel>
-              <Input type="file" id="project-photo" {...field} />
+              <Input
+                type="file"
+                id="project-photo"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    onChange(file);
+                  }
+                }}
+                {...fieldProps}
+              />
               <FormMessage />
             </FormItem>
           )}

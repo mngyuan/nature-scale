@@ -43,11 +43,14 @@ export default function ProfileForm({
   async function onSubmit(data: z.infer<typeof ProfileFormSchema>) {
     setLoading(true);
 
-    const {error} = await supabase.from('profiles').update({
-      first_name: data.firstName,
-      last_name: data.lastName,
-      updated_at: new Date().toISOString(),
-    });
+    const {error} = await supabase
+      .from('profiles')
+      .update({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user?.id);
 
     if (error) {
       console.error('Error updating profile:', error);
