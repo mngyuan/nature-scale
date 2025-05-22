@@ -94,7 +94,7 @@ const Stage1 = ({
     };
 
     fetchRegions();
-  }, []);
+  }, [country]);
 
   // Fetch districts when region changes
   useEffect(() => {
@@ -125,7 +125,7 @@ const Stage1 = ({
     };
 
     fetchDistricts();
-  }, [selectedRegion]);
+  }, [selectedRegion, country]);
 
   // Fetch wards when district changes
   useEffect(() => {
@@ -157,7 +157,7 @@ const Stage1 = ({
     };
 
     fetchWards();
-  }, [selectedRegion, selectedDistrict]);
+  }, [selectedRegion, selectedDistrict, country]);
 
   // Fetch image from r API when ward changes or selection ends with 'Any'
   const isValidSelection = (
@@ -212,6 +212,7 @@ const Stage1 = ({
     selectedWard,
     setPlotImage,
     setPlotImageLoading,
+    country,
   ]);
 
   const handleRegionChange = (value: string) => {

@@ -25,7 +25,6 @@ export default async function ProjectPage({
 }) {
   const {slug} = await params;
   const project = await getProject(slug);
-  console.log('Project:', project);
 
   return (
     <main className="flex flex-col grow w-full">

@@ -96,7 +96,8 @@ export default function CreateProjectForm() {
 
     if (error) {
       console.error('Error creating project:', error);
-      alert('Error creating project');
+      // TODO: display to user
+      // alert('Error creating project');
     } else {
       // TODO: show a success toast?
       router.push('/');
@@ -155,7 +156,7 @@ export default function CreateProjectForm() {
               <FormLabel>Country</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Country" />
+                  <SelectValue placeholder="Select a country" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="AO">Angola</SelectItem>
