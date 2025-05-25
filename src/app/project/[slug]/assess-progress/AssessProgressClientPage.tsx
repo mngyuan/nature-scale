@@ -40,10 +40,8 @@ export default function AssessProgressClientPage({
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [adopterPopulation, setAdopterPopulation] = useState<string | null>(
-    null,
-  );
-  const [totalWeeks, setTotalWeeks] = useState<string | null>(null);
+  const [adopterPopulation, setAdopterPopulation] = useState<string>('');
+  const [targetAdoption, setTargetAdoption] = useState<string>('');
   const [csvFile, setCSVFile] = useState<File | null>(null);
 
   const fetchPlot = async () => {
@@ -55,8 +53,8 @@ export default function AssessProgressClientPage({
         // Vercel server function times out in 60s so directly call the R API
         // `/api/forecast-graph?${new URLSearchParams({
         `${R_API_BASE_URL}/run-forecast?${new URLSearchParams({
-          potentialAdopters: adopterPopulation!,
-          totalWeeks: totalWeeks!,
+          potentialAdopters: adopterPopulation,
+          targetAdoption,
         })}`,
         {
           method: 'POST',
@@ -96,25 +94,19 @@ export default function AssessProgressClientPage({
         <div className="flex flex-col space-y-2">
           <Label>Adopter population estimate</Label>
           <Input
-            placeholder="118"
-            value={adopterPopulation || ''}
+            type="number"
+            placeholder="An educated guess at the number of potential adopters"
+            value={adopterPopulation}
             onChange={(e) => setAdopterPopulation(e.target.value)}
           />
         </div>
         <div className="flex flex-col space-y-2">
           <Label>Target adoption</Label>
-          <Input placeholder="92" />
-        </div>
-        <div className="flex flex-col space-y-2">
-          <Label>Time (weeks)</Label>
           <Input
-            placeholder={
-              // TODO: populate default from the project data
-              // need to support other than weeks in R API
-              '52'
-            }
-            value={totalWeeks || ''}
-            onChange={(e) => setTotalWeeks(e.target.value)}
+            type="number"
+            placeholder="The number of adopters you hope have at the end of the project"
+            value={targetAdoption}
+            onChange={(e) => setTargetAdoption(e.target.value)}
           />
         </div>
         <div className="flex flex-col space-y-2">
@@ -153,7 +145,7 @@ export default function AssessProgressClientPage({
         <div className="text-right">
           <Button
             role="submit"
-            disabled={!(csvFile && adopterPopulation && totalWeeks)}
+            disabled={!(csvFile && adopterPopulation)}
             className="shrink"
             onClick={() => fetchPlot()}
           >

@@ -57,8 +57,11 @@ function(country=NA, region=NA, district=NA) {
   shp<-read_sf(shp)
 
   if(is.na(district)[1]==F){
-    shp<-shp%>%filter(NAME_2 %in% district)
-    return(unique(shp$NAME_3))
+    if ("NAME_3" %in% names(shp)) {
+      shp<-shp%>%filter(NAME_2 %in% district)
+      return(unique(shp$NAME_3))
+    }
+    return (list())
   }
   if(is.na(region)[1]==F){
     shp<-shp%>%filter(NAME_1 %in% region)
@@ -81,15 +84,14 @@ function(country=NA, region=NA, district=NA, ward=NA) {
 #* Get the prediction chart
 #* @serializer png
 #* @param potentialAdopters:int
-#* @param totalWeeks:int
 #* @parser csv
 #* @post /run-forecast
-function(req, potentialAdopters, totalWeeks) {
+function(req, potentialAdopters, targetAdoption) {
   potentialAdopters <- as.integer(potentialAdopters)
+  targetAdoption <- as.integer(targetAdoption)
   if (is.na(potentialAdopters)) potentialAdopters <- 0L
-  totalWeeks <- as.integer(totalWeeks)
-  if (is.na(totalWeeks)) totalWeeks <- 0L
-  return(RunForecast(req$body, potentialAdopters, totalWeeks))
+  if (is.na(targetAdoption)) targetAdoption <- 0L
+  return(RunForecast(req$body, potentialAdopters, targetAdoption))
 }
 
 #* Get the standard reporting form

@@ -11,10 +11,13 @@ options(mc.cores = parallel::detectCores())
 # Save model otherwise docker will always recompile
 # This adds ~2min to loading the server
 model = stan_model("./Module2/SIaM.stan")
-RunForecast<-function(csv, potentialAdopters, totalWeeks) {
+RunForecast<-function(csv, potentialAdopters, targetAdoption) {
 
   #### STEP 1: Load adoption data
   df<-csv
+  df <- df %>% mutate(Time = as.character(Time)) %>%
+    mutate(Time = factor(Time, levels = df$Time)) #Make time an ordered categorical
+  df2 <- df #save full version
   df<-na.omit(df) #get rid of NAs
   
   #### STEP 2: Set potential adopters (total population)
@@ -45,7 +48,7 @@ RunForecast<-function(csv, potentialAdopters, totalWeeks) {
   #This is the length of time to fit the timeseries for
   #i.e., the full project duration. 
   #In the example data, let's do 52 weeks
-  t_max<-totalWeeks
+  t_max<-nrow(df2)
   
   #Ideally we will create a custom csv for users to fill in
   #That has the project duration and fills in missing
@@ -115,14 +118,23 @@ RunForecast<-function(csv, potentialAdopters, totalWeeks) {
                                .width = c(0.25,0.5,0.9), fill = "#252525",
                                color=alpha("gray",0.01),linetype="blank",
                                alpha=0.75) +
-    geom_point(data=df,aes(x=Time,y=Adopters/sample_n),color="darkred",size=3.0,
+    geom_point(data=df2,aes(x=as.integer(Time),y=Adopters/sample_n),color="darkred",size=3.0,
                shape=21,fill=alpha("red",alpha=0.5),stroke=1.5)+
     geom_vline(xintercept = sample_days,linetype="longdash")+
+    geom_hline(yintercept = targetAdoption/sample_n, linetype="longdash")+
+      annotate("text", x=Inf, y=targetAdoption/sample_n, label="Target", hjust=1)+
     ggthemes::theme_clean()+
-    xlab("Project time")+ylab("Adoption")+
+    scale_x_continuous(
+      name = "Project time",
+      breaks = as.integer(df2$Time[c(1, ceiling(nrow(df2) /
+                                                  2), nrow(df2))]),
+      labels = df2$Time[c(1, ceiling(nrow(df2) / 2), nrow(df2))]
+    )+
+    ylab("Adoption")+
     scale_y_continuous(labels=scales::percent)+
     theme(axis.title = element_text(colour = "black",size=16),
-          axis.text=element_text(color="black",size=14))
+          axis.text=element_text(color="black",size=14))+
+    theme(plot.margin = unit(c(.2, .5, .2, .2), "cm"))
   )
 }
 
