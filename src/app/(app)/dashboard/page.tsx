@@ -110,7 +110,7 @@ export default async function Dashboard() {
             ? `Welcome back, ${profile?.first_name}.`
             : 'Welcome!'}
         </h2>
-        <Link href="/new-project">
+        <Link href="/dashboard/new-project">
           <Button className="p-6 drop-shadow-lg rounded-lg">
             <Plus />
             Create a new project
