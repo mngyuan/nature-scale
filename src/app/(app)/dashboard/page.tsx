@@ -37,9 +37,9 @@ const ProjectCard = ({
   description,
   imageURL,
 }: {
-  id: string;
+  id: number;
   name: string;
-  description: string;
+  description: string | null;
   imageURL: string;
 }) => (
   <Card className="w-sm pt-0 overflow-hidden">

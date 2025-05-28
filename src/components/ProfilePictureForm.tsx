@@ -5,6 +5,7 @@ import Image from 'next/image';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {User} from '@supabase/supabase-js';
+import {Tables} from '@/lib/supabase/types/supabase';
 
 export default function ProfilePictureForm({
   user,
@@ -12,9 +13,7 @@ export default function ProfilePictureForm({
   size,
 }: {
   user: User | null;
-  // TODO: supabase typescript type generation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  profile: any;
+  profile: Tables<'profiles'> | null;
   size: number;
 }): JSX.Element {
   const supabase = createClient();
@@ -47,6 +46,11 @@ export default function ProfilePictureForm({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     try {
+      // TODO: display to user?
+      if (!user?.id) {
+        console.error('User ID is not available');
+        return;
+      }
       setUploading(true);
 
       if (!event.target.files || event.target.files.length === 0) {
@@ -85,7 +89,7 @@ export default function ProfilePictureForm({
 
   return (
     <div className="flex flex-col gap-2">
-      {profilePictureURL ? (
+      {profilePictureURL && profile ? (
         <Image
           width={size}
           height={size}

@@ -2,6 +2,7 @@ import {SupabaseClient} from '@supabase/supabase-js';
 import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 import {titleCase} from 'title-case';
+import {Database} from '@/lib/supabase/types/supabase';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,8 +21,8 @@ export function absoluteUrl(path: string) {
   return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
 }
 
-export const formatPathCrumb = (crumb: string): string =>
-  titleCase(crumb.replace(/-/g, ' '));
+export const formatPathCrumb = (crumb?: string): string =>
+  crumb == null ? '' : titleCase(crumb.replace(/-/g, ' '));
 
 export const countryNameFromCode = (code: string): string => {
   try {
@@ -34,7 +35,7 @@ export const countryNameFromCode = (code: string): string => {
   }
 };
 
-export const getProfile = async (supabase: SupabaseClient) => {
+export const getProfile = async (supabase: SupabaseClient<Database>) => {
   const {data, error} = await supabase.auth.getUser();
   const loggedIn = data?.user && !error;
   let profile = null;

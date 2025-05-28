@@ -10,6 +10,7 @@ import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {R_API_BASE_URL} from '@/lib/constants';
 import {Button} from '@/components/ui/button';
 import {useProjects} from '@/components/ProjectContext';
+import {Tables} from '@/lib/supabase/types/supabase';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -25,9 +26,7 @@ const MONITORING_TIME_UNITS = {
 export default function AssessProgressClientPage({
   project,
 }: {
-  // TODO: supabase typescript type generation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
+  project?: Tables<'projects'>;
 }) {
   // Update context store with project data from server
   const {updateProjects} = useProjects();
@@ -124,26 +123,32 @@ export default function AssessProgressClientPage({
             }}
           />
         </div>
-        {project?.details?.startingDate && project?.details?.endingDate && (
-          <p className="text-xs text-muted-foreground">
-            <Link
-              href={`/api/standard-reporting-form?${new URLSearchParams({
-                adopterType: project.details.engagementType,
-                period: project.details.monitoringFrequency,
-                // format as YYYY-MM-DD
-                start: format(
-                  new Date(project.details.startingDate),
-                  'yyyy-MM-dd',
-                ),
-                end: format(new Date(project.details.endingDate), 'yyyy-MM-dd'),
-              })}`}
-              download
-            >
-              Download a {project.details.monitoringFrequency} standard
-              reporting form for your project here
-            </Link>
-          </p>
-        )}
+        {project?.details?.startingDate &&
+          project?.details?.endingDate &&
+          project?.details?.engagementType &&
+          project?.details?.monitoringFrequency && (
+            <p className="text-xs text-muted-foreground">
+              <Link
+                href={`/api/standard-reporting-form?${new URLSearchParams({
+                  adopterType: project.details.engagementType,
+                  period: project.details.monitoringFrequency,
+                  // format as YYYY-MM-DD
+                  start: format(
+                    new Date(project.details.startingDate),
+                    'yyyy-MM-dd',
+                  ),
+                  end: format(
+                    new Date(project.details.endingDate),
+                    'yyyy-MM-dd',
+                  ),
+                })}`}
+                download
+              >
+                Download a {project.details.monitoringFrequency} standard
+                reporting form for your project here
+              </Link>
+            </p>
+          )}
         <div className="text-right">
           <Button
             role="submit"
@@ -159,7 +164,7 @@ export default function AssessProgressClientPage({
       <div className="flex flex-col grow">
         {error && <div className="text-red-500 text-sm">{error}</div>}
         <h2 className="text-sm text-muted-foreground">Visualisation</h2>
-        <p className="font-semibold text-sm">{project.description}</p>
+        <p className="font-semibold text-sm">{project?.description}</p>
         <div className="w-[480px] h-[480px] flex items-center justify-center">
           {plotImageLoading ? (
             <LoaderIcon className="animate-spin" />

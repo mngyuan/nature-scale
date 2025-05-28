@@ -1,5 +1,6 @@
 'use client';
 
+import {Tables} from '@/lib/supabase/types/supabase';
 import React, {
   createContext,
   useContext,
@@ -9,21 +10,24 @@ import React, {
   useCallback,
 } from 'react';
 
-// TODO: supabase typescript type generation
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Project = any;
 type ProjectContextType = {
-  projects?: Record<string, Project>;
-  updateProjects?: (projects: Record<string, Project>) => void;
+  projects: Record<string, Tables<'projects'>>;
+  updateProjects: (projects: Record<string, Tables<'projects'>>) => void;
 };
 
-const ProjectContext = createContext<ProjectContextType>({});
+// Initialize with empty record and no-op function
+const ProjectContext = createContext<ProjectContextType>({
+  projects: {},
+  updateProjects: () => {},
+});
 
 export const ProjectProvider = ({children}: {children: ReactNode}) => {
-  const [projects, setProjects] = useState<ProjectContextType>({});
+  const [projects, setProjects] = useState<Record<string, Tables<'projects'>>>(
+    {},
+  );
 
   const updateProjects = useCallback(
-    (newProjects: Record<string, Project>) =>
+    (newProjects: Record<string, Tables<'projects'>>) =>
       setProjects((prev) => ({...prev, ...newProjects})),
     [],
   );
@@ -44,7 +48,11 @@ export function useProjects() {
  * Provides the same functionality as the hook but for server components
  * which can't use hooks
  */
-export function ProjectDataForwarder({project}: {project?: Project}) {
+export function ProjectDataForwarder({
+  project,
+}: {
+  project?: Tables<'projects'>;
+}) {
   const context = useContext(ProjectContext);
 
   useEffect(() => {

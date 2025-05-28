@@ -14,6 +14,7 @@ import {Button} from '@/components/ui/button';
 import {z} from 'zod';
 import {createClient} from '@/lib/supabase/client';
 import {type User} from '@supabase/supabase-js';
+import {Tables} from '@/lib/supabase/types/supabase';
 
 const ProfileFormSchema = z.object({
   firstName: z.string().min(1, {message: 'First name is required'}),
@@ -25,9 +26,7 @@ export default function ProfileForm({
   profile,
 }: {
   user: User | null;
-  // TODO: supabase typescript type generation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  profile: any;
+  profile: Tables<'profiles'> | null;
 }) {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -41,6 +40,11 @@ export default function ProfileForm({
   });
 
   async function onSubmit(data: z.infer<typeof ProfileFormSchema>) {
+    // TODO: display to user?
+    if (!user?.id) {
+      console.error('User ID is not available');
+      return;
+    }
     setLoading(true);
 
     const {error} = await supabase

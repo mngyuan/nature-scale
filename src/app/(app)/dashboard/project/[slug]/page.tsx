@@ -38,8 +38,8 @@ export default async function ProjectPage({
               </Badge>
             ),
           )}
-          <h2 className="text-3xl">{formatPathCrumb(project.name)}</h2>
-          <div>{project.description}</div>
+          <h2 className="text-3xl">{formatPathCrumb(project?.name)}</h2>
+          <div>{project?.description}</div>
         </div>
       </div>
       <div className="flex flex-col p-8">

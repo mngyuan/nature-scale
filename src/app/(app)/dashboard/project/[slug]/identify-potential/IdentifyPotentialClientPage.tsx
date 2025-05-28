@@ -20,6 +20,7 @@ import {Slider} from '@/components/ui/slider';
 import {getBoundaryNames} from './actions';
 import {countryNameFromCode} from '@/lib/utils';
 import {useProjects} from '@/components/ProjectContext';
+import {Tables} from '@/lib/supabase/types/supabase';
 
 const Stages = ({
   setPlotImage,
@@ -28,9 +29,7 @@ const Stages = ({
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
-  // TODO: supabase typescript type generation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
+  project?: Tables<'projects'>;
 }) => {
   const [stage, setStage] = useState<number>(1);
   return (
@@ -40,7 +39,7 @@ const Stages = ({
         setPlotImage={setPlotImage}
         setPlotImageLoading={setPlotImageLoading}
         setStage={setStage}
-        country={project.country_code}
+        country={project?.country_code}
       />
       <Stage2 hidden={stage !== 2} setStage={setStage} />
     </>
@@ -58,7 +57,7 @@ const Stage1 = ({
   setPlotImageLoading: (loading: boolean) => void;
   setStage: (stage: number) => void;
   hidden: boolean | undefined;
-  country: string;
+  country?: string | null;
 }) => {
   const [regions, setRegions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -79,6 +78,9 @@ const Stage1 = ({
   // Fetch regions on component mount
   useEffect(() => {
     const fetchRegions = async () => {
+      if (!country) {
+        return;
+      }
       setError(null);
       try {
         const data = await getBoundaryNames({
@@ -104,6 +106,9 @@ const Stage1 = ({
     }
 
     const fetchDistricts = async () => {
+      if (!country) {
+        return;
+      }
       if (selectedRegion === 'Any') {
         setDistricts([]);
         return;
@@ -135,6 +140,9 @@ const Stage1 = ({
     }
 
     const fetchWards = async () => {
+      if (!country) {
+        return;
+      }
       if (selectedDistrict === 'Any') {
         setWards([]);
         return;
@@ -181,6 +189,9 @@ const Stage1 = ({
     }
 
     const fetchPlot = async () => {
+      if (!country) {
+        return;
+      }
       setPlotImageLoading(true);
       setError(null);
       try {
@@ -445,9 +456,7 @@ const Stage2 = ({
 export default function IdentifyPotentialClientPage({
   project,
 }: {
-  // TODO: supabase typescript type generation
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
+  project?: Tables<'projects'>;
 }) {
   // Update context store with project data from server
   const {updateProjects} = useProjects();
@@ -470,7 +479,7 @@ export default function IdentifyPotentialClientPage({
       <div className="flex flex-col grow">
         <h2 className="text-sm text-muted-foreground">Location</h2>
         <p className="font-semibold text-sm">
-          {countryNameFromCode(project.country_code)}
+          {project?.country_code && countryNameFromCode(project.country_code)}
         </p>
         <div className="w-[480px] h-[480px] flex items-center justify-center">
           {plotImageLoading ? (

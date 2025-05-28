@@ -40,6 +40,15 @@ import Link from 'next/link';
 import {RESOURCE_LABELS} from '@/lib/constants';
 import {User} from '@supabase/supabase-js';
 
+const ENGAGEMENT_TYPES = {
+  individual: 'Individual',
+  settlement: 'Settlement (Group of houses)',
+  village: 'Village',
+  municipality: 'Municipality',
+} as const;
+
+export type EngagementType = keyof typeof ENGAGEMENT_TYPES;
+
 const CreateProjectFormSchema = z.object({
   projectName: z.string().min(1, {message: 'Project name is required'}),
   projectDescription: z.string().max(200, {message: 'Max 200 characters'}),
@@ -48,9 +57,9 @@ const CreateProjectFormSchema = z.object({
   resourcesType: z
     .array(z.string())
     .min(1, {message: 'At least 1 resource type is required'}),
-  engagementType: z
-    .string()
-    .min(1, {message: 'At least 1 engagement type is required'}),
+  engagementType: z.enum(Object.keys(ENGAGEMENT_TYPES) as [EngagementType], {
+    message: 'At least 1 engagement type is required',
+  }),
   monitoringFrequency: z.string(),
   startingDate: z.string(),
   endingDate: z.string(),
@@ -69,7 +78,7 @@ export default function CreateProjectForm({user}: {user: User | null}) {
       projectPhoto: undefined,
       countryCode: '',
       resourcesType: [],
-      engagementType: '',
+      engagementType: undefined,
       monitoringFrequency: '',
       startingDate: '',
       endingDate: '',
@@ -326,12 +335,15 @@ export default function CreateProjectForm({user}: {user: User | null}) {
                   <SelectValue placeholder="Select one engagement type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="individual">Individual</SelectItem>
-                  <SelectItem value="settlement">
-                    Settlement (Group of houses)
-                  </SelectItem>
-                  <SelectItem value="village">Village</SelectItem>
-                  <SelectItem value="municipality">Municipality</SelectItem>
+                  {Object.entries(ENGAGEMENT_TYPES).map(([value, label]) => (
+                    <SelectItem
+                      key={value}
+                      value={value}
+                      disabled={['village', 'municipality'].includes(value)}
+                    >
+                      {label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
