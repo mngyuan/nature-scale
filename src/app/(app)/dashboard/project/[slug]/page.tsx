@@ -46,7 +46,7 @@ export default async function ProjectPage({
         <div className="text-xl font-bold mb-4">Choose a module</div>
         <div className="flex flex-row space-x-4 space-y-4 items-stretch">
           <Card className="mb-4 basis-3xs grow">
-            <Link href={`/project/${slug}/identify-potential`}>
+            <Link href={`/dashboard/project/${slug}/identify-potential`}>
               <CardHeader>
                 <CardTitle>
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
@@ -62,7 +62,7 @@ export default async function ProjectPage({
           </Card>
           <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
-            <Link href={`/project/${slug}/assess-progress`}>
+            <Link href={`/dashboard/project/${slug}/assess-progress`}>
               <CardHeader>
                 <CardTitle>
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
@@ -79,7 +79,7 @@ export default async function ProjectPage({
           </Card>
           <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
-            <Link href={`/project/${slug}/context-diagnostic`}>
+            <Link href={`/dashboard/project/${slug}/context-diagnostic`}>
               <CardHeader>
                 <CardTitle>
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">

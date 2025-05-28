@@ -19,9 +19,13 @@ export default function Breadcrumbs() {
   const crumbs = pathname.split('/').filter(Boolean);
   const {projects} = useProjects();
 
-  if (pathname === '/') {
+  if (pathname === '/' || pathname === '/dashboard') {
     return;
   }
+
+  // There a lot of acrobatics to not show the "dashboard" crumb
+  // at this point, it would be easier to just hardcode the breadcrumbs
+  // into each route
 
   const displayCrumbs = [...crumbs];
   if (displayCrumbs.indexOf('project') !== -1 && projects) {
@@ -39,10 +43,10 @@ export default function Breadcrumbs() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
           </BreadcrumbItem>
           {crumbs.map((crumb, index) => {
-            if (crumb === 'project') {
+            if (crumb === 'project' || crumb === 'dashboard') {
               return;
             }
             if (index === crumbs.length - 1) {
@@ -60,7 +64,12 @@ export default function Breadcrumbs() {
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href={`/${crumbs.slice(0, index + 1).join('/')}`}>
+                    <Link
+                      href={`/dashboard/${crumbs
+                        .filter((crumb) => crumb !== 'dashboard')
+                        .slice(0, index)
+                        .join('/')}`}
+                    >
                       {formatPathCrumb(displayCrumbs[index])}
                     </Link>
                   </BreadcrumbLink>

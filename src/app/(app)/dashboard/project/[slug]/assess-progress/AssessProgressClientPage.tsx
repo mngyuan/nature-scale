@@ -40,7 +40,9 @@ export default function AssessProgressClientPage({
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [adopterPopulation, setAdopterPopulation] = useState<string>('');
+  const [potentialAdopters, setPotentialAdopters] = useState<string>(
+    project?.details?.potentialAdopters || '',
+  );
   const [targetAdoption, setTargetAdoption] = useState<string>('');
   const [csvFile, setCSVFile] = useState<File | null>(null);
 
@@ -53,7 +55,7 @@ export default function AssessProgressClientPage({
         // Vercel server function times out in 60s so directly call the R API
         // `/api/forecast-graph?${new URLSearchParams({
         `${R_API_BASE_URL}/run-forecast?${new URLSearchParams({
-          potentialAdopters: adopterPopulation,
+          potentialAdopters: potentialAdopters,
           targetAdoption,
         })}`,
         {
@@ -96,8 +98,8 @@ export default function AssessProgressClientPage({
           <Input
             type="number"
             placeholder="An educated guess at the number of potential adopters"
-            value={adopterPopulation}
-            onChange={(e) => setAdopterPopulation(e.target.value)}
+            value={potentialAdopters}
+            onChange={(e) => setPotentialAdopters(e.target.value)}
           />
         </div>
         <div className="flex flex-col space-y-2">
@@ -145,7 +147,7 @@ export default function AssessProgressClientPage({
         <div className="text-right">
           <Button
             role="submit"
-            disabled={!(csvFile && adopterPopulation)}
+            disabled={!(csvFile && potentialAdopters)}
             className="shrink"
             onClick={() => fetchPlot()}
           >

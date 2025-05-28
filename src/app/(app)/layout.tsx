@@ -1,0 +1,106 @@
+import type {Metadata} from 'next';
+import {Geist, Geist_Mono} from 'next/font/google';
+import Image from 'next/image';
+import styles from './page.module.css';
+import {Globe} from 'lucide-react';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
+import Breadcrumbs from '@/components/Breadcrumbs';
+import Link from 'next/link';
+import {createClient} from '@/lib/supabase/server';
+import {getProfile} from '@/lib/utils';
+import {ProjectProvider} from '@/components/ProjectContext';
+
+export default async function DashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const supabase = await createClient();
+  const {loggedIn, profile} = await getProfile(supabase);
+
+  return (
+    <div className="flex flex-col items-center min-h-screen">
+      <header className="flex flex-row items-center w-full p-4 justify-between border-b border-gray-200">
+        <Link href="/dashboard">
+          <Image
+            className={styles.logo}
+            src="/scale4nature-logo.png"
+            alt="scale4nature logo"
+            width={880 / 5}
+            height={224 / 5}
+            priority
+          />
+        </Link>
+        <div className="flex flex-row space-x-4">
+          <div className="flex flex-row items-center text-sm font-semibold">
+            Effective conservation scaling for sustainable impact
+          </div>
+          <Globe />
+          {loggedIn ? (
+            <Link
+              href="/profile"
+              className="flex flex-row items-center text-sm font-semibold"
+            >
+              {profile && profile?.first_name && profile.last_name
+                ? `${profile.first_name} ${profile.last_name}`
+                : 'Profile'}
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="flex flex-row items-center text-sm font-semibold"
+            >
+              Log In
+            </Link>
+          )}
+        </div>
+      </header>
+      <ProjectProvider>
+        <Breadcrumbs />
+        {children}
+      </ProjectProvider>
+      <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200">
+        <div className="text-sm flex flex-row space-x-4">
+          <a target="_blank" rel="noopener noreferrer">
+            © 2025 Scale4Nature, LTD
+          </a>
+          <a target="_blank" rel="noopener noreferrer">
+            Terms
+          </a>
+          <a target="_blank" rel="noopener noreferrer">
+            Sitemap
+          </a>
+          <a target="_blank" rel="noopener noreferrer">
+            Privacy
+          </a>
+        </div>
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="space-x-2">
+                <Globe />
+                English (UK)
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <NavigationMenuLink>English (US)</NavigationMenuLink>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Support & Resources</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <NavigationMenuLink>Help</NavigationMenuLink>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </footer>
+    </div>
+  );
+}
