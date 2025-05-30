@@ -15,6 +15,7 @@ import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import APIStatusIndicator from '@/components/APIStatusIndicator';
 import {redirect} from 'next/navigation';
+import {Tables} from '@/lib/supabase/types/supabase';
 
 const PeopleList = ({
   children,
@@ -32,27 +33,23 @@ const ProfileHead = ({src}: {src: string}): React.JSX.Element => (
 );
 
 const ProjectCard = ({
-  id,
-  name,
-  description,
-  imageURL,
+  project,
+  projectImage,
 }: {
-  id: number;
-  name: string;
-  description: string | null;
-  imageURL: string;
-}) => (
+  project: Tables<'projects'>;
+  projectImage: string;
+}): React.JSX.Element => (
   <Card className="w-sm pt-0 overflow-hidden">
     <Image
-      src={imageURL || '/rangelands.png'}
+      src={projectImage || '/rangelands.png'}
       alt="Project photo"
       width={800}
       height={529}
       className="object-cover max-h-48 w-full"
     />
     <CardHeader className="grow">
-      <CardTitle>{name}</CardTitle>
-      <CardDescription>{description}</CardDescription>
+      <CardTitle>{project.name}</CardTitle>
+      <CardDescription>{project.description}</CardDescription>
     </CardHeader>
     <CardContent>
       <PeopleList>
@@ -63,7 +60,7 @@ const ProjectCard = ({
       </PeopleList>
     </CardContent>
     <CardFooter>
-      <Link href={`/dashboard/project/${id}`} className="w-full">
+      <Link href={`/dashboard/project/${project.id}`} className="w-full">
         <Button className="w-full">
           <ArrowRight />
           View project
@@ -92,8 +89,6 @@ export default async function Dashboard() {
         const {data} = supabase.storage
           .from('project-images')
           .getPublicUrl(project.project_image_url);
-
-        console.log('Project image URL:', data);
 
         if (data) {
           projectImages[project.id] = data.publicUrl;
@@ -130,10 +125,8 @@ export default async function Dashboard() {
             {projects?.map((project) => (
               <ProjectCard
                 key={project.id}
-                id={project.id}
-                name={project.name}
-                description={project.description}
-                imageURL={projectImages?.[project.id || ''] || ''}
+                project={project}
+                projectImage={projectImages[project.id] || ''}
               />
             ))}
           </TabsContent>
