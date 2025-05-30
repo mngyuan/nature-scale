@@ -36,6 +36,10 @@ function() {
   # will handle OPTIONS requests, but it's needed to register the endpoint
   return(NULL)
 }
+#* @options /plot-area-of-interest
+function() {
+  return(NULL)
+}
 
 #* For pinging from the web app to "wake" the docker container on the cloud
 #* @serializer json
@@ -79,6 +83,46 @@ function(country=NA, region=NA, district=NA, ward=NA) {
   # TODO: does this handle arrays?
   aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
   return(plotAoi(aoi=aoi))
+}
+
+#* Plot the given area of interest given a shp boundary
+#* Note: the parameter name of the below function must match the form data name
+#* of the request
+#* @serializer png
+#* @param files:[file]
+#* @parser multi
+#* @parser octet
+#* @post /plot-area-of-interest
+function(files) {
+  print(paste("Received files:", names(files)))
+  if (length(files) == 0) {
+    stop("No files provided")
+  }
+  # get .shp file name
+  shp_file_name <- names(files)[grep("\\.shp$", names(files))]
+  if (length(shp_file_name) == 0) {
+    stop("No .shp file provided")
+  }
+  print(paste("Processing .shp file:", shp_file_name))
+
+  temp_dir <- tempdir()
+  # Delete temporary files
+  # this makes plumber's png serializer lose its output file, so commenting
+  # on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
+  for (i in seq_along(files)) {
+    file_name <- names(files)[i]
+    file_content <- files[[i]]
+    
+    # Write each file with its original name in the temp directory
+    file_path <- file.path(temp_dir, file_name)
+    writeBin(file_content, file_path)
+    on.exit(unlink(file_path), add = TRUE)
+  }
+  # Find the .shp file based on shp_file_name
+  shp_file <- list.files(temp_dir, pattern = paste0("^", shp_file_name), full.names = TRUE)[1]
+
+  aoi <- read_sf(shp_file)
+  return(plotAoi(aoi = aoi))
 }
 
 #* Get the prediction chart

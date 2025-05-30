@@ -1,6 +1,13 @@
 'use client';
 
-import {ArrowLeft, Calculator, Info, LoaderIcon} from 'lucide-react';
+import {
+  ArrowLeft,
+  Calculator,
+  Check,
+  ChevronDown,
+  Info,
+  LoaderIcon,
+} from 'lucide-react';
 import {useState, useEffect} from 'react';
 import {
   Select,
@@ -18,9 +25,25 @@ import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {Separator} from '@/components/ui/separator';
 import {Slider} from '@/components/ui/slider';
 import {getBoundaryNames} from './actions';
-import {countryNameFromCode} from '@/lib/utils';
+import {cn, countryNameFromCode} from '@/lib/utils';
 import {useProjects} from '@/components/ProjectContext';
 import {Tables} from '@/lib/supabase/types/supabase';
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '@/components/ui/command';
+
+const SETTLEMENT_SIZES = [
+  '1-50',
+  '51-100',
+  '101-250',
+  '251-1000',
+  '1001 and up',
+] as const;
 
 const Stages = ({
   setPlotImage,
@@ -66,6 +89,8 @@ const Stage1 = ({
   const [selectedRegion, setSelectedRegion] = useState<string>('');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
   const [selectedWard, setSelectedWard] = useState<string>('');
+
+  const [customBoundary, setCustomBoundary] = useState<FileList | null>(null);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -226,6 +251,43 @@ const Stage1 = ({
     country,
   ]);
 
+  // Fetch plot on custom boundary upload
+  useEffect(() => {
+    if (!customBoundary || customBoundary.length === 0) {
+      return;
+    }
+    const fetchPlot = async () => {
+      if (!country) {
+        return;
+      }
+      setPlotImageLoading(true);
+      setError(null);
+      try {
+        const formData = new FormData();
+        for (const file of customBoundary) {
+          formData.append('files', file);
+        }
+        const response = await fetch('/api/area-of-interest-plot', {
+          method: 'POST',
+          body: formData,
+        });
+        if (!response.ok) {
+          console.log(response);
+          throw new Error('Failed to fetch plot');
+        }
+        const objURL = URL.createObjectURL(await response.blob());
+        setPlotImage(objURL);
+      } catch (err) {
+        setError('Failed to load plot. Please try again later.');
+        console.error(err);
+      } finally {
+        setPlotImageLoading(false);
+      }
+    };
+
+    fetchPlot();
+  }, [customBoundary]);
+
   const handleRegionChange = (value: string) => {
     setSelectedRegion(value);
     setSelectedDistrict('');
@@ -236,6 +298,7 @@ const Stage1 = ({
     setSelectedDistrict(value);
     setSelectedWard('');
   };
+
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
       <div className="flex flex-row items-center space-x-1">
@@ -369,12 +432,27 @@ const Stage1 = ({
                 Next
               </Button>
             </div>
-          </div>{' '}
+          </div>
         </TabsContent>
         <TabsContent value="custom">
           <div className="flex flex-col space-y-2">
             <Label htmlFor="custom-boundary">Custom boundary</Label>
-            <Input id="custom-boundary" type="file" />
+            <Input
+              id="custom-boundary"
+              type="file"
+              accept=".shp,.cpg,.dbf,.prj,.shx"
+              multiple
+              onChange={(e) => setCustomBoundary(e.target.files)}
+            />
+            <div className="text-right">
+              <Button
+                disabled={!customBoundary || customBoundary.length === 0}
+                onClick={() => setStage(2)}
+              >
+                <ArrowRight />
+                Next
+              </Button>
+            </div>
           </div>
         </TabsContent>
       </Tabs>
@@ -390,7 +468,7 @@ const Stage2 = ({
   setStage: (stage: number) => void;
 }) => {
   const [bufferAmount, setBufferAmount] = useState<number>(5);
-  const [economicWellbeing, setEconomicWellbeing] = useState<string>('Any');
+  const [settlementSizes, setSettlementSizes] = useState<string[]>([]);
 
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
@@ -404,21 +482,68 @@ const Stage2 = ({
         </Tooltip>
       </div>
       <div className="flex flex-col space-y-2">
-        <Label>Economic wellbeing of the target</Label>
-        <Select value={economicWellbeing} onValueChange={setEconomicWellbeing}>
-          <SelectTrigger className="w-full">
-            <SelectValue
-              placeholder={'Select one economic wellbeing category'}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Any">Any</SelectItem>
-            <Separator className="my-2" />
-            <SelectItem value="High">High</SelectItem>
-            <SelectItem value="Medium">Medium</SelectItem>
-            <SelectItem value="Low">Low</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label>Settlement size (in persons)</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                'w-full justify-between h-auto',
+                !settlementSizes.length && 'text-muted-foreground',
+              )}
+            >
+              <div className="flex flex-wrap gap-2">
+                {settlementSizes.length > 0
+                  ? settlementSizes.map((item) => (
+                      <div
+                        key={item}
+                        className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
+                      >
+                        {item}
+                      </div>
+                    ))
+                  : 'Select settlement sizes'}
+              </div>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search settlement size..." />
+              <CommandEmpty>No resource type found.</CommandEmpty>
+              <CommandGroup className="max-h-64 overflow-auto">
+                {SETTLEMENT_SIZES.map((settlementSize) => (
+                  <CommandItem
+                    key={settlementSize}
+                    onSelect={() =>
+                      setSettlementSizes(
+                        settlementSizes.includes(settlementSize)
+                          ? settlementSizes.filter(
+                              (item) => item !== settlementSize,
+                            )
+                          : [...settlementSizes, settlementSize],
+                      )
+                    }
+                  >
+                    <div
+                      className={cn(
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        settlementSizes.includes(settlementSize)
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-50',
+                      )}
+                    >
+                      {settlementSizes.includes(settlementSize) && (
+                        <Check className="h-3 w-3" />
+                      )}
+                    </div>
+                    {settlementSize}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="flex flex-col space-y-2">
         <div className="flex flex-row items-center justify-between">
@@ -444,7 +569,7 @@ const Stage2 = ({
           <ArrowLeft />
           Previous
         </Button>
-        <Button disabled={!(bufferAmount && economicWellbeing)}>
+        <Button disabled={!(bufferAmount && settlementSizes.length > 0)}>
           <Calculator />
           Calculate
         </Button>

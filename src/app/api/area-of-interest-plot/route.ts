@@ -23,3 +23,23 @@ export async function GET(request: NextRequest) {
     },
   });
 }
+export async function POST(request: NextRequest) {
+  const formData = await request.formData();
+  const res = await fetch(`${R_API_BASE_URL}/plot-area-of-interest`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch area of interest plot: R API responded with ${res.status} ${res.statusText}`,
+    );
+  }
+
+  return new NextResponse(await res.blob(), {
+    status: res.status,
+    headers: {
+      'Content-Type': 'image/png',
+    },
+  });
+}
