@@ -28,7 +28,10 @@ export default async function DashboardLayout({
   return (
     <div className="flex flex-col items-center min-h-screen">
       <header className="flex flex-row items-center w-full p-4 justify-between border-b border-gray-200">
-        <Link href="/dashboard">
+        <Link
+          href="/dashboard"
+          className="flex flex-row items-center space-x-2"
+        >
           <Image
             className={styles.logo}
             src="/scale4nature-logo.png"
@@ -37,6 +40,7 @@ export default async function DashboardLayout({
             height={224 / 5}
             priority
           />
+          <span className="text-blue-300 text-sm font-bold">Early Access</span>
         </Link>
         <div className="flex flex-row space-x-4">
           <div className="flex flex-row items-center text-sm font-semibold">

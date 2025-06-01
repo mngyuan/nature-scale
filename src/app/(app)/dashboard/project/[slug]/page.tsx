@@ -17,6 +17,7 @@ import {
 import Link from 'next/link';
 import {getProject} from './actions';
 import {ProjectDataForwarder} from '@/components/ProjectContext';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 
 export default async function ProjectPage({
   params,
@@ -94,7 +95,7 @@ export default async function ProjectPage({
             </Link>
           </Card>
           <ArrowRight className="self-center" />
-          <Card className="mb-4 basis-3xs grow">
+          <Card className="mb-4 basis-3xs grow cursor-not-allowed">
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
@@ -103,7 +104,12 @@ export default async function ProjectPage({
                 Get scaling suggestions
               </CardTitle>
               <CardDescription>
-                In this section, you can calculate the number of adopters.
+                <Tooltip>
+                  <TooltipTrigger>
+                    In this section, you can calculate the number of adopters.
+                  </TooltipTrigger>
+                  <TooltipContent>Coming soon!</TooltipContent>
+                </Tooltip>
               </CardDescription>
             </CardHeader>
           </Card>

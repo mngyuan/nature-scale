@@ -11,6 +11,7 @@ import {R_API_BASE_URL} from '@/lib/constants';
 import {Button} from '@/components/ui/button';
 import {useProjects} from '@/components/ProjectContext';
 import {Tables} from '@/lib/supabase/types/supabase';
+import StandardReportingFormLink from '@/components/StandardReportingFormLink';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -128,25 +129,12 @@ export default function AssessProgressClientPage({
           project?.details?.engagementType &&
           project?.details?.monitoringFrequency && (
             <p className="text-xs text-muted-foreground">
-              <Link
-                href={`/api/standard-reporting-form?${new URLSearchParams({
-                  adopterType: project.details.engagementType,
-                  period: project.details.monitoringFrequency,
-                  // format as YYYY-MM-DD
-                  start: format(
-                    new Date(project.details.startingDate),
-                    'yyyy-MM-dd',
-                  ),
-                  end: format(
-                    new Date(project.details.endingDate),
-                    'yyyy-MM-dd',
-                  ),
-                })}`}
-                download
-              >
-                Download a {project.details.monitoringFrequency} standard
-                reporting form for your project here
-              </Link>
+              <StandardReportingFormLink
+                engagementType={project.details.engagementType}
+                monitoringFrequency={project.details.monitoringFrequency}
+                startingDate={project.details.startingDate}
+                endingDate={project.details.endingDate}
+              />
             </p>
           )}
         <div className="text-right">

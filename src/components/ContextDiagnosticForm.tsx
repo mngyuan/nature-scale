@@ -1,30 +1,13 @@
 'use client';
 
 import {useState} from 'react';
-import {Info, UserIcon, UsersIcon} from 'lucide-react';
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import {UserIcon, UsersIcon} from 'lucide-react';
 import {Label} from '@/components/ui/label';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
+import {Button} from '@/components/ui/button';
+import Link from 'next/link';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 
-const DIAGNOSTIC_COLORS = [
-  'text-red-500',
-  'text-amber-500',
-  'text-lime-500',
-  'text-green-500',
-];
-const DIAGNOSTIC_DESCRIPTION = [
-  'Strongly limits scaling',
-  'Somewhat limits scaling',
-  'Somewhat supports scaling',
-  'Strongly supports scaling',
-];
 const DiagnosticItem = ({
   title,
   value,
@@ -38,104 +21,157 @@ const DiagnosticItem = ({
 
   const [selectedValue, setSelectedValue] = useState(value || null);
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger>
-          <div className="flex flex-row">
-            <Label>{title}</Label>
-            {description && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info size={16} className="mx-2" />
-                </TooltipTrigger>
-                <TooltipContent>{description}</TooltipContent>
-              </Tooltip>
-            )}
-            <div
-              className={
-                selectedValue
-                  ? DIAGNOSTIC_COLORS[parseInt(selectedValue) - 1]
-                  : ''
-              }
-            >
-              {selectedValue
-                ? DIAGNOSTIC_DESCRIPTION[parseInt(selectedValue) - 1]
-                : ''}
-            </div>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="p-4">
-          <RadioGroup
-            value={selectedValue || ''}
-            onValueChange={setSelectedValue}
-            className="flex flex-row"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="1" id={`${idPrefix}-1`} />
-              <Label htmlFor={`${idPrefix}-1`}>1</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="2" id={`${idPrefix}-2`} />
-              <Label htmlFor={`${idPrefix}-2`}>2</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="3" id={`${idPrefix}-3`} />
-              <Label htmlFor={`${idPrefix}-3`}>3</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="4" id={`${idPrefix}-4`} />
-              <Label htmlFor={`${idPrefix}-4`}>4</Label>
-            </div>
-          </RadioGroup>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className="contents">
+      <div className="flex flex-col space-y-2">
+        <Label>{title}</Label>
+        {description && (
+          <p className="text-sm text-muted-foreground">{description}</p>
+        )}
+      </div>
+      <RadioGroup
+        value={selectedValue || ''}
+        onValueChange={setSelectedValue}
+        className="flex flex-row"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="1" id={`${idPrefix}-1`} />
+          <Label htmlFor={`${idPrefix}-1`}>Agree</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="2" id={`${idPrefix}-2`} />
+          <Label htmlFor={`${idPrefix}-2`}>Neither agree nor disagree</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="3" id={`${idPrefix}-3`} />
+          <Label htmlFor={`${idPrefix}-3`}>Disagree</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="4" id={`${idPrefix}-4`} />
+          <Label htmlFor={`${idPrefix}-4`}>Not applicable</Label>
+        </div>
+      </RadioGroup>
+    </div>
   );
 };
 
 export default function ContextDiagnosticForm() {
   return (
-    <div className="grid grid-cols-3 gap-4 px-8 pb-8 space-x-6">
-      <div className="flex flex-col">
-        <h2 className="font-semibold text-md">
-          <UserIcon className="inline mr-2" size={16} />
-          Individual Uptake
-        </h2>
-        <DiagnosticItem title="Financial Cost" description="test" />
-        <DiagnosticItem title="Environmental Benefit" description="test" />
-        <DiagnosticItem title="Extension support" description="test" />
-        <DiagnosticItem title="Trialability" description="test" />
-        <DiagnosticItem title="Compatible with needs" description="test" />
-        <DiagnosticItem title="Empowerment" description="test" />
-        <DiagnosticItem title="Economic wellbeing" description="test" />
+    <div className="flex flex-col grow px-8 pb-8 space-y-4 w-full">
+      <div className="grid grid-cols-[1fr_auto] gap-4">
+        <div className="col-span-2">
+          <h2 className="font-semibold text-md">
+            <UserIcon className="inline mr-2" size={16} />
+            Individual Uptake
+          </h2>
+        </div>
+        <DiagnosticItem
+          title="Overall Benefits vs Costs"
+          description="Overall, engaging in [the initiative] will be advantageous for participants and outweighs the costs of adoption and implementation"
+        />
+        <DiagnosticItem
+          title="Financial Benefits"
+          description="Engaging in [the initiative] has meaningful net financial benefits for participants."
+        />
+        <DiagnosticItem
+          title="Environmental Benefit"
+          description="Engaging in [the initiative] has meaningful benefits to local environmental conditions of participants."
+        />
+        <DiagnosticItem
+          title="Direct Needs Alignment"
+          description="[The initiative] directly addresses critical needs of potential participants."
+        />
+        <DiagnosticItem
+          title="Simplicity"
+          description="The [initiative] is easy to understand and engage with."
+        />
+        <DiagnosticItem
+          title="Compatible with practices"
+          description="Engaging in [the initiative] generally requires very few and/or very easy modifications to the current practices of participants."
+        />
+        <DiagnosticItem
+          title="Adaptability"
+          description="[The initiative] includes many actions that can be conducted, adapted, or excluded to meet different contexts and suit the needs of the participant."
+        />
+        <DiagnosticItem
+          title="Trialability"
+          description="[The initiative] and/or required actions are easy and low-risk for participants to trial and later disengage."
+        />
+        <DiagnosticItem
+          title="Empowerment"
+          description="The potential participants are politically empowered to make decisions on what to adopt and how."
+        />
+        <DiagnosticItem
+          title="Economic wellbeing"
+          description="Potential participants generally have surplus financial and/or other livelihood resources (e.g., access to food)."
+        />
+        <div className="col-span-2">
+          <h2 className="font-semibold text-md">
+            <UserIcon className="inline mr-2" size={16} />
+            Individual Uptake and
+            <UsersIcon className="inline mx-2" size={16} />
+            Social Transmission
+          </h2>
+        </div>
+        <DiagnosticItem
+          title="Timing of benefits"
+          description="Key benefits of the [the initiative] are nearly immediate for all participants."
+        />
+        <DiagnosticItem
+          title="Observable"
+          description="The benefits of participating in the initiative are highly visible and evident to others."
+        />
+        <DiagnosticItem
+          title="Community Visibility"
+          description="Potential participants can easily see who in their community is participating in [the initiative]."
+        />
+        <DiagnosticItem
+          title="Policy Support"
+          description="The [initiative] is strongly supported by both international and national policies."
+        />
+        <DiagnosticItem
+          title="Technical Support"
+          description="Comprehensive and reliable technical support is available to assist participants in adopting and implementing the initiative."
+        />
+        <div className="col-span-2">
+          <h2 className="font-semibold text-md">
+            <UsersIcon className="inline mr-2" size={16} />
+            Social Transmission
+          </h2>
+        </div>
+        <DiagnosticItem
+          title="Reputational benefits"
+          description="Engaging in [the initiative] has meaningful net social benefits (e.g. tenure, reputation, connections) for participants."
+        />
+        <DiagnosticItem
+          title="Understanding"
+          description="The [initiative] is simple to understand and use."
+        />
+        <DiagnosticItem
+          title="Social connectivity"
+          description="Potential participants have well-developed ways of sharing knowledge and strong social connections to facilitate the spread of information."
+        />
+        <DiagnosticItem
+          title="Proximity"
+          description="Potential participants are geographically well-connected, driving frequent social interaction."
+        />
+        <DiagnosticItem
+          title="Local champions"
+          description="Influential local champions actively promote [the initiative]."
+        />
       </div>
-      <div className="flex flex-col">
-        <h2 className="font-semibold text-md">
-          <UserIcon className="inline mr-2" size={16} />
-          Individual Uptake and
-          <UsersIcon className="inline mx-2" size={16} />
-          Social Transmission
-        </h2>
-        <DiagnosticItem title="Globally supported" description="test" />
-        <DiagnosticItem title="Nationally supported" description="test" />
-        <DiagnosticItem title="NGOs" description="test" />
-        <DiagnosticItem title="Timing of benefits" description="test" />
-        <DiagnosticItem title="Reputational benefits" description="test" />
-        <DiagnosticItem title="Observable" description="test" />
-        <DiagnosticItem title="Proximity" description="test" />
-        <DiagnosticItem title="Social connectivity" description="test" />
-        <DiagnosticItem title="Local champions" description="test" />
-      </div>
-      <div className="flex flex-col">
-        <h2 className="font-semibold text-md">
-          <UsersIcon className="inline mr-2" size={16} />
-          Social Transmission
-        </h2>
-        <DiagnosticItem title="Aligned with practices" description="test" />
-        <DiagnosticItem title="Simplicity" description="test" />
-        <DiagnosticItem title="Tenure" description="test" />
-        <DiagnosticItem title="Adaptability" description="test" />
-      </div>
+      <Button role="submit" className="mx-auto mt-4" disabled>
+        Submit
+      </Button>
+      <Tooltip>
+        <TooltipTrigger>
+          <p className="text-sm text-muted-foreground text-center">
+            Coming soon!
+          </p>
+        </TooltipTrigger>
+        <TooltipContent>
+          Thanks for trying the early access version.
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }

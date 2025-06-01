@@ -39,6 +39,7 @@ import {createClient} from '@/lib/supabase/client';
 import Link from 'next/link';
 import {RESOURCE_LABELS} from '@/lib/constants';
 import {User} from '@supabase/supabase-js';
+import StandardReportingFormLink from './StandardReportingFormLink';
 
 const ENGAGEMENT_TYPES = {
   individual: 'Individual',
@@ -399,7 +400,10 @@ export default function CreateProjectForm({user}: {user: User | null}) {
                   <SelectItem value="ZW">Zimbabwe</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className="text-xs text-muted-foreground">
+                Note: Settlements and population data are only available
+                currently for countries in Africa.
+              </FormMessage>
             </FormItem>
           )}
         />
@@ -614,22 +618,12 @@ export default function CreateProjectForm({user}: {user: User | null}) {
             form.watch('engagementType') &&
             form.watch('startingDate') &&
             form.watch('endingDate') && (
-              <Link
-                href={`/api/standard-reporting-form?${new URLSearchParams({
-                  adopterType: form.watch('engagementType'),
-                  period: form.watch('monitoringFrequency'),
-                  // format as YYYY-MM-DD
-                  start: format(
-                    new Date(form.watch('startingDate')),
-                    'yyyy-MM-dd',
-                  ),
-                  end: format(new Date(form.watch('endingDate')), 'yyyy-MM-dd'),
-                })}`}
-                download
-              >
-                Download a {form.watch('monitoringFrequency')} standard
-                reporting form for your project here
-              </Link>
+              <StandardReportingFormLink
+                engagementType={form.watch('engagementType')}
+                monitoringFrequency={form.watch('monitoringFrequency')}
+                startingDate={form.watch('startingDate')}
+                endingDate={form.watch('endingDate')}
+              />
             )}
         </div>
         <Button className="mt-4" type="submit">
