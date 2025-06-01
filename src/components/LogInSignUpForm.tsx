@@ -14,6 +14,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {useSearchParams} from 'next/navigation';
 
 const LoginFormSchema = z.object({
   email: z.string().email({message: 'Invalid email address'}),
@@ -179,8 +180,13 @@ export default function LogInSignUpForm({
   loginAction: (formData: FormData) => Promise<void>;
   signupAction: (formData: FormData) => Promise<void>;
 }) {
+  const searchParams = useSearchParams();
+  const show = searchParams.get('show');
+
   return (
-    <Tabs defaultValue="login">
+    <Tabs
+      defaultValue={show && ['login', 'signup'].includes(show) ? show : 'login'}
+    >
       <TabsList className="mb-2">
         <TabsTrigger value="login" className="grow">
           Login

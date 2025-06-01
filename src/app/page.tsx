@@ -107,7 +107,7 @@ export default async function RootPage() {
             </li>
           </ol>
         </div>
-        <Link href="/login" className="text-sm font-semibold">
+        <Link href="/login?show=signup" className="text-sm font-semibold">
           <Button className="mt-8">Try it out</Button>
         </Link>
       </main>
