@@ -16,10 +16,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return new NextResponse(await res.blob(), {
+  const json = await res.json();
+  return new NextResponse(JSON.stringify(json), {
     status: res.status,
     headers: {
-      'Content-Type': 'image/png',
+      'Content-Type': 'application/json',
     },
   });
 }

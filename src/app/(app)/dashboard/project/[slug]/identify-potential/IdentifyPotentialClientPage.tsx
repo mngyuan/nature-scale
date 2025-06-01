@@ -6,6 +6,7 @@ import {
   Check,
   ChevronDown,
   Info,
+  LoaderCircle,
   LoaderIcon,
 } from 'lucide-react';
 import {useState, useEffect} from 'react';
@@ -36,6 +37,16 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
+import {R_API_BASE_URL} from '@/lib/constants';
+import {EngagementType} from '@/components/CreateProjectForm';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import {createClient} from '@/lib/supabase/client';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -45,13 +56,32 @@ const SETTLEMENT_SIZES = [
   '1001 and up',
 ] as const;
 
+const RESOURCE_TYPES: Record<string, number> = {
+  'closed forest': 1,
+  'open forest': 2,
+  shrubs: 3,
+  grassland: 4,
+  'herbaceous vegetation': 4,
+  'herbaceous wetland': 5,
+  bare: 6,
+  snow: 7,
+  agriculture: 8,
+  urban: 9,
+  freshwater: 10,
+  sea: 11,
+};
+
 const Stages = ({
   setPlotImage,
   setPlotImageLoading,
+  aoi,
+  setAOI,
   project,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
+  aoi: string | null;
+  setAOI: (aoi: string | null) => void;
   project?: Tables<'projects'>;
 }) => {
   const [stage, setStage] = useState<number>(1);
@@ -63,8 +93,19 @@ const Stages = ({
         setPlotImageLoading={setPlotImageLoading}
         setStage={setStage}
         country={project?.country_code}
+        setAOI={setAOI}
       />
-      <Stage2 hidden={stage !== 2} setStage={setStage} />
+      <Stage2
+        hidden={stage !== 2}
+        setStage={setStage}
+        setPlotImage={setPlotImage}
+        setPlotImageLoading={setPlotImageLoading}
+        country={project?.country_code}
+        resourcesType={project?.details?.resourcesType || []}
+        aoi={aoi}
+        engagementType={project?.details?.engagementType}
+        project={project}
+      />
     </>
   );
 };
@@ -75,12 +116,14 @@ const Stage1 = ({
   setStage,
   hidden,
   country,
+  setAOI,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
   setStage: (stage: number) => void;
   hidden: boolean | undefined;
   country?: string | null;
+  setAOI: (aoi: string | null) => void;
 }) => {
   const [regions, setRegions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -231,8 +274,11 @@ const Stage1 = ({
         if (!response.ok) {
           throw new Error('Failed to fetch plot');
         }
-        const objURL = URL.createObjectURL(await response.blob());
-        setPlotImage(objURL);
+        const respJSON = await response.json();
+        setPlotImage(
+          `data:${respJSON.plot.type};base64,${respJSON.plot.base64}`,
+        );
+        setAOI(respJSON.aoi);
       } catch (err) {
         setError('Failed to load plot. Please try again later.');
         console.error(err);
@@ -275,8 +321,11 @@ const Stage1 = ({
           console.log(response);
           throw new Error('Failed to fetch plot');
         }
-        const objURL = URL.createObjectURL(await response.blob());
-        setPlotImage(objURL);
+        const respJSON = await response.json();
+        setPlotImage(
+          `data:${respJSON.plot.type};base64,${respJSON.plot.base64}`,
+        );
+        setAOI(respJSON.aoi);
       } catch (err) {
         setError('Failed to load plot. Please try again later.');
         console.error(err);
@@ -463,12 +512,146 @@ const Stage1 = ({
 const Stage2 = ({
   hidden,
   setStage,
+  setPlotImage,
+  setPlotImageLoading,
+  country,
+  aoi,
+  resourcesType,
+  engagementType,
+  project,
 }: {
+  setPlotImage: (url: string) => void;
+  setPlotImageLoading: (loading: boolean) => void;
   hidden: boolean | undefined;
   setStage: (stage: number) => void;
+  country?: string | null;
+  aoi: string | null;
+  resourcesType?: string[];
+  engagementType: EngagementType | undefined;
+  project: Tables<'projects'> | undefined;
 }) => {
-  const [bufferAmount, setBufferAmount] = useState<number>(5);
+  const supabase = createClient();
+  const [bufferAmount, setBufferAmount] = useState<number>(0);
   const [settlementSizes, setSettlementSizes] = useState<string[]>([]);
+  const [potentialAdopters, setPotentialAdopters] = useState<number | null>(
+    null,
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const fetchSettlementAdopterData = async () => {
+    setError(null);
+    setPlotImageLoading(true);
+    setLoading(true);
+    try {
+      const response = await fetch(
+        // Vercel server function times out in 60s so directly call the R API
+        // `/api/forecast-graph?${new URLSearchParams({
+        `${R_API_BASE_URL}/potential-adopters/settlements?${new URLSearchParams(
+          {
+            countries: country ? countryNameFromCode(country) : '',
+            resourceTypes:
+              resourcesType
+                ?.map((resource: string): string =>
+                  RESOURCE_TYPES[resource].toString(),
+                )
+                .join(',') || '',
+            bufferDistance: bufferAmount.toString(),
+            settlementSizes: settlementSizes.join(','),
+          },
+        )}`,
+        {
+          method: 'POST',
+          body: aoi,
+        },
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch plot');
+      }
+      const respJSON = await response.json();
+      setPlotImage(`data:${respJSON.plot.type};base64,${respJSON.plot.base64}`);
+      setPotentialAdopters(respJSON.potentialAdopters);
+      setDialogOpen(true);
+    } catch (err) {
+      setError(
+        'Failed to load settlements data and plot. Please try again later.',
+      );
+      console.error(err);
+    } finally {
+      setPlotImageLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const fetchIndividualAdopterData = async () => {
+    setError(null);
+    try {
+      setLoading(true);
+      const response = await fetch(
+        // Vercel server function times out in 60s so directly call the R API
+        // `/api/forecast-graph?${new URLSearchParams({
+        `${R_API_BASE_URL}/potential-adopters/individuals?${new URLSearchParams(
+          {
+            resourceTypes:
+              resourcesType
+                ?.map((resource: string): string =>
+                  RESOURCE_TYPES[resource].toString(),
+                )
+                .join(',') || '',
+            bufferDistance: bufferAmount.toString(),
+          },
+        )}`,
+        {
+          method: 'POST',
+          body: aoi,
+        },
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch plot');
+      }
+      const respJSON = await response.json();
+      setPotentialAdopters(respJSON[0]);
+      setDialogOpen(true);
+    } catch (err) {
+      setError('Failed to load individuals data. Please try again later.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const updatePotentialAdopters = async () => {
+      if (project?.id === undefined || potentialAdopters === null) {
+        return;
+      }
+
+      const {data, error} = await supabase
+        .from('projects')
+        .update({
+          details: {
+            ...project?.details,
+            potentialAdopters: potentialAdopters?.toString() || '',
+          },
+        })
+        .eq('id', Number(project?.id))
+        .select();
+      if (error) {
+        console.error('Error updating potentialAdopters:', error);
+        // TODO: display to user
+        // alert('Error updating potential adopters');
+      } else {
+        // TODO: show a success toast?
+        console.log('Potential adopters updated successfully', data);
+      }
+    };
+
+    if (dialogOpen) {
+      // Update every time the user tries to, even if the value is the same
+      updatePotentialAdopters();
+    }
+  }, [potentialAdopters, dialogOpen]);
 
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
@@ -481,70 +664,72 @@ const Stage2 = ({
           <TooltipContent>Assess Progress</TooltipContent>
         </Tooltip>
       </div>
-      <div className="flex flex-col space-y-2">
-        <Label>Settlement size (in persons)</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                'w-full justify-between h-auto',
-                !settlementSizes.length && 'text-muted-foreground',
-              )}
-            >
-              <div className="flex flex-wrap gap-2">
-                {settlementSizes.length > 0
-                  ? settlementSizes.map((item) => (
-                      <div
-                        key={item}
-                        className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
-                      >
-                        {item}
-                      </div>
-                    ))
-                  : 'Select settlement sizes'}
-              </div>
-              <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Search settlement size..." />
-              <CommandEmpty>No resource type found.</CommandEmpty>
-              <CommandGroup className="max-h-64 overflow-auto">
-                {SETTLEMENT_SIZES.map((settlementSize) => (
-                  <CommandItem
-                    key={settlementSize}
-                    onSelect={() =>
-                      setSettlementSizes(
-                        settlementSizes.includes(settlementSize)
-                          ? settlementSizes.filter(
-                              (item) => item !== settlementSize,
-                            )
-                          : [...settlementSizes, settlementSize],
-                      )
-                    }
-                  >
-                    <div
-                      className={cn(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                        settlementSizes.includes(settlementSize)
-                          ? 'bg-primary text-primary-foreground'
-                          : 'opacity-50',
-                      )}
+      {engagementType === 'settlement' && (
+        <div className="flex flex-col space-y-2">
+          <Label>Settlement size (in persons)</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  'w-full justify-between h-auto',
+                  !settlementSizes.length && 'text-muted-foreground',
+                )}
+              >
+                <div className="flex flex-wrap gap-2">
+                  {settlementSizes.length > 0
+                    ? settlementSizes.map((item) => (
+                        <div
+                          key={item}
+                          className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
+                        >
+                          {item}
+                        </div>
+                      ))
+                    : 'Select settlement sizes'}
+                </div>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Search settlement size..." />
+                <CommandEmpty>No resource type found.</CommandEmpty>
+                <CommandGroup className="max-h-64 overflow-auto">
+                  {SETTLEMENT_SIZES.map((settlementSize) => (
+                    <CommandItem
+                      key={settlementSize}
+                      onSelect={() =>
+                        setSettlementSizes(
+                          settlementSizes.includes(settlementSize)
+                            ? settlementSizes.filter(
+                                (item) => item !== settlementSize,
+                              )
+                            : [...settlementSizes, settlementSize],
+                        )
+                      }
                     >
-                      {settlementSizes.includes(settlementSize) && (
-                        <Check className="h-3 w-3" />
-                      )}
-                    </div>
-                    {settlementSize}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
+                      <div
+                        className={cn(
+                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                          settlementSizes.includes(settlementSize)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'opacity-50',
+                        )}
+                      >
+                        {settlementSizes.includes(settlementSize) && (
+                          <Check className="h-3 w-3" />
+                        )}
+                      </div>
+                      {settlementSize}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
       <div className="flex flex-col space-y-2">
         <div className="flex flex-row items-center justify-between">
           <Label>Buffer from resources (km)</Label>
@@ -569,11 +754,35 @@ const Stage2 = ({
           <ArrowLeft />
           Previous
         </Button>
-        <Button disabled={!(bufferAmount && settlementSizes.length > 0)}>
-          <Calculator />
-          Calculate
+        <Button
+          disabled={
+            loading ||
+            (engagementType === 'settlement'
+              ? !(settlementSizes.length > 0)
+              : false)
+          }
+          role="submit"
+          onClick={() =>
+            engagementType === 'settlement'
+              ? fetchSettlementAdopterData()
+              : fetchIndividualAdopterData()
+          }
+        >
+          {loading ? <LoaderCircle className="animate-spin" /> : <Calculator />}
+          {loading ? 'Loading ...' : 'Calculate'}
         </Button>
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Potential adopters updated!</DialogTitle>
+            <DialogDescription>
+              The number of potential adopters has been updated to{' '}
+              {potentialAdopters}.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
@@ -593,12 +802,15 @@ export default function IdentifyPotentialClientPage({
 
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
+  const [aoi, setAOI] = useState<string | null>(null);
 
   return (
     <>
       <Stages
         setPlotImage={setPlotImage}
         setPlotImageLoading={setPlotImageLoading}
+        aoi={aoi}
+        setAOI={setAOI}
         project={project}
       />
       <div className="flex flex-col grow">

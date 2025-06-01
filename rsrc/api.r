@@ -9,6 +9,8 @@ library(dplyr)
 source('./Module1/PlotAOI.R')
 source('./Module2/RunForecast.R')
 source('./ProjectSetup/MakeStandardReportingForm.R')
+source('./Module1/IndividualsPlotsCalculations.R')
+source('./Module1/SettlementPlotsCalculations.R')
 
 #* @filter cors
 cors <- function(req, res) {
@@ -77,18 +79,26 @@ function(country=NA, region=NA, district=NA) {
 #south_africa<-read_sf("./Data/ExampleBoundary/GADM_SouthAfrica/gadm41_ZAF_3.shp")
 
 #* Plot the given area of interest
-#* @serializer png
+#* @serializer json
 #* @get /plot-area-of-interest
 function(country=NA, region=NA, district=NA, ward=NA) {
   # TODO: does this handle arrays?
   aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
-  return(plotAoi(aoi=aoi))
+
+  # Prepare data for api
+  aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
+  plot_data<-plotAoiAPIWrapper(aoi = aoi)
+
+  return(list(
+    aoi = aoi_as_string,
+    plot = plot_data
+  ))
 }
 
 #* Plot the given area of interest given a shp boundary
 #* Note: the parameter name of the below function must match the form data name
 #* of the request
-#* @serializer png
+#* @serializer json
 #* @param files:[file]
 #* @parser multi
 #* @parser octet
@@ -122,7 +132,60 @@ function(files) {
   shp_file <- list.files(temp_dir, pattern = paste0("^", shp_file_name), full.names = TRUE)[1]
 
   aoi <- read_sf(shp_file)
-  return(plotAoi(aoi = aoi))
+  # Prepare data for api
+  aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
+  plot_data<-plotAoiAPIWrapper(aoi = aoi)
+
+  return(list(
+    aoi = aoi_as_string,
+    plot = plot_data
+  ))
+}
+
+#* Get the potential adopter individuals amount
+#* @serializer json
+#* @param resourceTypes:[number]
+#* @param bufferDistance:number
+#* @post /potential-adopters/individuals
+function(req, resourceTypes, bufferDistance = NA) {
+  resourceTypes <- as.integer(resourceTypes)
+  bufferDistance <- as.numeric(bufferDistance)
+  
+  if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
+    stop("No resource types provided")
+  }
+
+  aoi<-unserialize(jsonlite::base64_dec(req$body))
+  
+  if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
+    return (IndividualsPlotsCalculations(resourceTypes, aoi=aoi))
+  }
+  return(IndividualsPlotsCalculations(resourceTypes, bufferDistance, aoi))
+}
+
+#* Get the potential adopter settlement amount and png plot
+#* @serializer json
+#* @param countries:[string]
+#* @param resourceTypes:[number]
+#* @param bufferDistance:number
+#* @param settlementSizes:[string]
+#* @post /potential-adopters/settlements
+function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
+  countries <- as.character(countries)
+  resourceTypes <- as.integer(resourceTypes)
+  bufferDistance <- as.numeric(bufferDistance)
+  settlementSizes <- as.character(settlementSizes)
+  
+  if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
+    stop("No resource types provided")
+  }
+
+  aoi<-unserialize(jsonlite::base64_dec(req$body))
+  
+  if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
+    return (SettlementsPlotsCalculationsAPIWrapper(Countries=countries, ResourceTypes=resourceTypes, SettlementSizes=settlementSizes, aoi=aoi))
+  }
+  return(SettlementsPlotsCalculationsAPIWrapper(countries, resourceTypes, bufferDistance, settlementSizes, aoi))
 }
 
 #* Get the prediction chart

@@ -9,7 +9,27 @@ library(sf)
 #The function is defined below, then code to load the country / countries 
 # or a user-provided shape file is given
 
+plotAoiAPIWrapper<-function(aoi) {
+  # Write to an image file for returning to the api
+  img_file <- tempfile(fileext = ".png")
+  png(img_file, width = 800, height = 600)
 
+  plotAoi(aoi = aoi)
+
+  # Prepare data for api
+  # Close graphics device
+  dev.off()
+  plot_data <- readBin(img_file, "raw", n = file.info(img_file)$size)
+  plot_base64 <- jsonlite::base64_enc(plot_data)
+  # Unlink the temporary image file
+  unlink(img_file)
+
+  print("Returning plot as base64")
+  return(list(
+    type = "image/png",
+    base64 = plot_base64
+  ))
+}
 
 plotAoi<-function(aoi){
     
