@@ -18,6 +18,7 @@ import Link from 'next/link';
 import {getProject} from './actions';
 import {ProjectDataForwarder} from '@/components/ProjectContext';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {format} from 'date-fns';
 
 export default async function ProjectPage({
   params,
@@ -39,6 +40,16 @@ export default async function ProjectPage({
               </Badge>
             ),
           )}
+          <span className="text-xs pl-1">
+            {project?.details?.monitoringFrequency &&
+              `Monitoring ${project.details.monitoringFrequency} from `}
+            {project?.details?.startingDate
+              ? `${format(project?.details?.startingDate, 'MMMM dd, yyyy')} to `
+              : 'Starting date not specified '}
+            {project?.details?.endingDate
+              ? format(project?.details?.endingDate, 'MMMM dd, yyyy')
+              : 'Ongoing'}
+          </span>
           <h2 className="text-3xl">{formatPathCrumb(project?.name)}</h2>
           <div>{project?.description}</div>
         </div>
@@ -105,7 +116,7 @@ export default async function ProjectPage({
               </CardTitle>
               <CardDescription>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger className="text-left">
                     In this section, you can calculate the number of adopters.
                   </TooltipTrigger>
                   <TooltipContent>Coming soon!</TooltipContent>

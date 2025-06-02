@@ -782,6 +782,7 @@ const Stage2 = ({
               {potentialAdopters}.
             </DialogDescription>
           </DialogHeader>
+          <Button onClick={() => setDialogOpen(false)}>Okay</Button>
         </DialogContent>
       </Dialog>
     </div>

@@ -112,7 +112,7 @@ export default async function Dashboard() {
           </Button>
         </Link>
       </div>
-      <div className="px-8 pb-4 grow flex flex-col justify-between">
+      <div className="px-8 pb-4 grow flex flex-col justify-between gap-4">
         <Tabs defaultValue="my-projects">
           <TabsList className="grid grid-cols-3">
             <TabsTrigger value="my-projects">My projects</TabsTrigger>
@@ -121,7 +121,10 @@ export default async function Dashboard() {
               Projects to update
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="my-projects" className="flex flex-row space-x-2">
+          <TabsContent
+            value="my-projects"
+            className="flex flex-row flex-wrap gap-2"
+          >
             {projects?.map((project) => (
               <ProjectCard
                 key={project.id}
