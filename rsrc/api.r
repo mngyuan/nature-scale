@@ -47,38 +47,34 @@ function() {
 #* @serializer json
 #* @get /wake
 function() {
-  future_promise({
-    # Return system information and date
-    return(list(
-      system = Sys.info(),
-      date = Sys.time()
-    ))
-  })
+  # Return system information and date
+  return(list(
+    system = Sys.info(),
+    date = Sys.time()
+  ))
 }
 
 #* Return regions of given country
 #* @serializer json
 #* @get /boundary-names
 function(country=NA, region=NA, district=NA) {
-  future_promise({
-    folder<-paste0("./Data/CountryShapes/",country)
-    shp<-list.files(folder,pattern=".shp",full.names = T)
-    shp<-read_sf(shp)
+  folder<-paste0("./Data/CountryShapes/",country)
+  shp<-list.files(folder,pattern=".shp",full.names = T)
+  shp<-read_sf(shp)
 
-    if(is.na(district)[1]==F){
-      if ("NAME_3" %in% names(shp)) {
-        shp<-shp%>%filter(NAME_2 %in% district)
-        return(unique(shp$NAME_3))
-      }
-      return (list())
+  if(is.na(district)[1]==F){
+    if ("NAME_3" %in% names(shp)) {
+      shp<-shp%>%filter(NAME_2 %in% district)
+      return(unique(shp$NAME_3))
     }
-    if(is.na(region)[1]==F){
-      shp<-shp%>%filter(NAME_1 %in% region)
-      return(unique(shp$NAME_2))
-    }
+    return (list())
+  }
+  if(is.na(region)[1]==F){
+    shp<-shp%>%filter(NAME_1 %in% region)
+    return(unique(shp$NAME_2))
+  }
 
-    return(unique(shp$NAME_1))
-  })
+  return(unique(shp$NAME_1))
 }
 #south_africa<-read_sf("./Data/ExampleBoundary/GADM_SouthAfrica/gadm41_ZAF_3.shp")
 
@@ -86,19 +82,17 @@ function(country=NA, region=NA, district=NA) {
 #* @serializer json
 #* @get /plot-area-of-interest
 function(country=NA, region=NA, district=NA, ward=NA) {
-  future_promise({
-    # TODO: does this handle arrays?
-    aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
+  # TODO: does this handle arrays?
+  aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
 
-    # Prepare data for api
-    aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
-    plot_data<-plotAoiAPIWrapper(aoi = aoi)
+  # Prepare data for api
+  aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
+  plot_data<-plotAoiAPIWrapper(aoi = aoi)
 
-    return(list(
-      aoi = aoi_as_string,
-      plot = plot_data
-    ))
-  })
+  return(list(
+    aoi = aoi_as_string,
+    plot = plot_data
+  ))
 }
 
 #* Plot the given area of interest given a shp boundary
@@ -110,44 +104,42 @@ function(country=NA, region=NA, district=NA, ward=NA) {
 #* @parser octet
 #* @post /plot-area-of-interest
 function(files) {
-  future_promise({
-    print(paste("Received files:", names(files)))
-    if (length(files) == 0) {
-      stop("No files provided")
-    }
-    # get .shp file name
-    shp_file_name <- names(files)[grep("\\.shp$", names(files))]
-    if (length(shp_file_name) == 0) {
-      stop("No .shp file provided")
-    }
-    print(paste("Processing .shp file:", shp_file_name))
+  print(paste("Received files:", names(files)))
+  if (length(files) == 0) {
+    stop("No files provided")
+  }
+  # get .shp file name
+  shp_file_name <- names(files)[grep("\\.shp$", names(files))]
+  if (length(shp_file_name) == 0) {
+    stop("No .shp file provided")
+  }
+  print(paste("Processing .shp file:", shp_file_name))
 
-    temp_dir <- tempdir()
-    # Delete temporary files
-    # this makes plumber's png serializer lose its output file, so commenting
-    # on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
-    for (i in seq_along(files)) {
-      file_name <- names(files)[i]
-      file_content <- files[[i]]
-      
-      # Write each file with its original name in the temp directory
-      file_path <- file.path(temp_dir, file_name)
-      writeBin(file_content, file_path)
-      on.exit(unlink(file_path), add = TRUE)
-    }
-    # Find the .shp file based on shp_file_name
-    shp_file <- list.files(temp_dir, pattern = paste0("^", shp_file_name), full.names = TRUE)[1]
+  temp_dir <- tempdir()
+  # Delete temporary files
+  # this makes plumber's png serializer lose its output file, so commenting
+  # on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
+  for (i in seq_along(files)) {
+    file_name <- names(files)[i]
+    file_content <- files[[i]]
+    
+    # Write each file with its original name in the temp directory
+    file_path <- file.path(temp_dir, file_name)
+    writeBin(file_content, file_path)
+    on.exit(unlink(file_path), add = TRUE)
+  }
+  # Find the .shp file based on shp_file_name
+  shp_file <- list.files(temp_dir, pattern = paste0("^", shp_file_name), full.names = TRUE)[1]
 
-    aoi <- read_sf(shp_file)
-    # Prepare data for api
-    aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
-    plot_data<-plotAoiAPIWrapper(aoi = aoi)
+  aoi <- read_sf(shp_file)
+  # Prepare data for api
+  aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
+  plot_data<-plotAoiAPIWrapper(aoi = aoi)
 
-    return(list(
-      aoi = aoi_as_string,
-      plot = plot_data
-    ))
-  })
+  return(list(
+    aoi = aoi_as_string,
+    plot = plot_data
+  ))
 }
 
 #* Get the potential adopter individuals amount
@@ -156,21 +148,19 @@ function(files) {
 #* @param bufferDistance:number
 #* @post /potential-adopters/individuals
 function(req, resourceTypes, bufferDistance = NA) {
-  future_promise({
-    resourceTypes <- as.integer(resourceTypes)
-    bufferDistance <- as.numeric(bufferDistance)
-    
-    if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
-      stop("No resource types provided")
-    }
+  resourceTypes <- as.integer(resourceTypes)
+  bufferDistance <- as.numeric(bufferDistance)
+  
+  if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
+    stop("No resource types provided")
+  }
 
-    aoi<-unserialize(jsonlite::base64_dec(req$body))
-    
-    if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
-      return (IndividualsPlotsCalculations(resourceTypes, aoi=aoi))
-    }
-    return(IndividualsPlotsCalculations(resourceTypes, bufferDistance, aoi))
-  })
+  aoi<-unserialize(jsonlite::base64_dec(req$body))
+  
+  if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
+    return (IndividualsPlotsCalculations(resourceTypes, aoi=aoi))
+  }
+  return(IndividualsPlotsCalculations(resourceTypes, bufferDistance, aoi))
 }
 
 #* Get the potential adopter settlement amount and png plot
@@ -181,23 +171,21 @@ function(req, resourceTypes, bufferDistance = NA) {
 #* @param settlementSizes:[string]
 #* @post /potential-adopters/settlements
 function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
-  future_promise({
-    countries <- as.character(countries)
-    resourceTypes <- as.integer(resourceTypes)
-    bufferDistance <- as.numeric(bufferDistance)
-    settlementSizes <- as.character(settlementSizes)
-    
-    if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
-      stop("No resource types provided")
-    }
+  countries <- as.character(countries)
+  resourceTypes <- as.integer(resourceTypes)
+  bufferDistance <- as.numeric(bufferDistance)
+  settlementSizes <- as.character(settlementSizes)
+  
+  if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
+    stop("No resource types provided")
+  }
 
-    aoi<-unserialize(jsonlite::base64_dec(req$body))
-    
-    if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
-      return (SettlementsPlotsCalculationsAPIWrapper(Countries=countries, ResourceTypes=resourceTypes, SettlementSizes=settlementSizes, aoi=aoi))
-    }
-    return(SettlementsPlotsCalculationsAPIWrapper(countries, resourceTypes, bufferDistance, settlementSizes, aoi))
-  })
+  aoi<-unserialize(jsonlite::base64_dec(req$body))
+  
+  if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
+    return (SettlementsPlotsCalculationsAPIWrapper(Countries=countries, ResourceTypes=resourceTypes, SettlementSizes=settlementSizes, aoi=aoi))
+  }
+  return(SettlementsPlotsCalculationsAPIWrapper(countries, resourceTypes, bufferDistance, settlementSizes, aoi))
 }
 
 #* Get the prediction chart
@@ -206,13 +194,11 @@ function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
 #* @parser csv
 #* @post /run-forecast
 function(req, potentialAdopters, targetAdoption) {
-  future_promise({
-    potentialAdopters <- as.integer(potentialAdopters)
-    targetAdoption <- as.integer(targetAdoption)
-    if (is.na(potentialAdopters)) potentialAdopters <- 0L
-    if (is.na(targetAdoption)) targetAdoption <- 0L
-    return(RunForecast(req$body, potentialAdopters, targetAdoption))
-  })
+  potentialAdopters <- as.integer(potentialAdopters)
+  targetAdoption <- as.integer(targetAdoption)
+  if (is.na(potentialAdopters)) potentialAdopters <- 0L
+  if (is.na(targetAdoption)) targetAdoption <- 0L
+  return(RunForecast(req$body, potentialAdopters, targetAdoption))
 }
 
 #* Get the standard reporting form
@@ -223,7 +209,5 @@ function(req, potentialAdopters, targetAdoption) {
 #* @param start:string
 #* @param end:string
 function(adopterType, period, start, end) {
-  future_promise({
-    return(MakeStandardReportingForm(adopterType, period, start, end))
-  })
+  return(MakeStandardReportingForm(adopterType, period, start, end))
 }

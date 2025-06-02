@@ -46,3 +46,5 @@ next-env.d.ts
 
 # Large data files
 rsrc/Data
+# Logs
+rsrc/logs
