@@ -100,20 +100,14 @@ if (missing(BufferDistKM)) { #If no buffer, just plot them all
   }
   
   
-  #Function to get the buffer distance specified above on the correct scale
-  # Latitude conversion (constant)
-  km_to_degrees_lat <- function(km) {
-    return(km / 111)
-  }
+  #Reproject settlements to a crs that uses meters 
+  settlements_proj <- st_transform(settlements, crs = 32633)  # Example: UTM zone 33N
   
-  #Apply function
-  # Convert dist km to degrees
-  km <- BufferDistKM
-  degrees_lat <- km_to_degrees_lat(km)
+  # Buffer in meters (1 km = 1000 m)
+  buffer <- st_buffer(settlements_proj, dist = 1000 *BufferDistKM)
   
-  buffer<-st_buffer(settlements, degrees_lat) # Circular buffer size, units depend on CRS (utm = meters)
-  #plot(buffer, col=alpha("#dd3497",0.65), fill=alpha("black",0.65),lwd=0.9 , add=TRUE,pch=20,cex=3)
-  
+  # Transform back to original CRS
+  buffer <- st_transform(buffer, crs = st_crs(settlements))
   
   
   # Use the modified extract function
@@ -130,7 +124,8 @@ if (missing(BufferDistKM)) { #If no buffer, just plot them all
   
   
   
-  plot(settlementsBuf, col=alpha("#dd3497",0.65), fill=alpha("black",0.65),lwd=0.9 , add=TRUE,pch=20,cex=3)
+  plot(settlementsBuf, col = alpha("#dd3497", 0.65),  # Fill color
+       border = alpha("black", 0.65),lwd=0.9 , add=TRUE,pch=20,cex=3)
   
   
   #Sum the potential adopters (settlements nearby resource of interest)

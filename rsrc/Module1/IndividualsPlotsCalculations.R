@@ -32,6 +32,8 @@ land_cover_class <- c(ResourceTypes)
 # Reclassify the land cover raster to binary (1 for the class of interest, NA for others)
 land_cover_binary <-r #new raster
 land_cover_binary[]<-ifelse(r[]==land_cover_class,1,NA) #reclassify
+#plotAoi(aoi=aoi)
+#raster::plot(land_cover_binary,add=T)
 
 #This is removing pixels of land cover that aren't connected at 100< others.
 #We're essentially just reducing noise here
@@ -44,23 +46,25 @@ land_cover_binary[]<-ifelse(land_cover_binary[]==1,1,NA)
 #terra::plot(land_cover_binary)
 #patch<-terra::patches(land_cover_binary)
 
-
-#Turn the land cover into polygon data fo rbetter buffering
+#Turn the land cover into polygon data for better buffering
 patchpoly<-terra::as.polygons(land_cover_binary)
 
 #Make it an sf vector object
-patchpoly<-sf::st_as_sf(patchpoly)
+patchpoly<- sf::st_as_sf(patchpoly)
+patchpoly_sf <- sf::st_transform(patchpoly, crs = 4326)
 
-# Latitude conversion (constant) function
-km_to_degrees_lat <- function(km) {
-  return(km / 111)
-}
-# Convert assigned buffer distance to degrees
-degrees_lat <- km_to_degrees_lat(BufferDistKM)
 
-#Make buffer with calculated distance in degrees
-buf<-st_buffer(patchpoly, degrees_lat) 
+#Make buffer with calculated distance 
+
+BufferDistKM <- units::set_units(BufferDistKM,'km')
+
+buf<-st_buffer(patchpoly, BufferDistKM) 
+
+#plotAoi(aoi=aoi)
 st_crs(buf)<-"+proj=longlat +datum=WGS84 +no_defs" 
+
+#plot(patchpoly,add=T)
+#raster::plot(Pop,add=T)
 
 #plot buffer
 #p<-ggplot(patchpoly)+geom_sf(fill="green")+

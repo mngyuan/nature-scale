@@ -743,7 +743,7 @@ const Stage2 = ({
           />
         </div>
         <Slider
-          max={30}
+          max={10}
           step={1}
           className="py-2"
           value={[bufferAmount]}
