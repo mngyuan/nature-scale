@@ -171,10 +171,10 @@ function(req, resourceTypes, bufferDistance = NA) {
 #* @param settlementSizes:[string]
 #* @post /potential-adopters/settlements
 function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
-  countries <- as.character(countries)
-  resourceTypes <- as.integer(resourceTypes)
+  countries <- jsonlite::fromJSON(as.character(countries))
+  resourceTypes <- jsonlite::fromJSON(as.character(resourceTypes))
   bufferDistance <- as.numeric(bufferDistance)
-  settlementSizes <- as.character(settlementSizes)
+  settlementSizes <- jsonlite::fromJSON(as.character(settlementSizes))
   
   if (length(resourceTypes) == 0 || all(is.na(resourceTypes))) {
     stop("No resource types provided")

@@ -550,15 +550,16 @@ const Stage2 = ({
         // `/api/forecast-graph?${new URLSearchParams({
         `${R_API_BASE_URL}/potential-adopters/settlements?${new URLSearchParams(
           {
-            countries: country ? countryNameFromCode(country) : '',
-            resourceTypes:
-              resourcesType
-                ?.map((resource: string): string =>
-                  RESOURCE_TYPES[resource].toString(),
-                )
-                .join(',') || '',
-            bufferDistance: bufferAmount.toString(),
-            settlementSizes: settlementSizes.join(','),
+            countries: JSON.stringify(
+              country ? countryNameFromCode(country) : '',
+            ),
+            resourceTypes: JSON.stringify(
+              resourcesType?.map(
+                (resource: string): number => RESOURCE_TYPES[resource],
+              ),
+            ),
+            bufferDistance: JSON.stringify(bufferAmount),
+            settlementSizes: JSON.stringify(settlementSizes),
           },
         )}`,
         {
