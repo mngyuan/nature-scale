@@ -1,0 +1,7 @@
+INFO [2025-06-02 10:20:16] 127.0.0.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" localhost:8000 GET /__docs__/ 200 0.046
+INFO [2025-06-02 10:20:17] 127.0.0.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" localhost:8000 GET /openapi.json 200 0.073
+INFO [2025-06-02 10:20:23] 127.0.0.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" localhost:8000 GET /wake 500 0.003
+INFO [2025-06-02 10:20:41] 127.0.0.1 "node" localhost:8000 GET /wake 500 0.005
+INFO [2025-06-02 10:20:41] 127.0.0.1 "node" localhost:8000 GET /wake 500 0.002
+INFO [2025-06-02 10:20:43] 127.0.0.1 "node" localhost:8000 GET /boundary-names 500 0.002
+INFO [2025-06-02 10:20:44] 127.0.0.1 "node" localhost:8000 GET /boundary-names 500 0.015

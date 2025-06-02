@@ -9,6 +9,10 @@ RUN apt-get update -qq && apt-get install -y \
 
 RUN R -e "install.packages(c('rstan', 'tidybayes', 'ggthemes', 'scales', 'raster'))"
 RUN R -e "install.packages(c('tidyverse', 'sf'))"
+# For logging
+RUN R -e "install.packages(c('logger','tictoc', 'fs'))"
+# For parallel processing
+RUN R -e "install.packages(c('future', 'promises'))"
 
 # FROM rstudio/plumber:latest AS runtime
 # COPY --from=builder /usr/local/lib/R/site-library/ /usr/local/lib/R/site-library/
