@@ -101,6 +101,7 @@ export type Database = {
       };
       projects: {
         Row: {
+          context_diagnostic: Json | null;
           country_code: string | null;
           created_at: string;
           description: string | null;
@@ -111,6 +112,7 @@ export type Database = {
           project_image_url: string | null;
         };
         Insert: {
+          context_diagnostic?: Json | null;
           country_code?: string | null;
           created_at?: string;
           description?: string | null;
@@ -121,6 +123,7 @@ export type Database = {
           project_image_url?: string | null;
         };
         Update: {
+          context_diagnostic?: Json | null;
           country_code?: string | null;
           created_at?: string;
           description?: string | null;

@@ -1,6 +1,7 @@
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {getProject} from '../actions';
 import {ChartNoAxesCombinedIcon, Info, Sun} from 'lucide-react';
+import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 
 export default async function ScalingSuggestionsPage({
   params,
@@ -30,6 +31,30 @@ export default async function ScalingSuggestionsPage({
               Based on the project stage, your data, and your responses, the
               following suggestions may help improve the adoption rate.
             </p>
+            {project?.context_diagnostic &&
+              Object.entries(project.context_diagnostic)
+                .sort(([key, _]) => Number(key))
+                // Only keep the "disagree" responses
+                .filter(([_, value]) => value === '3')
+                .map(([key, value]) => [Number(key), value])
+                .map(
+                  ([key, _]) =>
+                    CONTEXT_DIAGNOSTIC_ITEMS[key] &&
+                    CONTEXT_DIAGNOSTIC_ITEMS[key].recommendations.map(
+                      (recommendation) => (
+                        <Tooltip key={recommendation}>
+                          <TooltipTrigger className="w-full">
+                            <div className="p-2 bg-secondary rounded-md hover:bg-secondary/80 transition-colors">
+                              {recommendation}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">{recommendation}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ),
+                    ),
+                )}
           </div>
         </div>
         <div className="flex flex-col"></div>
