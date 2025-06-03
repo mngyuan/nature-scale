@@ -1,6 +1,6 @@
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {getProject} from '../actions';
-import {ChartNoAxesCombinedIcon, Info, Sun} from 'lucide-react';
+import {ChartNoAxesCombinedIcon, LightbulbIcon, Sun} from 'lucide-react';
 import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 
 export default async function ScalingSuggestionsPage({
@@ -27,7 +27,7 @@ export default async function ScalingSuggestionsPage({
               <ChartNoAxesCombinedIcon size={16} className="" />
               <p className="font-semibold text-lg">Suggestions</p>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Based on the project stage, your data, and your responses, the
               following suggestions may help improve the adoption rate.
             </p>
@@ -43,13 +43,19 @@ export default async function ScalingSuggestionsPage({
                     CONTEXT_DIAGNOSTIC_ITEMS[key].recommendations.map(
                       (recommendation) => (
                         <Tooltip key={recommendation}>
-                          <TooltipTrigger className="w-full">
-                            <div className="p-2 bg-secondary rounded-md hover:bg-secondary/80 transition-colors">
-                              {recommendation}
+                          <TooltipTrigger>
+                            <div className="flex flex-row items-center space-between p-4 bg-secondary rounded-lg text-left space-x-2">
+                              <LightbulbIcon className="shrink-0 ml-2 mr-4" />
+                              <div className="flex flex-col">
+                                <div className="uppercase text-xs text-muted-foreground">
+                                  {CONTEXT_DIAGNOSTIC_ITEMS[key].title}
+                                </div>
+                                <p className="text-sm">{recommendation}</p>
+                              </div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="text-xs">{recommendation}</p>
+                            {CONTEXT_DIAGNOSTIC_ITEMS[key].description}
                           </TooltipContent>
                         </Tooltip>
                       ),
