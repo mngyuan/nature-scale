@@ -1,3 +1,4 @@
+import {ProjectDataForwarder} from '@/components/ProjectContext';
 import {getProject} from './actions';
 
 export default async function ProjectLayout({
@@ -9,7 +10,12 @@ export default async function ProjectLayout({
 }) {
   const {slug} = await params;
   // pre-fetch to prime cache
-  await getProject(slug);
+  const project = await getProject(slug);
 
-  return children;
+  return (
+    <>
+      <ProjectDataForwarder project={project} />
+      {children}
+    </>
+  );
 }
