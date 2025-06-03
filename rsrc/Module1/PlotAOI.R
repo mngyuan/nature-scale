@@ -14,7 +14,7 @@ plotAoiAPIWrapper<-function(aoi) {
   img_file <- tempfile(fileext = ".png")
   png(img_file, width = 800, height = 600)
 
-  plotAoi(aoi = aoi)
+  r<-plotAoi(aoi = aoi)
 
   # Prepare data for api
   # Close graphics device
@@ -24,10 +24,12 @@ plotAoiAPIWrapper<-function(aoi) {
   # Unlink the temporary image file
   unlink(img_file)
 
-  print("Returning plot as base64")
   return(list(
-    type = "image/png",
-    base64 = plot_base64
+    r = terra::wrap(r), # Allows us to send over API for parallel
+    plot = list(
+      type = "image/png",
+      base64 = plot_base64
+    )
   ))
 }
 
@@ -131,6 +133,7 @@ plotAoi<-function(aoi){
   
   # #plot the project area on top of the bounding box
   raster::plot(Inside,add=T, legend = TRUE)
+  return(r)
 }
 
 makeAOI<-function(country,region=NA,district=NA,ward=NA ){

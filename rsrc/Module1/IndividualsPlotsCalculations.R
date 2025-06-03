@@ -2,7 +2,8 @@
 IndividualsPlotsCalculations<-function(
     ResourceTypes, #Resource type. Options are: closed forest, open forest, shrubs, herbaceous vegetation, bare, agriculture, freshwater, sea
     BufferDistKM, #buffer around resource type that we want to count and plot settlements. in kilometers
-    aoi # Area of interest from PlotAOI script, should be a sf object
+    aoi, # Area of interest from PlotAOI script, should be a sf object
+    r # SpatRaster object from PlotAOI script, should be a raster with land cover classes
 ){
 
 
@@ -51,17 +52,49 @@ patchpoly<-terra::as.polygons(land_cover_binary)
 
 #Make it an sf vector object
 patchpoly<- sf::st_as_sf(patchpoly)
-patchpoly_sf <- sf::st_transform(patchpoly, crs = 4326)
+patchpoly <- sf::st_transform(patchpoly, crs = 4326)
+
+km_to_deg_equator <- function(km) {
+  km / 111.32
+}
+
+BufferDistDegree <- units::set_units(km_to_deg_equator(BufferDistKM),degree)
+
+#plot(buffer)
+
+buffer<-sf::st_buffer(patchpoly, BufferDistDegree) 
+
+#plotAoi(aoi=aoi)
+st_crs(buffer)<-"+proj=longlat +datum=WGS84 +no_defs" 
+
+
+
 
 
 #Make buffer with calculated distance 
 
-BufferDistKM <- units::set_units(BufferDistKM,'km')
+#BufferDistKM <- units::set_units(BufferDistKM,'km')
 
-buf<-st_buffer(patchpoly, BufferDistKM) 
+#buf<-st_buffer(patchpoly, BufferDistKM) 
 
 #plotAoi(aoi=aoi)
-st_crs(buf)<-"+proj=longlat +datum=WGS84 +no_defs" 
+#st_crs(buf)<-"+proj=longlat +datum=WGS84 +no_defs" 
+
+##########
+#Reproject settlements to a crs that uses meters 
+#patchpoly_proj <- st_transform(patchpoly, crs = 32633)  # Example: UTM zone 33N
+
+# Buffer in meters (1 km = 1000 m)
+#buffer <- st_buffer(patchpoly_proj, dist = 1000 *BufferDistKM)
+
+# Transform back to original CRS
+#buffer <- st_transform(buffer, crs = st_crs(patchpoly))
+
+#########
+
+
+
+
 
 #plot(patchpoly,add=T)
 #raster::plot(Pop,add=T)
@@ -72,7 +105,7 @@ st_crs(buf)<-"+proj=longlat +datum=WGS84 +no_defs"
 
 #Extract the population counta inside the buffer
 extract <- terra::extract(x = Pop,              # Raster layer
-                          y = buf,    # SpatialPoints* object   
+                          y = buffer,    # SpatialPoints* object   
                           na.rm = TRUE,       # Remove NAs
                           fun = sum   ) 
 names(extract)[2]<-"pop" #change the column name

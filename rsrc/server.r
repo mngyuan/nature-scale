@@ -1,6 +1,7 @@
 library(plumber)
 
 source("./helpers/logging.r")
+source("./helpers/parallel.r")
 
 pr("api.r") %>%
   pr_hooks(list(preroute = pre_route_logging, postroute = post_route_logging)) %>%

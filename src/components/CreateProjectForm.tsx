@@ -36,8 +36,7 @@ import {
 } from '@/components/ui/command';
 import {cn} from '@/lib/utils';
 import {createClient} from '@/lib/supabase/client';
-import Link from 'next/link';
-import {RESOURCE_LABELS} from '@/lib/constants';
+import {RESOURCE_TYPES} from '@/lib/constants';
 import {User} from '@supabase/supabase-js';
 import StandardReportingFormLink from './StandardReportingFormLink';
 
@@ -56,7 +55,7 @@ const CreateProjectFormSchema = z.object({
   projectPhoto: z.instanceof(File).optional(),
   countryCode: z.string().min(1, {message: 'Country is required'}).max(2),
   resourcesType: z
-    .array(z.string())
+    .array(z.enum(Object.keys(RESOURCE_TYPES) as [keyof typeof RESOURCE_TYPES]))
     .min(1, {message: 'At least 1 resource type is required'}),
   engagementType: z.enum(Object.keys(ENGAGEMENT_TYPES) as [EngagementType], {
     message: 'At least 1 engagement type is required',
@@ -429,7 +428,7 @@ export default function CreateProjectForm({user}: {user: User | null}) {
                               key={item}
                               className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
                             >
-                              {RESOURCE_LABELS[item] || item}
+                              {RESOURCE_TYPES[item].label || item}
                             </div>
                           ))
                         : 'Select resource types'}
@@ -442,31 +441,37 @@ export default function CreateProjectForm({user}: {user: User | null}) {
                     <CommandInput placeholder="Search resource type..." />
                     <CommandEmpty>No resource type found.</CommandEmpty>
                     <CommandGroup className="max-h-64 overflow-auto">
-                      {Object.entries(RESOURCE_LABELS).map(([value, label]) => (
-                        <CommandItem
-                          key={value}
-                          onSelect={() => {
-                            const newValue = field.value.includes(value)
-                              ? field.value.filter((item) => item !== value)
-                              : [...field.value, value];
-                            field.onChange(newValue);
-                          }}
-                        >
-                          <div
-                            className={cn(
-                              'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                              field.value.includes(value)
-                                ? 'bg-primary text-primary-foreground'
-                                : 'opacity-50',
-                            )}
+                      {Object.entries(RESOURCE_TYPES).map(
+                        ([resourceName, resourceInfo]) => (
+                          <CommandItem
+                            key={resourceName}
+                            onSelect={() => {
+                              const newValue = field.value.includes(
+                                resourceName,
+                              )
+                                ? field.value.filter(
+                                    (item) => item !== resourceName,
+                                  )
+                                : [...field.value, resourceName];
+                              field.onChange(newValue);
+                            }}
                           >
-                            {field.value.includes(value) && (
-                              <Check className="h-3 w-3" />
-                            )}
-                          </div>
-                          {label}
-                        </CommandItem>
-                      ))}
+                            <div
+                              className={cn(
+                                'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                                field.value.includes(resourceName)
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'opacity-50',
+                              )}
+                            >
+                              {field.value.includes(resourceName) && (
+                                <Check className="h-3 w-3" />
+                              )}
+                            </div>
+                            {resourceInfo.label}
+                          </CommandItem>
+                        ),
+                      )}
                     </CommandGroup>
                   </Command>
                 </PopoverContent>

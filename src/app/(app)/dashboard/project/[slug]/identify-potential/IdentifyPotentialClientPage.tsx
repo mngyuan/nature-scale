@@ -37,7 +37,7 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import {R_API_BASE_URL} from '@/lib/constants';
+import {R_API_BASE_URL, RESOURCE_TYPES} from '@/lib/constants';
 import {EngagementType} from '@/components/CreateProjectForm';
 import {
   Dialog,
@@ -47,6 +47,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import {createClient} from '@/lib/supabase/client';
+import {Checkbox} from '@/components/ui/checkbox';
+import {buffer} from 'stream/consumers';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -56,32 +58,17 @@ const SETTLEMENT_SIZES = [
   '1001 and up',
 ] as const;
 
-const RESOURCE_TYPES: Record<string, number> = {
-  'closed forest': 1,
-  'open forest': 2,
-  shrubs: 3,
-  grassland: 4,
-  'herbaceous vegetation': 4,
-  'herbaceous wetland': 5,
-  bare: 6,
-  snow: 7,
-  agriculture: 8,
-  urban: 9,
-  freshwater: 10,
-  sea: 11,
-};
-
 const Stages = ({
   setPlotImage,
   setPlotImageLoading,
-  aoi,
-  setAOI,
+  serializedData,
+  setSerializedData,
   project,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
-  aoi: string | null;
-  setAOI: (aoi: string | null) => void;
+  serializedData: string | null;
+  setSerializedData: (serializedData: string | null) => void;
   project?: Tables<'projects'>;
 }) => {
   const [stage, setStage] = useState<number>(1);
@@ -93,7 +80,7 @@ const Stages = ({
         setPlotImageLoading={setPlotImageLoading}
         setStage={setStage}
         country={project?.country_code}
-        setAOI={setAOI}
+        setSerializedData={setSerializedData}
       />
       <Stage2
         hidden={stage !== 2}
@@ -102,7 +89,7 @@ const Stages = ({
         setPlotImageLoading={setPlotImageLoading}
         country={project?.country_code}
         resourcesType={project?.details?.resourcesType || []}
-        aoi={aoi}
+        serializedData={serializedData}
         engagementType={project?.details?.engagementType}
         project={project}
       />
@@ -116,14 +103,14 @@ const Stage1 = ({
   setStage,
   hidden,
   country,
-  setAOI,
+  setSerializedData,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
   setStage: (stage: number) => void;
   hidden: boolean | undefined;
   country?: string | null;
-  setAOI: (aoi: string | null) => void;
+  setSerializedData: (serializedData: string | null) => void;
 }) => {
   const [regions, setRegions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -278,7 +265,7 @@ const Stage1 = ({
         setPlotImage(
           `data:${respJSON.plot.type};base64,${respJSON.plot.base64}`,
         );
-        setAOI(respJSON.aoi);
+        setSerializedData(respJSON.data);
       } catch (err) {
         setError('Failed to load plot. Please try again later.');
         console.error(err);
@@ -325,7 +312,7 @@ const Stage1 = ({
         setPlotImage(
           `data:${respJSON.plot.type};base64,${respJSON.plot.base64}`,
         );
-        setAOI(respJSON.aoi);
+        setSerializedData(respJSON.data);
       } catch (err) {
         setError('Failed to load plot. Please try again later.');
         console.error(err);
@@ -515,7 +502,7 @@ const Stage2 = ({
   setPlotImage,
   setPlotImageLoading,
   country,
-  aoi,
+  serializedData,
   resourcesType,
   engagementType,
   project,
@@ -525,7 +512,7 @@ const Stage2 = ({
   hidden: boolean | undefined;
   setStage: (stage: number) => void;
   country?: string | null;
-  aoi: string | null;
+  serializedData: string | null;
   resourcesType?: string[];
   engagementType: EngagementType | undefined;
   project: Tables<'projects'> | undefined;
@@ -536,6 +523,7 @@ const Stage2 = ({
   const [potentialAdopters, setPotentialAdopters] = useState<number | null>(
     null,
   );
+  const [useBuffer, setUseBuffer] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -555,7 +543,7 @@ const Stage2 = ({
             ),
             resourceTypes: JSON.stringify(
               resourcesType?.map(
-                (resource: string): number => RESOURCE_TYPES[resource],
+                (resource: string): number => RESOURCE_TYPES[resource].value,
               ),
             ),
             bufferDistance: JSON.stringify(bufferAmount),
@@ -564,7 +552,7 @@ const Stage2 = ({
         )}`,
         {
           method: 'POST',
-          body: aoi,
+          body: JSON.stringify(serializedData),
         },
       );
       if (!response.ok) {
@@ -594,18 +582,17 @@ const Stage2 = ({
         // `/api/forecast-graph?${new URLSearchParams({
         `${R_API_BASE_URL}/potential-adopters/individuals?${new URLSearchParams(
           {
-            resourceTypes:
-              resourcesType
-                ?.map((resource: string): string =>
-                  RESOURCE_TYPES[resource].toString(),
-                )
-                .join(',') || '',
+            resourceTypes: JSON.stringify(
+              resourcesType?.map(
+                (resource: string): number => RESOURCE_TYPES[resource].value,
+              ),
+            ),
             bufferDistance: bufferAmount.toString(),
           },
         )}`,
         {
           method: 'POST',
-          body: aoi,
+          body: JSON.stringify(serializedData),
         },
       );
       if (!response.ok) {
@@ -732,7 +719,26 @@ const Stage2 = ({
         </div>
       )}
       <div className="flex flex-col space-y-2">
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row justify-between gap-2">
+          <Label>
+            Restrict to {engagementType}s within buffer distance (km) from{' '}
+            {resourcesType && resourcesType?.length > 0
+              ? resourcesType.join(', ')
+              : 'resources'}
+          </Label>
+          <Checkbox
+            checked={useBuffer}
+            onCheckedChange={(checked) =>
+              setUseBuffer(checked === 'indeterminate' ? false : checked)
+            }
+            className="h-4 w-4"
+          />
+        </div>
+        <div
+          className={`flex flex-row items-center justify-between ${
+            useBuffer ? '' : 'text-muted-foreground pointer-events-none'
+          }`}
+        >
           <Label>Buffer from resources (km)</Label>
           <Input
             placeholder="0"
@@ -740,15 +746,23 @@ const Stage2 = ({
             type="number"
             value={bufferAmount}
             onChange={(e) => setBufferAmount(parseInt(e.target.value))}
+            disabled={!useBuffer}
           />
         </div>
         <Slider
           max={10}
+          min={1}
           step={1}
           className="py-2"
           value={[bufferAmount]}
           onValueChange={(values) => setBufferAmount(values[0])}
+          disabled={!useBuffer}
         />
+        {bufferAmount > 0 && engagementType === 'settlement' ? (
+          <p className="text-xs text-muted-foreground">
+            Using a buffer will cause the calculation to take longer than usual.
+          </p>
+        ) : null}
       </div>
       <div className="flex flex-row justify-between">
         <Button onClick={() => setStage(1)}>
@@ -804,15 +818,15 @@ export default function IdentifyPotentialClientPage({
 
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
-  const [aoi, setAOI] = useState<string | null>(null);
+  const [serializedData, setSerializedData] = useState<string | null>(null);
 
   return (
     <>
       <Stages
         setPlotImage={setPlotImage}
         setPlotImageLoading={setPlotImageLoading}
-        aoi={aoi}
-        setAOI={setAOI}
+        serializedData={serializedData}
+        setSerializedData={setSerializedData}
         project={project}
       />
       <div className="flex flex-col grow">

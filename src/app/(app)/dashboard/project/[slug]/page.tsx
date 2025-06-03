@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {RESOURCE_LABELS} from '@/lib/constants';
+import {RESOURCE_TYPES} from '@/lib/constants';
 import {formatPathCrumb} from '@/lib/utils';
 import {
   ArrowRight,
@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {getProject} from './actions';
-import {ProjectDataForwarder} from '@/components/ProjectContext';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {format} from 'date-fns';
 
@@ -35,7 +34,7 @@ export default async function ProjectPage({
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (
               <Badge key={resource}>
-                {RESOURCE_LABELS[resource] || resource}
+                {RESOURCE_TYPES[resource].label || resource}
               </Badge>
             ),
           )}
@@ -44,10 +43,10 @@ export default async function ProjectPage({
               `Monitoring ${project.details.monitoringFrequency} from `}
             {project?.details?.startingDate
               ? `${format(project?.details?.startingDate, 'MMMM dd, yyyy')} to `
-              : 'Starting date not specified '}
+              : 'Starting date not specified to '}
             {project?.details?.endingDate
               ? format(project?.details?.endingDate, 'MMMM dd, yyyy')
-              : 'Ongoing'}
+              : 'ongoing'}
           </span>
           <h2 className="text-3xl">{formatPathCrumb(project?.name)}</h2>
           <div>{project?.description}</div>
@@ -105,7 +104,8 @@ export default async function ProjectPage({
             </Link>
           </Card>
           <ArrowRight className="self-center" />
-          <Card className="mb-4 basis-3xs grow cursor-not-allowed">
+          <Card className="mb-4 basis-3xs grow">
+            {/*<Link href={`/dashboard/project/${slug}/scaling-suggestions`}>*/}
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
@@ -116,12 +116,14 @@ export default async function ProjectPage({
               <CardDescription>
                 <Tooltip>
                   <TooltipTrigger className="text-left">
-                    In this section, you can calculate the number of adopters.
+                    In this section, you can get personalized scaling
+                    suggestions for your initiative.
                   </TooltipTrigger>
                   <TooltipContent>Coming soon!</TooltipContent>
                 </Tooltip>
               </CardDescription>
             </CardHeader>
+            {/*</Link>*/}
           </Card>
         </div>
       </div>

@@ -3,7 +3,8 @@ SettlementsPlotsCalculationsAPIWrapper<-function(
     ResourceTypes,
     BufferDistKM,
     SettlementSizes,
-    aoi
+    aoi,
+    r
 ) {
   # Write to an image file for returning to the api
   img_file <- tempfile(fileext = ".png")
@@ -18,10 +19,9 @@ SettlementsPlotsCalculationsAPIWrapper<-function(
     ResourceTypes = ResourceTypes,
     BufferDistKM = BufferDistKM,
     SettlementSizes = SettlementSizes,
-    aoi = aoi
+    aoi = aoi,
+    r = r
   )
-  
-  print(paste("Potential Adopters:", PotentialAdopters))
 
   # Prepare data for api
   # Close graphics device
@@ -45,7 +45,8 @@ SettlementsPlotsCalculations<-function(
     ResourceTypes, #Resource type. Options are: closed forest, open forest, shrubs, herbaceous vegetation, bare, agriculture, freshwater, sea
     BufferDistKM, #buffer around resource type that we want to count and plot settlements. in kilometers
     SettlementSizes, # sizes of settlements considered, options are "1-50","51-100","101-250","251-1000","1001 and up"
-    aoi # Area of interest from PlotAOI script, should be a sf object
+    aoi, # Area of interest from PlotAOI script, should be a sf object
+    r # SpatRaster object from PlotAOI script, should be a raster with land cover classes
   ){
 
 #vector of countries the project area is in
