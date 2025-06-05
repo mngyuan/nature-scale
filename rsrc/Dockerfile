@@ -8,7 +8,7 @@ RUN apt-get update -qq && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN R -e "install.packages(c('rstan', 'tidybayes', 'ggthemes', 'scales', 'raster'))"
-RUN R -e "install.packages(c('tidyverse', 'sf', 'terra'))"
+RUN R -e "install.packages(c('tidyverse', 'sf', 'terra', 'zoo'))"
 # For logging
 RUN R -e "install.packages(c('logger','tictoc', 'fs'))"
 # For parallel processing

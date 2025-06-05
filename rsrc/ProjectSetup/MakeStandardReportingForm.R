@@ -1,3 +1,5 @@
+library(zoo)
+
 MakeStandardReportingForm<-function(AdopterType, Period,Start,End) {
   if(Period == "daily"){
     Dates<-seq(from=as.Date(Start), to=as.Date(End), by="day") #daily
