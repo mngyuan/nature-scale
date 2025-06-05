@@ -26,7 +26,8 @@ export const formatPathCrumb = (crumb?: string): string =>
 
 export const countryNameFromCode = (code: string): string => {
   try {
-    return new Intl.DisplayNames([navigator.language || 'en'], {
+    // R API expects english name countries but we store country codes
+    return new Intl.DisplayNames(['en'], {
       type: 'region',
     }).of(code)!;
   } catch (e) {

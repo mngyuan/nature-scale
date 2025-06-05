@@ -18,6 +18,7 @@ import Link from 'next/link';
 import {getProject} from './actions';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {format} from 'date-fns';
+import {createClient} from '@/lib/supabase/server';
 
 export default async function ProjectPage({
   params,
@@ -26,10 +27,19 @@ export default async function ProjectPage({
 }) {
   const {slug} = await params;
   const project = await getProject(slug);
+  const supabase = await createClient();
+  const projectImage = project?.project_image_url
+    ? supabase.storage
+        .from('project-images')
+        .getPublicUrl(project.project_image_url).data.publicUrl
+    : null;
 
   return (
     <main className="flex flex-col grow w-full">
-      <div className="flex flex-col p-8 bg-[url(/rangelands.png)] bg-cover bg-center grow relative">
+      <div
+        className={`flex flex-col p-8 bg-cover bg-center grow relative`}
+        style={{backgroundImage: `url(${projectImage || '/rangelands.png'})`}}
+      >
         <div className="w-lg space-y-2 text-white absolute bottom-8 space-x-1">
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (
@@ -48,7 +58,9 @@ export default async function ProjectPage({
               ? format(project?.details?.endingDate, 'MMMM dd, yyyy')
               : 'ongoing'}
           </span>
-          <h2 className="text-3xl">{formatPathCrumb(project?.name)}</h2>
+          <h2 className="text-3xl font-medium">
+            {formatPathCrumb(project?.name)}
+          </h2>
           <div>{project?.description}</div>
         </div>
       </div>
