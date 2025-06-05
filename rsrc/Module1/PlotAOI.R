@@ -9,10 +9,10 @@ library(sf)
 #The function is defined below, then code to load the country / countries 
 # or a user-provided shape file is given
 
-plotAoiAPIWrapper<-function(aoi) {
+plotAoiAPIWrapper<-function(aoi, width=800, height=600) {
   # Write to an image file for returning to the api
   img_file <- tempfile(fileext = ".png")
-  png(img_file, width = 800, height = 600)
+  png(img_file, width = width, height = height)
 
   r<-plotAoi(aoi = aoi)
 

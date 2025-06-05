@@ -11,7 +11,7 @@ options(mc.cores = parallel::detectCores())
 # Save model otherwise docker will always recompile
 # This adds ~2min to loading the server
 model = stan_model("./Module2/SIaM.stan")
-RunForecast<-function(csv, potentialAdopters, targetAdoption) {
+RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
 
   #### STEP 1: Load adoption data
   df<-csv
@@ -106,8 +106,7 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption) {
   
   
   #Plot forecast
-  print(
-    ggplot(draws, aes(x=as.integer(mod_time), y=value)) +
+  p<-ggplot(draws, aes(x=as.integer(mod_time), y=value)) +
     tidybayes::stat_lineribbon(data=filter(draws,as.integer(mod_time)<=sample_days),
                                aes(fill_ramp = after_stat(.width)), 
                                .width = c(0.5,0.9), fill = "#969696",
@@ -121,8 +120,6 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption) {
     geom_point(data=df2,aes(x=as.integer(Time),y=Adopters/sample_n),color="darkred",size=3.0,
                shape=21,fill=alpha("red",alpha=0.5),stroke=1.5)+
     geom_vline(xintercept = sample_days,linetype="longdash")+
-    geom_hline(yintercept = targetAdoption/sample_n, linetype="longdash")+
-      annotate("text", x=Inf, y=targetAdoption/sample_n, label="Target", hjust=1)+
     ggthemes::theme_clean()+
     scale_x_continuous(
       name = "Project time",
@@ -135,7 +132,12 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption) {
     theme(axis.title = element_text(colour = "black",size=16),
           axis.text=element_text(color="black",size=14))+
     theme(plot.margin = unit(c(.2, .5, .2, .2), "cm"))
-  )
+  if (!is.na(targetAdoption)) {
+    p<-p+
+      geom_hline(yintercept = targetAdoption/sample_n, linetype="longdash")+
+      annotate("text", x=Inf, y=targetAdoption/sample_n, label="Target", hjust=1)
+  }
+  print(p)
 }
 
 #c<-read.csv("./Module2/ExampleAdoptionK2CSettlements.csv")

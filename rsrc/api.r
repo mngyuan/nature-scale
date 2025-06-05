@@ -86,14 +86,14 @@ function(country=NA, region=NA, district=NA) {
 #* Plot the given area of interest
 #* @serializer json
 #* @get /plot-area-of-interest
-function(country=NA, region=NA, district=NA, ward=NA) {
+function(country=NA, region=NA, district=NA, ward=NA, width=800, height=600) {
   future_promise({
     # TODO: does this handle arrays?
     aoi<-makeAOI(country=country, region=region, district=district, ward=ward)
 
     # Prepare data for api
     aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
-    serialized_data<-plotAoiAPIWrapper(aoi = aoi)
+    serialized_data<-plotAoiAPIWrapper(aoi = aoi, width=width, height=height)
     r_as_string <- jsonlite::base64_enc(serialize(serialized_data$r, NULL))
     # r_as_string <- serialized_data$r
 
@@ -115,7 +115,7 @@ function(country=NA, region=NA, district=NA, ward=NA) {
 #* @parser multi
 #* @parser octet
 #* @post /plot-area-of-interest
-function(files) {
+function(files, width = 800, height = 600) {
   future_promise({
     print(paste("Received files:", names(files)))
     if (length(files) == 0) {
@@ -147,7 +147,7 @@ function(files) {
     aoi <- read_sf(shp_file)
     # Prepare data for api
     aoi_as_string <- jsonlite::base64_enc(serialize(aoi, NULL))
-    serialized_data<-plotAoiAPIWrapper(aoi = aoi)
+    serialized_data<-plotAoiAPIWrapper(aoi = aoi, width=width,height=height)
     r_as_string <- jsonlite::base64_enc(serialize(serialized_data$r, NULL))
     # r_as_string <- serialized_data$r
 
@@ -193,7 +193,7 @@ function(req, resourceTypes, bufferDistance = NA) {
 #* @param bufferDistance:number
 #* @param settlementSizes:[string]
 #* @post /potential-adopters/settlements
-function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
+function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes, width=800, height=600) {
   future_promise({
     countries <- jsonlite::fromJSON(as.character(countries))
     resourceTypes <- jsonlite::fromJSON(as.character(resourceTypes))
@@ -209,9 +209,30 @@ function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
     r<-terra::unwrap(unserialize(jsonlite::base64_dec(reqBody$r)))
 
     if (is.null(bufferDistance) || is.na(bufferDistance) || bufferDistance == 0) {
-      return (SettlementsPlotsCalculationsAPIWrapper(Countries=countries, ResourceTypes=resourceTypes, SettlementSizes=settlementSizes, aoi=aoi, r=r))
+      return(
+        SettlementsPlotsCalculationsAPIWrapper(
+          Countries=countries,
+          ResourceTypes=resourceTypes,
+          SettlementSizes=settlementSizes,
+          aoi=aoi,
+          r=r,
+          width=width,
+          height=height
+        )
+      )
     }
-    return(SettlementsPlotsCalculationsAPIWrapper(countries, resourceTypes, bufferDistance, settlementSizes, aoi, r))
+    return(
+      SettlementsPlotsCalculationsAPIWrapper(
+        countries,
+        resourceTypes,
+        bufferDistance,
+        settlementSizes,
+        aoi,
+        r,
+        width,
+        height
+      )
+    )
   })
 }
 
@@ -221,11 +242,10 @@ function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes) {
 #* @parser csv
 #* @post /run-forecast
 # TODO: this route doesn't work with parellization, the png created isn't detected
-function(req, potentialAdopters, targetAdoption) {
+function(req, potentialAdopters, targetAdoption=NA) {
   potentialAdopters <- as.integer(potentialAdopters)
   targetAdoption <- as.integer(targetAdoption)
   if (is.na(potentialAdopters)) potentialAdopters <- 0L
-  if (is.na(targetAdoption)) targetAdoption <- 0L
   return(RunForecast(req$body, potentialAdopters, targetAdoption))
 }
 

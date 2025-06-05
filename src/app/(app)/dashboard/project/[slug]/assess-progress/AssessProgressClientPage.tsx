@@ -153,11 +153,11 @@ export default function AssessProgressClientPage({
         {error && <div className="text-red-500 text-sm">{error}</div>}
         <h2 className="text-sm text-muted-foreground">Visualisation</h2>
         <p className="font-semibold text-sm">{project?.description}</p>
-        <div className="w-[480px] h-[480px] flex items-center justify-center">
+        <div className="flex items-center justify-center h-full">
           {plotImageLoading ? (
             <LoaderIcon className="animate-spin" />
           ) : plotImage ? (
-            <img src={plotImage} width={480} height={480} alt="Plot" />
+            <img src={plotImage} className="object-contain h-full" alt="Plot" />
           ) : (
             <div className="text-sm text-muted-foreground">
               Complete the form to see an adoption forecast

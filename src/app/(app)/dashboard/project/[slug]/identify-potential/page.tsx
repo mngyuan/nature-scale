@@ -12,7 +12,7 @@ export default async function IdentifyPotentialPage({
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Identify scaling potential and targets</h2>
-      <div className="grid grid-cols-2 gap-4 px-8 pb-8 space-x-6">
+      <div className="grid grid-cols-2 gap-4 px-8 pb-8 space-x-6 grow">
         <IdentifyPotentialClientPage project={project} />
       </div>
     </main>

@@ -9,7 +9,7 @@ import {
   LoaderCircle,
   LoaderIcon,
 } from 'lucide-react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {
   Select,
   SelectContent,
@@ -49,6 +49,7 @@ import {
 import {createClient} from '@/lib/supabase/client';
 import {Checkbox} from '@/components/ui/checkbox';
 import {buffer} from 'stream/consumers';
+import Image from 'next/image';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -63,12 +64,14 @@ const Stages = ({
   setPlotImageLoading,
   serializedData,
   setSerializedData,
+  imageDimensions,
   project,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
   serializedData: string | null;
   setSerializedData: (serializedData: string | null) => void;
+  imageDimensions: {width: number; height: number};
   project?: Tables<'projects'>;
 }) => {
   const [stage, setStage] = useState<number>(1);
@@ -81,6 +84,7 @@ const Stages = ({
         setStage={setStage}
         country={project?.country_code}
         setSerializedData={setSerializedData}
+        imageDimensions={imageDimensions}
       />
       <Stage2
         hidden={stage !== 2}
@@ -92,6 +96,7 @@ const Stages = ({
         serializedData={serializedData}
         engagementType={project?.details?.engagementType}
         project={project}
+        imageDimensions={imageDimensions}
       />
     </>
   );
@@ -104,6 +109,7 @@ const Stage1 = ({
   hidden,
   country,
   setSerializedData,
+  imageDimensions,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
@@ -111,6 +117,7 @@ const Stage1 = ({
   hidden: boolean | undefined;
   country?: string | null;
   setSerializedData: (serializedData: string | null) => void;
+  imageDimensions: {width: number; height: number};
 }) => {
   const [regions, setRegions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -256,6 +263,8 @@ const Stage1 = ({
             region: selectedRegion === 'Any' ? '' : selectedRegion,
             district: selectedDistrict === 'Any' ? '' : selectedDistrict,
             ward: selectedWard === 'Any' ? '' : selectedWard,
+            width: imageDimensions.width.toString(),
+            height: imageDimensions.height.toString(),
           })}`,
         );
         if (!response.ok) {
@@ -300,10 +309,16 @@ const Stage1 = ({
         for (const file of customBoundary) {
           formData.append('files', file);
         }
-        const response = await fetch('/api/area-of-interest-plot', {
-          method: 'POST',
-          body: formData,
-        });
+        const response = await fetch(
+          `/api/area-of-interest-plot?${new URLSearchParams({
+            width: imageDimensions.width.toString(),
+            height: imageDimensions.height.toString(),
+          })}`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
         if (!response.ok) {
           console.log(response);
           throw new Error('Failed to fetch plot');
@@ -506,6 +521,7 @@ const Stage2 = ({
   resourcesType,
   engagementType,
   project,
+  imageDimensions,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
@@ -516,6 +532,7 @@ const Stage2 = ({
   resourcesType?: string[];
   engagementType: EngagementType | undefined;
   project: Tables<'projects'> | undefined;
+  imageDimensions: {width: number; height: number};
 }) => {
   const supabase = createClient();
   const [bufferAmount, setBufferAmount] = useState<number>(0);
@@ -548,6 +565,8 @@ const Stage2 = ({
             ),
             bufferDistance: JSON.stringify(bufferAmount),
             settlementSizes: JSON.stringify(settlementSizes),
+            width: imageDimensions.width.toString(),
+            height: imageDimensions.height.toString(),
           },
         )}`,
         {
@@ -820,6 +839,34 @@ export default function IdentifyPotentialClientPage({
   const [plotImageLoading, setPlotImageLoading] = useState(false);
   const [serializedData, setSerializedData] = useState<string | null>(null);
 
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const imageDimensions = useRef<{width: number; height: number}>({
+    width: 0,
+    height: 0,
+  });
+
+  const updateImageDimensions = () => {
+    if (imageContainerRef.current) {
+      const rect = imageContainerRef.current.getBoundingClientRect();
+      imageDimensions.current.width = rect.width;
+      imageDimensions.current.height = rect.height;
+    }
+  };
+
+  useEffect(() => {
+    updateImageDimensions();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateImageDimensions();
+    });
+    if (imageContainerRef.current) {
+      resizeObserver.observe(imageContainerRef.current);
+    }
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
     <>
       <Stages
@@ -827,6 +874,7 @@ export default function IdentifyPotentialClientPage({
         setPlotImageLoading={setPlotImageLoading}
         serializedData={serializedData}
         setSerializedData={setSerializedData}
+        imageDimensions={imageDimensions.current}
         project={project}
       />
       <div className="flex flex-col grow">
@@ -834,11 +882,14 @@ export default function IdentifyPotentialClientPage({
         <p className="font-semibold text-sm">
           {project?.country_code && countryNameFromCode(project.country_code)}
         </p>
-        <div className="w-[480px] h-[480px] flex items-center justify-center">
+        <div
+          className="flex items-center justify-center h-full"
+          ref={imageContainerRef}
+        >
           {plotImageLoading ? (
             <LoaderIcon className="animate-spin" />
           ) : plotImage ? (
-            <img src={plotImage} width={480} height={480} alt="Plot" />
+            <img src={plotImage} className="object-contain h-full" alt="Plot" />
           ) : (
             <div className="text-sm text-muted-foreground">
               Select or upload a project boundary

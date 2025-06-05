@@ -4,11 +4,13 @@ SettlementsPlotsCalculationsAPIWrapper<-function(
     BufferDistKM,
     SettlementSizes,
     aoi,
-    r
+    r,
+    width=800,
+    height=600
 ) {
   # Write to an image file for returning to the api
   img_file <- tempfile(fileext = ".png")
-  png(img_file, width = 800, height = 600)
+  png(img_file, width = width, height = height)
   # TODO: this duplicates work but has to be done because of the add=TRUE in plot calls
   # this will start something drawing onto our temp file, otherwise the add=TRUE
   # fails to do anything
