@@ -40,7 +40,7 @@ export default async function ProjectPage({
         className={`flex flex-col p-8 bg-cover bg-center grow relative`}
         style={{backgroundImage: `url(${projectImage || '/rangelands.png'})`}}
       >
-        <div className="w-lg space-y-2 text-white absolute bottom-8 space-x-1">
+        <div className="w-lg xl:w-xl space-y-2 text-white absolute bottom-8 space-x-1">
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (
               <Badge key={resource}>
@@ -107,10 +107,11 @@ export default async function ProjectPage({
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
                     <BookOpenCheck size={48} />
                   </div>
-                  Run a context diagnostic
+                  Take a context diagnostic
                 </CardTitle>
                 <CardDescription>
-                  In this section, you can calculate the number of adopters.
+                  In this section, we'll ask questions to help build a better
+                  picture of how your initiative is doing.
                 </CardDescription>
               </CardHeader>
             </Link>

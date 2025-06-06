@@ -48,8 +48,6 @@ import {
 } from '@/components/ui/dialog';
 import {createClient} from '@/lib/supabase/client';
 import {Checkbox} from '@/components/ui/checkbox';
-import {buffer} from 'stream/consumers';
-import Image from 'next/image';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -66,6 +64,8 @@ const Stages = ({
   setSerializedData,
   imageDimensions,
   project,
+  potentialAdopters,
+  setPotentialAdopters,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
@@ -73,6 +73,8 @@ const Stages = ({
   setSerializedData: (serializedData: string | null) => void;
   imageDimensions: {width: number; height: number};
   project?: Tables<'projects'>;
+  potentialAdopters: number | null;
+  setPotentialAdopters: (count: number | null) => void;
 }) => {
   const [stage, setStage] = useState<number>(1);
   return (
@@ -95,8 +97,9 @@ const Stages = ({
         resourcesType={project?.details?.resourcesType || []}
         serializedData={serializedData}
         engagementType={project?.details?.engagementType}
-        project={project}
         imageDimensions={imageDimensions}
+        setPotentialAdopters={setPotentialAdopters}
+        potentialAdopters={potentialAdopters}
       />
     </>
   );
@@ -520,8 +523,9 @@ const Stage2 = ({
   serializedData,
   resourcesType,
   engagementType,
-  project,
   imageDimensions,
+  potentialAdopters,
+  setPotentialAdopters,
 }: {
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
@@ -531,15 +535,12 @@ const Stage2 = ({
   serializedData: string | null;
   resourcesType?: string[];
   engagementType: EngagementType | undefined;
-  project: Tables<'projects'> | undefined;
   imageDimensions: {width: number; height: number};
+  potentialAdopters: number | null;
+  setPotentialAdopters: (count: number | null) => void;
 }) => {
-  const supabase = createClient();
   const [bufferAmount, setBufferAmount] = useState<number>(0);
   const [settlementSizes, setSettlementSizes] = useState<string[]>([]);
-  const [potentialAdopters, setPotentialAdopters] = useState<number | null>(
-    null,
-  );
   const [useBuffer, setUseBuffer] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -635,38 +636,6 @@ const Stage2 = ({
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const updatePotentialAdopters = async () => {
-      if (project?.id === undefined || potentialAdopters === null) {
-        return;
-      }
-
-      const {data, error} = await supabase
-        .from('projects')
-        .update({
-          details: {
-            ...project?.details,
-            potentialAdopters: potentialAdopters?.toString() || '',
-          },
-        })
-        .eq('id', Number(project?.id))
-        .select();
-      if (error) {
-        console.error('Error updating potentialAdopters:', error);
-        // TODO: display to user
-        // alert('Error updating potential adopters');
-      } else {
-        // TODO: show a success toast?
-        console.log('Potential adopters updated successfully', data);
-      }
-    };
-
-    if (dialogOpen) {
-      // Update every time the user tries to, even if the value is the same
-      updatePotentialAdopters();
-    }
-  }, [potentialAdopters, dialogOpen]);
 
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
@@ -835,6 +804,7 @@ export default function IdentifyPotentialClientPage({
 }: {
   project?: Tables<'projects'>;
 }) {
+  const supabase = createClient();
   // Update context store with project data from server
   const {updateProjects} = useProjects();
   useEffect(() => {
@@ -846,6 +816,9 @@ export default function IdentifyPotentialClientPage({
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
   const [serializedData, setSerializedData] = useState<string | null>(null);
+  const [potentialAdopters, setPotentialAdopters] = useState<number | null>(
+    null,
+  );
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageDimensions = useRef<{width: number; height: number}>({
@@ -875,6 +848,35 @@ export default function IdentifyPotentialClientPage({
     };
   }, []);
 
+  useEffect(() => {
+    const updatePotentialAdopters = async () => {
+      if (project?.id === undefined || potentialAdopters === null) {
+        return;
+      }
+
+      const {data, error} = await supabase
+        .from('projects')
+        .update({
+          details: {
+            ...project?.details,
+            potentialAdopters: potentialAdopters?.toString() || '',
+          },
+        })
+        .eq('id', Number(project?.id))
+        .select();
+      if (error) {
+        console.error('Error updating potentialAdopters:', error);
+        // TODO: display to user
+        // alert('Error updating potential adopters');
+      } else {
+        // TODO: show a success toast?
+        console.log('Potential adopters updated successfully', data);
+      }
+    };
+
+    updatePotentialAdopters();
+  }, [potentialAdopters]);
+
   return (
     <>
       <Stages
@@ -884,12 +886,31 @@ export default function IdentifyPotentialClientPage({
         setSerializedData={setSerializedData}
         imageDimensions={imageDimensions.current}
         project={project}
+        potentialAdopters={potentialAdopters}
+        setPotentialAdopters={setPotentialAdopters}
       />
       <div className="flex flex-col grow">
-        <h2 className="text-sm text-muted-foreground">Location</h2>
-        <p className="font-semibold text-sm">
-          {project?.country_code && countryNameFromCode(project.country_code)}
-        </p>
+        <span>
+          <h2 className="text-sm text-muted-foreground inline">Location </h2>
+          <span className="font-semibold text-sm text-right">
+            {project?.country_code && countryNameFromCode(project.country_code)}
+          </span>
+        </span>
+        {potentialAdopters !== null && (
+          <span>
+            <h2 className="text-sm text-muted-foreground inline">
+              {project?.details?.engagementType === 'settlement'
+                ? 'Eligible Settlements'
+                : 'Eligible Individuals'}
+            </h2>{' '}
+            <span className="font-semibold text-sm text-right">
+              {project?.details?.engagementType === 'settlement' && (
+                <div className="rounded-xl h-3 w-3 bg-[#dd3487] inline-block mx-1" />
+              )}
+              {potentialAdopters}
+            </span>
+          </span>
+        )}
         <div
           className="flex items-center justify-center h-full"
           ref={imageContainerRef}
