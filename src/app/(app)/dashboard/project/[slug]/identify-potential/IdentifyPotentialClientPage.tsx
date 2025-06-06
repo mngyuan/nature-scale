@@ -563,7 +563,11 @@ const Stage2 = ({
                 (resource: string): number => RESOURCE_TYPES[resource].value,
               ),
             ),
-            bufferDistance: JSON.stringify(bufferAmount),
+            ...(useBuffer
+              ? {
+                  bufferDistance: JSON.stringify(bufferAmount),
+                }
+              : {}),
             settlementSizes: JSON.stringify(settlementSizes),
             width: imageDimensions.width.toString(),
             height: imageDimensions.height.toString(),
@@ -606,7 +610,11 @@ const Stage2 = ({
                 (resource: string): number => RESOURCE_TYPES[resource].value,
               ),
             ),
-            bufferDistance: bufferAmount.toString(),
+            ...(useBuffer
+              ? {
+                  bufferDistance: JSON.stringify(bufferAmount),
+                }
+              : {}),
           },
         )}`,
         {
