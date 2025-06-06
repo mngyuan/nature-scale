@@ -20,6 +20,11 @@ a {
   text-decoration: none;
 }
 
+.rdp-vhidden {
+  /* This is missing from react-day-picker 8.10.1 for some reason */
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

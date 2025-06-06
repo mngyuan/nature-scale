@@ -678,7 +678,7 @@ const Stage2 = ({
             <PopoverContent className="w-full p-0" align="start">
               <Command>
                 <CommandInput placeholder="Search settlement size..." />
-                <CommandEmpty>No resource type found.</CommandEmpty>
+                <CommandEmpty>No settlement size found.</CommandEmpty>
                 <CommandGroup className="max-h-64 overflow-auto">
                   {SETTLEMENT_SIZES.map((settlementSize) => (
                     <CommandItem
