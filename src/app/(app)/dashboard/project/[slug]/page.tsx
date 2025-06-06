@@ -11,6 +11,7 @@ import {
   ArrowRight,
   BookOpenCheck,
   Flag,
+  Settings,
   TrendingUp,
   WandSparkles,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ import {getProject} from './actions';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {format} from 'date-fns';
 import {createClient} from '@/lib/supabase/server';
+import {Button} from '@/components/ui/button';
 
 export default async function ProjectPage({
   params,
@@ -40,6 +42,13 @@ export default async function ProjectPage({
         className={`flex flex-col p-8 bg-cover bg-center grow relative`}
         style={{backgroundImage: `url(${projectImage || '/rangelands.png'})`}}
       >
+        <div className="absolute right-8 top-8">
+          <Link href={`/dashboard/project/${slug}/settings`}>
+            <Button>
+              <Settings className="h-5 w-5" /> Project Settings
+            </Button>
+          </Link>
+        </div>
         <div className="w-lg xl:w-xl space-y-2 text-white absolute bottom-8 space-x-1">
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (

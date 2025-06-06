@@ -1,7 +1,13 @@
 'use client';
 
 import {format} from 'date-fns';
-import {Check, ChevronDown, Plus, CalendarIcon} from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  Plus,
+  CalendarIcon,
+  LoaderCircle,
+} from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import {useForm} from 'react-hook-form';
@@ -39,6 +45,7 @@ import {createClient} from '@/lib/supabase/client';
 import {COUNTRY_BY_ISO3166, RESOURCE_TYPES} from '@/lib/constants';
 import {User} from '@supabase/supabase-js';
 import StandardReportingFormLink from './StandardReportingFormLink';
+import {Tables} from '@/lib/supabase/types/supabase';
 
 const ENGAGEMENT_TYPES = {
   individual: 'Individual',
@@ -65,9 +72,22 @@ const CreateProjectFormSchema = z.object({
   endingDate: z.string(),
 });
 
-export default function CreateProjectForm({user}: {user: User | null}) {
+export default function CreateProjectForm({
+  user,
+  project,
+  children,
+}: {
+  user: User | null;
+  project?: Tables<'projects'>;
+  children?: React.ReactNode;
+}) {
   const router = useRouter();
   const supabase = createClient();
+  const projectImage = project?.project_image_url
+    ? supabase.storage
+        .from('project-images')
+        .getPublicUrl(project.project_image_url).data.publicUrl
+    : null;
   const [loading, setLoading] = useState(false);
   // TODO: make a ComboBox component ala shadcn
   const [countryPopoverOpen, setCountryPopoverOpen] = useState(false);
@@ -75,15 +95,15 @@ export default function CreateProjectForm({user}: {user: User | null}) {
   const form = useForm<z.infer<typeof CreateProjectFormSchema>>({
     resolver: zodResolver(CreateProjectFormSchema),
     defaultValues: {
-      projectName: '',
-      projectDescription: '',
+      projectName: project?.name || '',
+      projectDescription: project?.description || '',
       projectPhoto: undefined,
-      countryCode: '',
-      resourcesType: [],
-      engagementType: undefined,
-      monitoringFrequency: '',
-      startingDate: '',
-      endingDate: '',
+      countryCode: project?.country_code || '',
+      resourcesType: project?.details?.resourcesType || [],
+      engagementType: project?.details?.engagementType || undefined,
+      monitoringFrequency: project?.details?.monitoringFrequency || '',
+      startingDate: project?.details?.startingDate || '',
+      endingDate: project?.details?.endingDate || '',
     },
   });
 
@@ -109,8 +129,9 @@ export default function CreateProjectForm({user}: {user: User | null}) {
       project_image_url = filePath;
     }
 
-    const {error} = await supabase.from('projects').insert([
+    const {error} = await supabase.from('projects').upsert([
       {
+        ...(project?.id ? {id: project.id} : {}),
         name: data.projectName,
         description: data.projectDescription,
         country_code: data.countryCode,
@@ -173,6 +194,22 @@ export default function CreateProjectForm({user}: {user: User | null}) {
           render={({field: {value, onChange, ...fieldProps}}) => (
             <FormItem>
               <FormLabel htmlFor="project-photo">Project Photo</FormLabel>
+              {value ? (
+                <img
+                  src={URL.createObjectURL(value)}
+                  alt={value.name}
+                  className="w-32 h-32 object-cover mb-2 rounded-md"
+                />
+              ) : (
+                project?.project_image_url &&
+                projectImage && (
+                  <img
+                    src={projectImage}
+                    alt="User uploaded project image"
+                    className="w-32 h-32 object-cover mb-2 rounded-md"
+                  />
+                )
+              )}
               <Input
                 type="file"
                 id="project-photo"
@@ -206,7 +243,7 @@ export default function CreateProjectForm({user}: {user: User | null}) {
                     className={cn('w-full justify-between h-auto font-normal')}
                   >
                     {field.value ? (
-                      <div>{field.value}</div>
+                      <div>{countryNameFromCode(field.value)}</div>
                     ) : (
                       <div className="text-muted-foreground">
                         Select a country
@@ -220,19 +257,20 @@ export default function CreateProjectForm({user}: {user: User | null}) {
                     <CommandInput placeholder="Search countries..." />
                     <CommandEmpty>No country found.</CommandEmpty>
                     <CommandGroup className="max-h-64 overflow-auto">
-                      {Object.keys(COUNTRY_BY_ISO3166)
-                        .map((code) => countryNameFromCode(code))
-                        .map((countryName) => (
+                      {Object.entries(COUNTRY_BY_ISO3166).map(
+                        ([code, countryName]) => (
                           <CommandItem
-                            key={countryName}
+                            key={code}
                             onSelect={(s) => {
                               setCountryPopoverOpen(false);
                               return field.onChange(s);
                             }}
+                            value={code}
                           >
                             {countryName}
                           </CommandItem>
-                        ))}
+                        ),
+                      )}
                     </CommandGroup>
                   </Command>
                 </PopoverContent>
@@ -462,23 +500,31 @@ export default function CreateProjectForm({user}: {user: User | null}) {
             )}
           />
         </div>
-        <div className="text-xs hover:underline text-muted-foreground">
-          {form.watch('monitoringFrequency') &&
-            form.watch('engagementType') &&
-            form.watch('startingDate') &&
-            form.watch('endingDate') && (
+        {form.watch('monitoringFrequency') &&
+          form.watch('engagementType') &&
+          form.watch('startingDate') &&
+          form.watch('endingDate') && (
+            <div className="text-xs hover:underline text-muted-foreground">
               <StandardReportingFormLink
                 engagementType={form.watch('engagementType')}
                 monitoringFrequency={form.watch('monitoringFrequency')}
                 startingDate={form.watch('startingDate')}
                 endingDate={form.watch('endingDate')}
               />
+            </div>
+          )}
+        {children || (
+          <Button className="mt-4" type="submit" disabled={loading}>
+            {loading ? (
+              <LoaderCircle className="w-2 h-2 animate-spin" />
+            ) : (
+              <>
+                <Plus />
+                Create Project
+              </>
             )}
-        </div>
-        <Button className="mt-4" type="submit">
-          <Plus />
-          Create Project
-        </Button>
+          </Button>
+        )}
       </form>
     </Form>
   );
