@@ -79,7 +79,10 @@ export default async function Dashboard() {
     redirect('/login');
   }
 
-  const {data: projects} = await supabase.from('projects').select();
+  const {data} = await supabase.from('projects').select();
+  const projects = data?.sort((p1, p2) =>
+    p1.created_at.localeCompare(p2.created_at),
+  );
 
   const projectImages: Record<string, string> = {};
 

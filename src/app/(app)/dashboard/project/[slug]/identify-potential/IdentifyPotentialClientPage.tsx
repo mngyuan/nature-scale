@@ -539,7 +539,7 @@ const Stage2 = ({
   potentialAdopters: number | null;
   setPotentialAdopters: (count: number | null) => void;
 }) => {
-  const [bufferAmount, setBufferAmount] = useState<number>(0);
+  const [bufferAmount, setBufferAmount] = useState<number>(1);
   const [settlementSizes, setSettlementSizes] = useState<string[]>([]);
   const [useBuffer, setUseBuffer] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -746,7 +746,7 @@ const Stage2 = ({
           />
         </div>
         <Slider
-          max={10}
+          max={20}
           min={1}
           step={1}
           className="py-2"

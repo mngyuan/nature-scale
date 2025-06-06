@@ -129,22 +129,40 @@ export default function CreateProjectForm({
       project_image_url = filePath;
     }
 
-    const {error} = await supabase.from('projects').upsert([
-      {
-        ...(project?.id ? {id: project.id} : {}),
-        name: data.projectName,
-        description: data.projectDescription,
-        country_code: data.countryCode,
-        project_image_url: project_image_url,
-        details: {
-          resourcesType: data.resourcesType,
-          engagementType: data.engagementType,
-          monitoringFrequency: data.monitoringFrequency,
-          startingDate: data.startingDate,
-          endingDate: data.endingDate,
-        },
-      },
-    ]);
+    const {error} = project?.id
+      ? await supabase
+          .from('projects')
+          .update({
+            id: project.id,
+            name: data.projectName,
+            description: data.projectDescription,
+            country_code: data.countryCode,
+            // Don't clobber the existing image if nothing new was uploaded
+            project_image_url: project_image_url || project.project_image_url,
+            details: {
+              resourcesType: data.resourcesType,
+              engagementType: data.engagementType,
+              monitoringFrequency: data.monitoringFrequency,
+              startingDate: data.startingDate,
+              endingDate: data.endingDate,
+            },
+          })
+          .eq('id', project.id)
+      : await supabase.from('projects').insert([
+          {
+            name: data.projectName,
+            description: data.projectDescription,
+            country_code: data.countryCode,
+            project_image_url: project_image_url,
+            details: {
+              resourcesType: data.resourcesType,
+              engagementType: data.engagementType,
+              monitoringFrequency: data.monitoringFrequency,
+              startingDate: data.startingDate,
+              endingDate: data.endingDate,
+            },
+          },
+        ]);
 
     if (error) {
       console.error('Error creating project:', error);
