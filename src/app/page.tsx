@@ -16,7 +16,7 @@ export default async function RootPage() {
   }
 
   return (
-    <div className="flex flex-col grow min-w-screen min-h-screen p-8 lg:p-16 relative">
+    <div className="flex flex-col grow min-w-screen min-h-screen p-8 lg:p-12 relative">
       <div className="absolute -z-1 top-0 left-0 w-full h-full bg-[url(/rangelands.png)] bg-cover bg-center opacity-50"></div>
       <header className="flex flex-row items-center w-full lg:p-16 justify-between">
         <Link href="/">
@@ -50,17 +50,18 @@ export default async function RootPage() {
               communities, and countries years ahead of time.
             </h2>
             <p className="text-sm lg:text-md">
-              Scale4nature is an adaptive management tool to help forecast the
-              trajectory a programme is likely to take – from failure to launch
-              to widespread adoption – with just a handful of years of initial
-              data. The tool will help estimate the number of potential adopters
-              of conservation initiatives and, if the programme is off track,
-              can suggest reasons why.
+              Scale4nature is an adaptive management tool to help forecast and
+              manage the trajectory a programme is likely to take – from failure
+              to launch to widespread adoption – with just a handful of years of
+              initial data and basic insights on the program’s fit. The tool
+              will help estimate the number of potential adopters of
+              conservation initiatives and, if the programme is off track, can
+              suggest reasons why.
             </p>
             <p className="text-sm lg:text-md">
-              Make data driven decisions and track the mechanism(s) of spread –
-              whether it's social or independent learning – to manage the impact
-              of your project over the years or decades to come.
+              Make evidence informed decisions and track the mechanism(s) of
+              spread – whether it's social or independent learning – to manage
+              the impact of your project over the years or decades to come.
             </p>
           </div>
           <ol className="list-decimal list-outside space-y-2 text-xs">

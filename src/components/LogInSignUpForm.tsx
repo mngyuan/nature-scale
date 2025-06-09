@@ -15,6 +15,10 @@ import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {useSearchParams} from 'next/navigation';
+import {Eye, EyeClosed} from 'lucide-react';
+import {useState} from 'react';
+import Link from 'next/link';
+import {createClient} from '@/lib/supabase/client';
 
 const LoginFormSchema = z.object({
   email: z.string().email({message: 'Invalid email address'}),
@@ -37,6 +41,8 @@ function LoginForm({
 }: {
   loginAction: (formData: FormData) => Promise<void>;
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -75,7 +81,19 @@ function LoginForm({
           render={({field}) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <Input {...field} type="password" />
+              <div className="flex flex-row gap-2 items-center">
+                <Input {...field} type={showPassword ? 'text' : 'password'} />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="p-1 cursor-pointer"
+                  type="button"
+                  aria-label="Toggle password visibility"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeClosed /> : <Eye />}
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -94,6 +112,7 @@ function SignUpForm({
 }: {
   signupAction: (formData: FormData) => Promise<void>;
 }) {
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof SignupFormSchema>>({
     resolver: zodResolver(SignupFormSchema),
     // Must be defined otherwise components will change from uncontrolled to controlled
@@ -159,7 +178,19 @@ function SignUpForm({
           render={({field}) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <Input {...field} type="password" />
+              <div className="flex flex-row gap-2 items-center">
+                <Input {...field} type={showPassword ? 'text' : 'password'} />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="p-1 cursor-pointer"
+                  type="button"
+                  aria-label="Toggle password visibility"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeClosed /> : <Eye />}
+                </Button>
+              </div>
               <FormMessage />
             </FormItem>
           )}
