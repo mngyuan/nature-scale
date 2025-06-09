@@ -39,7 +39,7 @@ export default async function ProjectPage({
   return (
     <main className="flex flex-col grow w-full">
       <div
-        className={`flex flex-col p-8 bg-cover bg-center grow relative`}
+        className="flex flex-col p-8 bg-cover bg-center grow relative"
         style={{backgroundImage: `url(${projectImage || '/rangelands.png'})`}}
       >
         <div className="absolute right-8 top-8">
@@ -49,7 +49,8 @@ export default async function ProjectPage({
             </Button>
           </Link>
         </div>
-        <div className="w-lg xl:w-xl space-y-2 text-white absolute bottom-8 space-x-1">
+        <div className="grow" />
+        <div className="w-full max-w-2xl space-y-2 text-white space-x-1">
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (
               <Badge key={resource}>

@@ -8,6 +8,7 @@ import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 import {createClient} from '@/lib/supabase/client';
 import {Tables} from '@/lib/supabase/types/supabase';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {cn} from '@/lib/utils';
 
 const DiagnosticItem = ({
   itemKey,
@@ -23,9 +24,7 @@ const DiagnosticItem = ({
 }) => {
   return (
     <div className="flex flex-col space-y-4">
-      {description && (
-        <p className="text-sm text-muted-foreground">{description}</p>
-      )}
+      {description && <p className="text-sm font-medium">{description}</p>}
       <RadioGroup
         value={itemValue}
         onValueChange={(value) => onChange(itemKey, value)}
@@ -33,19 +32,51 @@ const DiagnosticItem = ({
       >
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="1" id={`${itemKey}-1`} />
-          <Label htmlFor={`${itemKey}-1`}>Agree</Label>
+          <Label
+            htmlFor={`${itemKey}-1`}
+            className={cn(
+              'font-normal text-muted-foreground',
+              itemValue === '1' ? 'text-primary' : undefined,
+            )}
+          >
+            Agree
+          </Label>
         </div>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="2" id={`${itemKey}-2`} />
-          <Label htmlFor={`${itemKey}-2`}>Neither agree nor disagree</Label>
+          <Label
+            htmlFor={`${itemKey}-2`}
+            className={cn(
+              'font-normal text-muted-foreground',
+              itemValue === '2' ? 'text-primary' : undefined,
+            )}
+          >
+            Neither agree nor disagree
+          </Label>
         </div>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="3" id={`${itemKey}-3`} />
-          <Label htmlFor={`${itemKey}-3`}>Disagree</Label>
+          <Label
+            htmlFor={`${itemKey}-3`}
+            className={cn(
+              'font-normal text-muted-foreground',
+              itemValue === '3' ? 'text-primary' : undefined,
+            )}
+          >
+            Disagree
+          </Label>
         </div>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="4" id={`${itemKey}-4`} />
-          <Label htmlFor={`${itemKey}-4`}>Not applicable</Label>
+          <Label
+            htmlFor={`${itemKey}-4`}
+            className={cn(
+              'font-normal text-muted-foreground',
+              itemValue === '4' ? 'text-primary' : undefined,
+            )}
+          >
+            Not applicable
+          </Label>
         </div>
       </RadioGroup>
     </div>
@@ -83,48 +114,56 @@ export default function ContextDiagnosticForm({
 
   return (
     <>
-      <div className="flex flex-col grow px-8 pb-8 space-y-4 w-full">
-        {CONTEXT_DIAGNOSTIC_ITEMS &&
-          Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
-            .filter(([key]) => [1, 2, 3, 7, 8, 9, 10].includes(Number(key)))
-            .map(([key, item]) => (
-              <DiagnosticItem
-                key={key}
-                itemKey={key}
-                itemValue={formValues[key] || ''}
-                title={item.title}
-                description={item.description}
-                onChange={handleValueChange}
-              />
-            ))}
-        {CONTEXT_DIAGNOSTIC_ITEMS &&
-          Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
-            .filter(([key]) =>
-              [6, 11, 12, 13, 15, 16, 17, 18, 19].includes(Number(key)),
-            )
-            .map(([key, item]) => (
-              <DiagnosticItem
-                key={key}
-                itemKey={key}
-                itemValue={formValues[key] || ''}
-                title={item.title}
-                description={item.description}
-                onChange={handleValueChange}
-              />
-            ))}
-        {CONTEXT_DIAGNOSTIC_ITEMS &&
-          Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
-            .filter(([key]) => [4, 5, 14].includes(Number(key)))
-            .map(([key, item]) => (
-              <DiagnosticItem
-                key={key}
-                itemKey={key}
-                itemValue={formValues[key] || ''}
-                title={item.title}
-                description={item.description}
-                onChange={handleValueChange}
-              />
-            ))}
+      <div className="flex flex-col grow px-8 pb-8 w-full">
+        <ul className="space-y-4">
+          {CONTEXT_DIAGNOSTIC_ITEMS &&
+            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
+              .filter(([key]) => [1, 2, 3, 7, 8, 9, 10].includes(Number(key)))
+              .map(([key, item]) => (
+                <li key={key}>
+                  <DiagnosticItem
+                    key={key}
+                    itemKey={key}
+                    itemValue={formValues[key] || ''}
+                    title={item.title}
+                    description={item.description}
+                    onChange={handleValueChange}
+                  />
+                </li>
+              ))}
+          {CONTEXT_DIAGNOSTIC_ITEMS &&
+            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
+              .filter(([key]) =>
+                [6, 11, 12, 13, 15, 16, 17, 18, 19].includes(Number(key)),
+              )
+              .map(([key, item]) => (
+                <li key={key}>
+                  <DiagnosticItem
+                    key={key}
+                    itemKey={key}
+                    itemValue={formValues[key] || ''}
+                    title={item.title}
+                    description={item.description}
+                    onChange={handleValueChange}
+                  />
+                </li>
+              ))}
+          {CONTEXT_DIAGNOSTIC_ITEMS &&
+            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
+              .filter(([key]) => [4, 5, 14].includes(Number(key)))
+              .map(([key, item]) => (
+                <li key={key}>
+                  <DiagnosticItem
+                    key={key}
+                    itemKey={key}
+                    itemValue={formValues[key] || ''}
+                    title={item.title}
+                    description={item.description}
+                    onChange={handleValueChange}
+                  />
+                </li>
+              ))}
+        </ul>
         <div>
           <Button role="submit" className="mt-4 mr-4" disabled>
             Submit
