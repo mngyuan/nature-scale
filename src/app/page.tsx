@@ -17,7 +17,7 @@ export default async function RootPage() {
 
   return (
     <div className="flex flex-col grow min-w-screen min-h-screen p-8 lg:p-12 relative">
-      <div className="absolute -z-1 top-0 left-0 w-full h-full bg-[url(/rangelands.png)] bg-cover bg-center opacity-50"></div>
+      <div className="absolute -z-1 top-0 left-0 w-full h-full bg-[url(/pexels-b.jpg)] bg-cover bg-center opacity-30"></div>
       <header className="flex flex-row items-center w-full lg:p-16 justify-between">
         <Link href="/">
           <Image
