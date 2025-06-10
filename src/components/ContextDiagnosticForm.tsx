@@ -114,7 +114,7 @@ export default function ContextDiagnosticForm({
 
   return (
     <>
-      <div className="flex flex-col grow px-8 pb-8 w-full">
+      <form className="flex flex-col grow px-8 pb-8 w-full" onSubmit={onSubmit}>
         <ul className="space-y-4">
           {CONTEXT_DIAGNOSTIC_ITEMS &&
             Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
@@ -165,21 +165,15 @@ export default function ContextDiagnosticForm({
               ))}
         </ul>
         <div>
-          <Button role="submit" className="mt-4 mr-4" disabled>
+          <Button
+            role="submit"
+            className="mt-4 mr-4"
+            disabled={Object.keys(formValues).length < 19}
+          >
             Submit
           </Button>
-          <Tooltip>
-            <TooltipTrigger>
-              <p className="text-sm text-muted-foreground text-center">
-                Coming soon!
-              </p>
-            </TooltipTrigger>
-            <TooltipContent>
-              Thanks for trying the early access version.
-            </TooltipContent>
-          </Tooltip>
         </div>
-      </div>
+      </form>
     </>
   );
 }

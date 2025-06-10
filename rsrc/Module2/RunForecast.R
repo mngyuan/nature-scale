@@ -8,6 +8,35 @@ library(rstan)
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
+RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width=800, height=600) {
+  # Write to an image file for returning to the api
+  img_file <- tempfile(fileext = ".png")
+  png(img_file, width = width, height = height)
+
+  mod<-RunForecast(csv, potentialAdopters, targetAdoption)
+  calcs<-DifEqParameterPlots_Cumulative(mod)
+
+  # Prepare data for api
+  # Close graphics device
+  dev.off()
+  plot_data <- readBin(img_file, "raw", n = file.info(img_file)$size)
+  plot_base64 <- jsonlite::base64_enc(plot_data)
+  # Unlink the temporary image file
+  unlink(img_file)
+
+  return(list(
+    parameters = list(
+      independent = calcs$ind[1]$med[1],
+      social = calcs$soc[1]$med[1]
+    ),
+    plot = list(
+      type = "image/png",
+      base64 = plot_base64
+    )
+  ))
+}
+
+
 # Save model otherwise docker will always recompile
 # This adds ~2min to loading the server
 model = stan_model("./Module2/SIaM.stan")
@@ -138,6 +167,8 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
       annotate("text", x=Inf, y=targetAdoption/sample_n, label="Target", hjust=1)
   }
   print(p)
+
+  return(mod)
 }
 
 #c<-read.csv("./Module2/ExampleAdoptionK2CSettlements.csv")

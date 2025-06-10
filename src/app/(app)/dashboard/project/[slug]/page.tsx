@@ -128,25 +128,20 @@ export default async function ProjectPage({
           </Card>
           <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
-            {/*<Link href={`/dashboard/project/${slug}/scaling-suggestions`}>*/}
-            <CardHeader>
-              <CardTitle>
-                <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                  <WandSparkles size={48} />
-                </div>
-                Get scaling suggestions
-              </CardTitle>
-              <CardDescription>
-                <Tooltip>
-                  <TooltipTrigger className="text-left">
-                    In this section, you can get personalized scaling
-                    suggestions for your initiative.
-                  </TooltipTrigger>
-                  <TooltipContent>Coming soon!</TooltipContent>
-                </Tooltip>
-              </CardDescription>
-            </CardHeader>
-            {/*</Link>*/}
+            <Link href={`/dashboard/project/${slug}/scaling-suggestions`}>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
+                    <WandSparkles size={48} />
+                  </div>
+                  Get scaling suggestions
+                </CardTitle>
+                <CardDescription>
+                  In this section, you can get personalized scaling suggestions
+                  for your initiative.
+                </CardDescription>
+              </CardHeader>
+            </Link>
           </Card>
         </div>
       </div>

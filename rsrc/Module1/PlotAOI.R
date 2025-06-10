@@ -1,14 +1,6 @@
 library(tidyverse)
 library(sf)
 
-#This code clips the land cover data to the bounding box and 
-#the project area for a given project
-#It also plots these data showing the project 
-#land cover in a darker color than the bounding box
-
-#The function is defined below, then code to load the country / countries 
-# or a user-provided shape file is given
-
 plotAoiAPIWrapper<-function(aoi, width=800, height=600) {
   # Write to an image file for returning to the api
   img_file <- tempfile(fileext = ".png")
@@ -32,6 +24,14 @@ plotAoiAPIWrapper<-function(aoi, width=800, height=600) {
     )
   ))
 }
+
+#This code clips the land cover data to the bounding box and 
+#the project area for a given project
+#It also plots these data showing the project 
+#land cover in a darker color than the bounding box
+
+#The function is defined below, then code to load the country / countries 
+# or a user-provided shape file is given
 
 plotAoi<-function(aoi){
     

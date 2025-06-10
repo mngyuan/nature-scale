@@ -11,7 +11,7 @@ export default async function AssessPotentialPage({
 
   return (
     <main className="flex flex-col grow w-full">
-      <h2 className="p-8 text-3xl">Identify scaling potential and targets</h2>
+      <h2 className="p-8 text-3xl">Assess Progress</h2>
       <div className="grid grid-cols-2 gap-4 px-8 pb-8 space-x-6 grow">
         <AssessProgressClientPage project={project} />
       </div>

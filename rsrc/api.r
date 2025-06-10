@@ -12,6 +12,7 @@ source('./Module2/RunForecast.R')
 source('./ProjectSetup/MakeStandardReportingForm.R')
 source('./Module1/IndividualsPlotsCalculations.R')
 source('./Module1/SettlementPlotsCalculations.R')
+source('./Module2/DifEqParameterPlots_Cumulative.R')
 
 #* @filter cors
 cors <- function(req, res) {
@@ -237,16 +238,16 @@ function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes, wi
 }
 
 #* Get the prediction chart
-#* @serializer png
+#* @serializer json
 #* @param potentialAdopters:int
 #* @parser csv
 #* @post /run-forecast
 # TODO: this route doesn't work with parellization, the png created isn't detected
-function(req, potentialAdopters, targetAdoption=NA) {
+function(req, potentialAdopters, targetAdoption=NA, width=800, height=600) {
   potentialAdopters <- as.integer(potentialAdopters)
   targetAdoption <- as.integer(targetAdoption)
   if (is.na(potentialAdopters)) potentialAdopters <- 0L
-  return(RunForecast(req$body, potentialAdopters, targetAdoption))
+  return(RunForecastAPIWrapper(req$body, potentialAdopters, targetAdoption, width, height))
 }
 
 #* Get the standard reporting form

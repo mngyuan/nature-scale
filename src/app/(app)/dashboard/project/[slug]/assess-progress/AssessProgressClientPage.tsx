@@ -12,6 +12,8 @@ import {Button} from '@/components/ui/button';
 import {useProjects} from '@/components/ProjectContext';
 import {Tables} from '@/lib/supabase/types/supabase';
 import StandardReportingFormLink from '@/components/StandardReportingFormLink';
+import {createClient} from '@/lib/supabase/client';
+import {useMeasuredElement} from '@/lib/hooks';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -29,6 +31,7 @@ export default function AssessProgressClientPage({
 }: {
   project?: Tables<'projects'>;
 }) {
+  const supabase = createClient();
   // Update context store with project data from server
   const {updateProjects} = useProjects();
   useEffect(() => {
@@ -46,6 +49,9 @@ export default function AssessProgressClientPage({
   const [targetAdoption, setTargetAdoption] = useState<string>('');
   const [csvFile, setCSVFile] = useState<File | null>(null);
 
+  const {ref: imageContainerRef, dimensions: imageDimensions} =
+    useMeasuredElement();
+
   const fetchPlot = async () => {
     setError(null);
     setPlotImageLoading(true);
@@ -57,6 +63,8 @@ export default function AssessProgressClientPage({
         `${R_API_BASE_URL}/run-forecast?${new URLSearchParams({
           potentialAdopters: potentialAdopters,
           targetAdoption,
+          width: imageDimensions.width.toString(),
+          height: imageDimensions.height.toString(),
         })}`,
         {
           method: 'POST',
@@ -69,8 +77,26 @@ export default function AssessProgressClientPage({
       if (!response.ok) {
         throw new Error('Failed to fetch plot');
       }
-      const objURL = URL.createObjectURL(await response.blob());
-      setPlotImage(objURL);
+      const respJSON = await response.json();
+      setPlotImage(`data:${respJSON.plot.type};base64,${respJSON.plot.base64}`);
+      if (project) {
+        const {error} = await supabase
+          .from('projects')
+          .update({
+            details: {
+              ...project.details,
+              ...(targetAdoption && {targetAdoption}),
+              growth: {
+                independent: respJSON.parameters.independent[0],
+                social: respJSON.parameters.social[0],
+                // TODO: get last non-NA value for lastReportedAdoption
+                // (in R or here)
+              },
+            },
+          })
+          .eq('id', project?.id);
+        if (error) throw error;
+      }
     } catch (err) {
       setError('Failed to load plot. Please try again later.');
       console.error(err);
@@ -153,7 +179,10 @@ export default function AssessProgressClientPage({
         {error && <div className="text-red-500 text-sm">{error}</div>}
         <h2 className="text-sm text-muted-foreground">Visualisation</h2>
         <p className="font-semibold text-sm">{project?.description}</p>
-        <div className="flex items-center justify-center h-full">
+        <div
+          className="flex items-center justify-center h-full"
+          ref={imageContainerRef}
+        >
           {plotImageLoading ? (
             <LoaderIcon className="animate-spin" />
           ) : plotImage ? (

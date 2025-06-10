@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     },
   });
 }
+
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const res = await fetch(`${R_API_BASE_URL}/plot-area-of-interest`, {

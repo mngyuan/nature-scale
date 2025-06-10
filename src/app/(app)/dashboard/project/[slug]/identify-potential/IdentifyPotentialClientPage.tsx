@@ -48,6 +48,7 @@ import {
 } from '@/components/ui/dialog';
 import {createClient} from '@/lib/supabase/client';
 import {Checkbox} from '@/components/ui/checkbox';
+import {useMeasuredElement} from '@/lib/hooks';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -820,33 +821,8 @@ export default function IdentifyPotentialClientPage({
     null,
   );
 
-  const imageContainerRef = useRef<HTMLDivElement>(null);
-  const imageDimensions = useRef<{width: number; height: number}>({
-    width: 0,
-    height: 0,
-  });
-
-  const updateImageDimensions = () => {
-    if (imageContainerRef.current) {
-      const rect = imageContainerRef.current.getBoundingClientRect();
-      imageDimensions.current.width = rect.width;
-      imageDimensions.current.height = rect.height;
-    }
-  };
-
-  useEffect(() => {
-    updateImageDimensions();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateImageDimensions();
-    });
-    if (imageContainerRef.current) {
-      resizeObserver.observe(imageContainerRef.current);
-    }
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+  const {ref: imageContainerRef, dimensions: imageDimensions} =
+    useMeasuredElement();
 
   useEffect(() => {
     const updatePotentialAdopters = async () => {
@@ -884,7 +860,7 @@ export default function IdentifyPotentialClientPage({
         setPlotImageLoading={setPlotImageLoading}
         serializedData={serializedData}
         setSerializedData={setSerializedData}
-        imageDimensions={imageDimensions.current}
+        imageDimensions={imageDimensions}
         project={project}
         potentialAdopters={potentialAdopters}
         setPotentialAdopters={setPotentialAdopters}

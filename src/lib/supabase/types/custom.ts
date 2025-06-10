@@ -8,4 +8,10 @@ export type ProjectDetails = {
   // TODO: both of the following could be enums like engagement
   monitoringFrequency?: string;
   resourcesType?: string[];
+  growth?: {
+    social?: number;
+    independent?: number;
+    lastReportedAdoption?: number;
+  };
+  targetAdoption?: string;
 };
