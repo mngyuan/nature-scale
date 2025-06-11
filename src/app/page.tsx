@@ -10,11 +10,6 @@ export default async function RootPage() {
   const supabase = await createClient();
   const {loggedIn} = await getProfile(supabase);
 
-  // Redirect logged in
-  if (loggedIn) {
-    redirect('/dashboard');
-  }
-
   return (
     <div className="flex flex-col grow min-w-screen min-h-screen p-8 lg:p-12 relative">
       <div className="absolute -z-1 top-0 left-0 w-full h-full bg-[url(/pexels-b.jpg)] bg-cover bg-center opacity-30"></div>
@@ -32,13 +27,32 @@ export default async function RootPage() {
           <div className="flex flex-row items-center text-sm font-semibold hidden lg:block">
             Effective conservation scaling for sustainable impact
           </div>
-          <Globe />
-          <Link
-            href="/login"
-            className="flex flex-row items-center text-sm font-semibold"
-          >
-            <Button variant="secondary">Log In</Button>
-          </Link>
+          {loggedIn ? (
+            <Link
+              href="/dashboard"
+              className="flex flex-row items-center text-sm font-semibold"
+            >
+              <Button variant="secondary" className="flex items-center">
+                <Globe />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="flex flex-row items-center text-sm font-semibold"
+              >
+                <Button variant="secondary">Log In</Button>
+              </Link>
+              <Link
+                href="/login?show=signup"
+                className="flex flex-row items-center text-sm font-semibold"
+              >
+                <Button variant="secondary">Sign Up</Button>
+              </Link>
+            </>
+          )}
         </div>
       </header>
       <main className="flex flex-col grow w-full h-full py-8 lg:p-16">

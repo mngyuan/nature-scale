@@ -1,21 +1,12 @@
-import type {Metadata} from 'next';
-import {Geist, Geist_Mono} from 'next/font/google';
 import Image from 'next/image';
 import styles from './page.module.css';
-import {Globe} from 'lucide-react';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
+import {LogIn, User} from 'lucide-react';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Link from 'next/link';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import {ProjectProvider} from '@/components/ProjectContext';
+import {Button} from '@/components/ui/button';
 
 export default async function DashboardLayout({
   children,
@@ -43,25 +34,28 @@ export default async function DashboardLayout({
           <span className="text-blue-300 text-sm font-bold">Early Access</span>
         </Link>
         <div className="flex flex-row space-x-4">
-          <div className="flex flex-row items-center text-sm font-semibold">
+          <div className="flex flex-row items-center text-sm font-semibold text-muted-foreground">
             Effective conservation scaling for sustainable impact
           </div>
-          <Globe />
           {loggedIn ? (
             <Link
               href="/profile"
               className="flex flex-row items-center text-sm font-semibold"
             >
-              {profile && profile?.first_name && profile.last_name
-                ? `${profile.first_name} ${profile.last_name}`
-                : 'Profile'}
+              <Button variant="outline" className="flex items-center">
+                <User />
+                Account
+              </Button>
             </Link>
           ) : (
             <Link
               href="/login"
               className="flex flex-row items-center text-sm font-semibold"
             >
-              Log In
+              <Button className="flex items-center">
+                <LogIn />
+                Log In
+              </Button>
             </Link>
           )}
         </div>
@@ -75,35 +69,10 @@ export default async function DashboardLayout({
           <a target="_blank" rel="noopener noreferrer">
             © 2025 Scale4Nature, LTD
           </a>
-          <a target="_blank" rel="noopener noreferrer">
-            Terms
-          </a>
-          <a target="_blank" rel="noopener noreferrer">
-            Sitemap
-          </a>
-          <a target="_blank" rel="noopener noreferrer">
-            Privacy
-          </a>
+          <Link href="/faqs" className="hover:underline">
+            FAQs
+          </Link>
         </div>
-        <NavigationMenu>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="space-x-2">
-                <Globe />
-                English (UK)
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuLink>English (US)</NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Support & Resources</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuLink>Help</NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
       </footer>
     </div>
   );
