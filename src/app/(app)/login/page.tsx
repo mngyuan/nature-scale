@@ -2,8 +2,17 @@ import Image from 'next/image';
 import {login, signup} from './actions';
 import LogInSignUpForm from '@/components/LogInSignUpForm';
 import {Suspense} from 'react';
+import {createClient} from '@/lib/supabase/server';
+import {getProfile} from '@/lib/utils';
+import {redirect} from 'next/navigation';
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = await createClient();
+  const {loggedIn} = await getProfile(supabase);
+
+  if (loggedIn) {
+    redirect('/dashboard');
+  }
   return (
     <main className="flex flex-col grow w-full">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 pt-12">
