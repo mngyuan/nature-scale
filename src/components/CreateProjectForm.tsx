@@ -178,7 +178,7 @@ export default function CreateProjectForm({
   return (
     <Form {...form}>
       <form
-        className="flex flex-col grow px-8 pb-8 space-y-4"
+        className="flex flex-col grow space-y-4"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField

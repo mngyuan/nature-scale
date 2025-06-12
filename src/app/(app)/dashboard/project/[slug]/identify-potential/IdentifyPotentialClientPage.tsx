@@ -888,7 +888,7 @@ export default function IdentifyPotentialClientPage({
           </span>
         )}
         <div
-          className="flex items-center justify-center h-full"
+          className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto"
           ref={imageContainerRef}
         >
           {plotImageLoading ? (

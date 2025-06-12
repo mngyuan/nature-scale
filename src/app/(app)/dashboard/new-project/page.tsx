@@ -11,7 +11,9 @@ export default async function NewProjectPage() {
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Create a new project</h2>
-      <CreateProjectForm user={user} />
+      <div className="flex flex-col gap-8 px-8 pb-8 w-full">
+        <CreateProjectForm user={user} />
+      </div>
     </main>
   );
 }

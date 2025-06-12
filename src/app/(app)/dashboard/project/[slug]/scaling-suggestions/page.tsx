@@ -84,7 +84,7 @@ export default async function ScalingSuggestionsPage({
                   Based on the project stage, your data, and your responses, the
                   following suggestions may help improve the adoption rate.
                 </p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="hidden lg:grid grid-cols-2 gap-2">
                   <div className="flex flex-col gap-2">
                     {disagreedItems &&
                       disagreedItems
@@ -97,6 +97,12 @@ export default async function ScalingSuggestionsPage({
                         .slice(disagreedItems.length / 2, disagreedItems.length)
                         .map(([k, v]) => disagreeRecommendations([k, v]))}
                   </div>
+                </div>
+                <div className="flex flex-col lg:hidden gap-2">
+                  {disagreedItems &&
+                    disagreedItems.map(([k, v]) =>
+                      disagreeRecommendations([k, v]),
+                    )}
                 </div>
               </>
             ) : (

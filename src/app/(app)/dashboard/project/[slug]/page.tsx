@@ -39,10 +39,10 @@ export default async function ProjectPage({
   return (
     <main className="flex flex-col grow w-full">
       <div
-        className="flex flex-col p-8 bg-cover bg-center grow relative"
+        className="flex flex-col p-8 bg-cover bg-center grow relative gap-4"
         style={{backgroundImage: `url(${projectImage || '/rangelands.png'})`}}
       >
-        <div className="absolute right-8 top-8">
+        <div className="hidden lg:block absolute right-8 top-8">
           <Link href={`/dashboard/project/${slug}/settings`}>
             <Button>
               <Settings className="h-5 w-5" /> Project Settings
@@ -50,7 +50,7 @@ export default async function ProjectPage({
           </Link>
         </div>
         <div className="grow" />
-        <div className="w-full max-w-2xl space-y-2 text-white space-x-1">
+        <div className="w-full max-w-2xl space-y-2 text-white space-x-1 flex flex-col lg:block">
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (
               <Badge key={resource}>
@@ -73,10 +73,17 @@ export default async function ProjectPage({
           </h2>
           <div>{project?.description}</div>
         </div>
+        <div className="lg:hidden">
+          <Link href={`/dashboard/project/${slug}/settings`}>
+            <Button>
+              <Settings className="h-5 w-5" /> Project Settings
+            </Button>
+          </Link>
+        </div>
       </div>
       <div className="flex flex-col p-8">
         <div className="text-xl font-bold mb-4">Choose a module</div>
-        <div className="flex flex-row space-x-4 space-y-4 items-stretch">
+        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
           <Card className="mb-4 basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/identify-potential`}>
               <CardHeader>
@@ -92,7 +99,6 @@ export default async function ProjectPage({
               </CardHeader>
             </Link>
           </Card>
-          <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/assess-progress`}>
               <CardHeader>
@@ -109,7 +115,6 @@ export default async function ProjectPage({
               </CardHeader>
             </Link>
           </Card>
-          <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/context-diagnostic`}>
               <CardHeader>
@@ -126,7 +131,6 @@ export default async function ProjectPage({
               </CardHeader>
             </Link>
           </Card>
-          <ArrowRight className="self-center" />
           <Card className="mb-4 basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/scaling-suggestions`}>
               <CardHeader>

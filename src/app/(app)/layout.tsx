@@ -31,10 +31,12 @@ export default async function DashboardLayout({
             height={224 / 5}
             priority
           />
-          <span className="text-blue-300 text-sm font-bold">Early Access</span>
+          <span className="text-blue-300 text-xs lg:text-sm font-bold">
+            Early Access
+          </span>
         </Link>
         <div className="flex flex-row space-x-4">
-          <div className="flex flex-row items-center text-sm font-semibold text-muted-foreground">
+          <div className="flex-row items-center text-sm font-semibold text-muted-foreground hidden lg:flex">
             Effective conservation scaling for sustainable impact
           </div>
           {loggedIn ? (

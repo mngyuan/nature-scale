@@ -21,7 +21,7 @@ export default async function ProfilePage() {
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Account</h2>
-      <div className="flex flex-col gap-8 px-8 pb-8 space-x-6 w-lg">
+      <div className="flex flex-col gap-8 px-8 pb-8 w-full lg:w-lg">
         {loggedIn && (
           <>
             <ProfileForm user={user} profile={profile} />

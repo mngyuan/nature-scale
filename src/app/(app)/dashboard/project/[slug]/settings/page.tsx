@@ -19,7 +19,7 @@ export default async function SettingsPage({
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Project Settings</h2>
-      <div className="flex flex-col gap-8 px-8 pb-8 space-x-6 w-lg">
+      <div className="flex flex-col gap-8 px-8 pb-8 w-full">
         <CreateProjectForm project={project} user={user}>
           <div className="flex gap-2">
             <Link href={`/dashboard/project/${slug}`}>

@@ -109,7 +109,7 @@ export default async function Dashboard() {
             ? `Welcome back, ${profile?.first_name}.`
             : 'Welcome!'}
         </h2>
-        <Link href="/dashboard/new-project">
+        <Link href="/dashboard/new-project" className="hidden lg:block">
           <Button className="p-6 drop-shadow-lg rounded-lg">
             <Plus />
             Create a new project
@@ -138,6 +138,12 @@ export default async function Dashboard() {
             ))}
           </TabsContent>
         </Tabs>
+        <Link href="/dashboard/new-project" className="lg:hidden text-center">
+          <Button className="p-6 drop-shadow-lg rounded-lg ">
+            <Plus />
+            Create a new project
+          </Button>
+        </Link>
         <APIStatusIndicator />
       </div>
     </main>

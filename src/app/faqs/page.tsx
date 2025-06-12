@@ -61,9 +61,9 @@ export default async function FAQsPage() {
             <h2 className="font-semibold text-2xl lg:text-3xl">
               Frequently Asked Questions
             </h2>
-            <ol className="list-decimal list-outside space-y-8">
+            <ol className="list-decimal list-inside lg:list-outside space-y-8">
               <li className="text-xl lg:text-2xl space-y-2">
-                <h3>Who is this tool for?</h3>
+                Who is this tool for?
                 <p className="text-base font-normal">
                   Scale4Nature is designed for conservation practitioners,
                   researchers, and decision-makers who want to scale their
@@ -71,7 +71,7 @@ export default async function FAQsPage() {
                 </p>
               </li>
               <li className="text-xl lg:text-2xl space-y-2">
-                <h3>What are the main use cases for this tool?</h3>
+                What are the main use cases for this tool?
                 <p className="text-base font-normal">
                   You can use this tool to identify the potential reach of your
                   conservation efforts, assess the progress of ongoing
@@ -80,7 +80,7 @@ export default async function FAQsPage() {
                 </p>
               </li>
               <li className="text-xl lg:text-2xl space-y-2">
-                <h3>Where is my data and how is it stored and used?</h3>
+                Where is my data and how is it stored and used?
                 <p className="text-base font-normal">
                   Only data that's deemed necessary for continued operation of
                   the tool is stored. Data for computation, for example, is only
@@ -89,10 +89,8 @@ export default async function FAQsPage() {
                 </p>
               </li>
               <li className="text-xl lg:text-2xl space-y-2">
-                <h3>
-                  What are some things I should keep in mind when I'm making
-                  decisions using this tool?
-                </h3>
+                What are some things I should keep in mind when I'm making
+                decisions using this tool?
                 <p className="text-base font-normal">
                   While Scale4Nature provides valuable insights, it is important
                   to remember that it is a forecasting tool based on

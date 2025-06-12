@@ -180,7 +180,7 @@ export default function AssessProgressClientPage({
         <h2 className="text-sm text-muted-foreground">Visualisation</h2>
         <p className="font-semibold text-sm">{project?.description}</p>
         <div
-          className="flex items-center justify-center h-full"
+          className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto"
           ref={imageContainerRef}
         >
           {plotImageLoading ? (
