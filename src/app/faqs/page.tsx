@@ -4,6 +4,7 @@ import {Button} from '@/components/ui/button';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import {Globe} from 'lucide-react';
+import {Metadata} from 'next';
 
 export default async function FAQsPage() {
   const supabase = await createClient();
@@ -108,3 +109,7 @@ export default async function FAQsPage() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'FAQs',
+};

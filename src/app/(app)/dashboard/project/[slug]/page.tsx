@@ -17,10 +17,10 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {getProject} from './actions';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {format} from 'date-fns';
 import {createClient} from '@/lib/supabase/server';
 import {Button} from '@/components/ui/button';
+import {Metadata} from 'next';
 
 export default async function ProjectPage({
   params,
@@ -148,3 +148,7 @@ export default async function ProjectPage({
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Project',
+};

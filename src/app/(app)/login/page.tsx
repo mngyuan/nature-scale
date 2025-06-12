@@ -5,6 +5,7 @@ import {Suspense} from 'react';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import {redirect} from 'next/navigation';
+import {Metadata} from 'next';
 
 export default async function LoginPage() {
   const supabase = await createClient();
@@ -34,3 +35,7 @@ export default async function LoginPage() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Login',
+};

@@ -16,6 +16,7 @@ import {getProfile} from '@/lib/utils';
 import APIStatusIndicator from '@/components/APIStatusIndicator';
 import {redirect} from 'next/navigation';
 import {Tables} from '@/lib/supabase/types/supabase';
+import {Metadata} from 'next';
 
 const PeopleList = ({
   children,
@@ -142,3 +143,7 @@ export default async function Dashboard() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+};

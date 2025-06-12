@@ -1,5 +1,6 @@
 import CreateProjectForm from '@/components/CreateProjectForm';
 import {createClient} from '@/lib/supabase/server';
+import {Metadata} from 'next';
 
 export default async function NewProjectPage() {
   const supabase = await createClient();
@@ -14,3 +15,7 @@ export default async function NewProjectPage() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'New Project',
+};

@@ -3,6 +3,7 @@ import ProfilePictureForm from '@/components/ProfilePictureForm';
 import {Button} from '@/components/ui/button';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
+import {Metadata} from 'next';
 import {redirect} from 'next/navigation';
 
 export default async function ProfilePage() {
@@ -41,3 +42,7 @@ export default async function ProfilePage() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Account',
+};

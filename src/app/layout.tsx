@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Scale4Nature',
+  title: {
+    default: 'Scale4Nature',
+    template: '%s | Scale4Nature',
+  },
   description: 'Effective conservation scaling for sustainable impact',
 };
 
