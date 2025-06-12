@@ -170,7 +170,7 @@ export default function CreateProjectForm({
       setError(error.message);
     } else {
       setMessage('Success! Redirecting...');
-      router.push('/dashboard');
+      return router.push('/dashboard');
     }
     setLoading(false);
   }

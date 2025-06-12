@@ -53,7 +53,7 @@ export default function ForgotPasswordForm() {
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event) => {
       if (event == 'PASSWORD_RECOVERY') {
-        router.push('/login/update-password');
+        return router.push('/login/update-password');
       }
     });
   }, []);

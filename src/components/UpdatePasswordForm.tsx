@@ -45,10 +45,10 @@ export default function UpdatePasswordForm() {
       setError(error.message);
     } else {
       setMessage('Successfully changed your password! Redirecting...');
+      // User should now have an active session
+      return router.push('/dashboard');
     }
     setLoading(false);
-    // User should now have an active session
-    router.push('/dashboard');
   }
 
   return (
