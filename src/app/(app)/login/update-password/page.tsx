@@ -19,6 +19,7 @@ export default async function ResetPasswordPage() {
           </div>
         </div>
         <Suspense>
+          <h2 className="text-2xl font-semibold mb-4">Update your password</h2>
           <UpdatePasswordForm />
         </Suspense>
       </div>

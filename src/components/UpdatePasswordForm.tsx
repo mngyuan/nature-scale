@@ -53,7 +53,6 @@ export default function UpdatePasswordForm() {
 
   return (
     <Form {...form}>
-      <h2 className="text-2xl font-semibold mb-4">Update your password</h2>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
         <FormField
           control={form.control}

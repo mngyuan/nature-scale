@@ -1,6 +1,7 @@
 import ProfileForm from '@/components/ProfileForm';
 import ProfilePictureForm from '@/components/ProfilePictureForm';
 import {Button} from '@/components/ui/button';
+import UpdatePasswordForm from '@/components/UpdatePasswordForm';
 import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import {Metadata} from 'next';
@@ -25,6 +26,11 @@ export default async function ProfilePage() {
         {loggedIn && (
           <>
             <ProfileForm user={user} profile={profile} />
+
+            <div>
+              <h3 className="text-2xl mb-4">Update your password</h3>
+              <UpdatePasswordForm />
+            </div>
 
             <div>
               <h3 className="text-2xl mb-4">Profile Picture</h3>
