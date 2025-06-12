@@ -17,6 +17,7 @@ import {createClient} from '@/lib/supabase/client';
 import {useState} from 'react';
 import {Eye, EyeClosed, LoaderCircle} from 'lucide-react';
 import {useRouter} from 'next/navigation';
+import {useUpdateStates} from '@/lib/hooks';
 
 const UpdatePasswordFormSchema = z.object({
   password: z
@@ -28,9 +29,8 @@ export default function UpdatePasswordForm() {
   const router = useRouter();
   const supabase = createClient();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const {loading, setLoading, error, setError, message, setMessage} =
+    useUpdateStates();
   const form = useForm<z.infer<typeof UpdatePasswordFormSchema>>({
     resolver: zodResolver(UpdatePasswordFormSchema),
     defaultValues: {

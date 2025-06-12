@@ -21,6 +21,7 @@ import {format} from 'date-fns';
 import {createClient} from '@/lib/supabase/server';
 import {Button} from '@/components/ui/button';
 import {Metadata} from 'next';
+import {redirect} from 'next/navigation';
 
 export default async function ProjectPage({
   params,
@@ -35,6 +36,11 @@ export default async function ProjectPage({
         .from('project-images')
         .getPublicUrl(project.project_image_url).data.publicUrl
     : null;
+
+  // Redirect to dashboard if project is not found
+  if (project == undefined) {
+    redirect('/dashboard');
+  }
 
   return (
     <main className="flex flex-col grow w-full">

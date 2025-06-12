@@ -4,8 +4,11 @@ import {revalidatePath} from 'next/cache';
 import {redirect} from 'next/navigation';
 
 import {createClient} from '@/lib/supabase/server';
+import {AuthError} from '@supabase/supabase-js';
 
-export async function login(formData: FormData) {
+export async function login(formData: FormData): Promise<{
+  error?: AuthError;
+}> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -18,18 +21,17 @@ export async function login(formData: FormData) {
   const {error} = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    const errorParams = new URLSearchParams({
-      code: error.code || 'Unknown',
-      message: error.message || 'Login failed',
-    });
-    redirect(`/error?${errorParams.toString()}`);
+    console.error('Login failed:', error);
+    return {error};
   }
 
-  revalidatePath('/', 'layout');
-  redirect('/');
+  revalidatePath('/dashboard', 'layout');
+  redirect('/dashboard');
 }
 
-export async function signup(formData: FormData) {
+export async function signup(formData: FormData): Promise<{
+  error?: AuthError;
+}> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -49,13 +51,10 @@ export async function signup(formData: FormData) {
   const {error} = await supabase.auth.signUp(data);
 
   if (error) {
-    const errorParams = new URLSearchParams({
-      code: error.code || 'Unknown',
-      message: error.message || 'Signup failed',
-    });
-    redirect(`/error?${errorParams.toString()}`);
+    console.error('Signup failed:', error);
+    return {error};
   }
 
-  revalidatePath('/', 'layout');
-  redirect('/');
+  revalidatePath('/dashboard', 'layout');
+  redirect('/dashboard');
 }

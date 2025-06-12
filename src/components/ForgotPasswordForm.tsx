@@ -17,6 +17,7 @@ import {createClient} from '@/lib/supabase/client';
 import {useEffect, useState} from 'react';
 import {LoaderCircle} from 'lucide-react';
 import {useRouter} from 'next/navigation';
+import {useUpdateStates} from '@/lib/hooks';
 
 const ForgotPasswordFormSchema = z.object({
   email: z.string().email({message: 'Invalid email address'}),
@@ -25,9 +26,8 @@ const ForgotPasswordFormSchema = z.object({
 export default function ForgotPasswordForm() {
   const router = useRouter();
   const supabase = createClient();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const {loading, setLoading, error, setError, message, setMessage} =
+    useUpdateStates();
   const form = useForm<z.infer<typeof ForgotPasswordFormSchema>>({
     resolver: zodResolver(ForgotPasswordFormSchema),
     defaultValues: {
@@ -42,12 +42,10 @@ export default function ForgotPasswordForm() {
     });
     if (error) {
       setError(error.message);
-      setMessage(null);
     } else {
       setMessage(
         'If an account exists with that email, you will receive an email with a link to reset your password.',
       );
-      setError(null);
     }
     setLoading(false);
   }

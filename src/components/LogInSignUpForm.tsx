@@ -15,10 +15,11 @@ import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {useSearchParams} from 'next/navigation';
-import {Eye, EyeClosed} from 'lucide-react';
+import {Eye, EyeClosed, LoaderCircle} from 'lucide-react';
 import {useState} from 'react';
 import Link from 'next/link';
-import {createClient} from '@/lib/supabase/client';
+import {AuthError} from '@supabase/supabase-js';
+import {useUpdateStates} from '@/lib/hooks';
 
 const LoginFormSchema = z.object({
   email: z.string().email({message: 'Invalid email address'}),
@@ -39,8 +40,10 @@ const SignupFormSchema = z.object({
 function LoginForm({
   loginAction,
 }: {
-  loginAction: (formData: FormData) => Promise<void>;
+  loginAction: (formData: FormData) => Promise<{error?: AuthError}>;
 }) {
+  const {loading, setLoading, error, setError, message, setMessage} =
+    useUpdateStates();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
@@ -51,11 +54,19 @@ function LoginForm({
     },
   });
 
-  function onSubmit(data: z.infer<typeof LoginFormSchema>) {
+  async function onSubmit(data: z.infer<typeof LoginFormSchema>) {
+    setLoading(true);
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('password', data.password);
-    loginAction(formData);
+    const {error} = await loginAction(formData);
+    if (error) {
+      setError(error.message);
+    } else {
+      // action handles redirect so no need here
+      setMessage('Logging you in...');
+    }
+    setLoading(false);
   }
 
   return (
@@ -106,8 +117,22 @@ function LoginForm({
         />
 
         <div className="flex items-center justify-start space-x-2">
-          <Button formAction={loginAction}>Login</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <LoaderCircle className="w-2 h-2 animate-spin" />
+            ) : message ? (
+              'Success!'
+            ) : (
+              'Login'
+            )}
+          </Button>
         </div>
+
+        {message && (
+          <div className="text-sm text-muted-foreground">{message}</div>
+        )}
+
+        {error && <div className="text-sm text-red-500 ">{error}</div>}
       </form>
     </Form>
   );
@@ -116,9 +141,12 @@ function LoginForm({
 function SignUpForm({
   signupAction,
 }: {
-  signupAction: (formData: FormData) => Promise<void>;
+  signupAction: (formData: FormData) => Promise<{error?: AuthError}>;
 }) {
+  const {loading, setLoading, error, setError, message, setMessage} =
+    useUpdateStates();
   const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<z.infer<typeof SignupFormSchema>>({
     resolver: zodResolver(SignupFormSchema),
     // Must be defined otherwise components will change from uncontrolled to controlled
@@ -130,13 +158,21 @@ function SignUpForm({
     },
   });
 
-  function onSubmit(data: z.infer<typeof SignupFormSchema>) {
+  async function onSubmit(data: z.infer<typeof SignupFormSchema>) {
+    setLoading(true);
     const formData = new FormData();
     formData.append('firstName', data.firstName);
     formData.append('lastName', data.lastName);
     formData.append('email', data.email);
     formData.append('password', data.password);
-    signupAction(formData);
+    const {error} = await signupAction(formData);
+    if (error) {
+      setError(error.message);
+    } else {
+      // action handles redirect so no need here
+      setMessage('Created a new account! Logging you in...');
+    }
+    setLoading(false);
   }
 
   return (
@@ -203,8 +239,22 @@ function SignUpForm({
         />
 
         <div className="flex items-center justify-start space-x-2">
-          <Button formAction={signupAction}>Sign up</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <LoaderCircle className="w-2 h-2 animate-spin" />
+            ) : message ? (
+              'Success!'
+            ) : (
+              'Sign Up'
+            )}
+          </Button>
         </div>
+
+        {message && (
+          <div className="text-sm text-muted-foreground">{message}</div>
+        )}
+
+        {error && <div className="text-sm text-red-500 ">{error}</div>}
       </form>
     </Form>
   );
@@ -214,8 +264,8 @@ export default function LogInSignUpForm({
   loginAction,
   signupAction,
 }: {
-  loginAction: (formData: FormData) => Promise<void>;
-  signupAction: (formData: FormData) => Promise<void>;
+  loginAction: (formData: FormData) => Promise<{error?: AuthError}>;
+  signupAction: (formData: FormData) => Promise<{error?: AuthError}>;
 }) {
   const searchParams = useSearchParams();
   const show = searchParams.get('show');

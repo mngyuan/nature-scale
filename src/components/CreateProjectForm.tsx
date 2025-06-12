@@ -46,6 +46,7 @@ import {COUNTRY_BY_ISO3166, RESOURCE_TYPES} from '@/lib/constants';
 import {User} from '@supabase/supabase-js';
 import StandardReportingFormLink from './StandardReportingFormLink';
 import {Tables} from '@/lib/supabase/types/supabase';
+import {useUpdateStates} from '@/lib/hooks';
 
 const ENGAGEMENT_TYPES = {
   individual: 'Individual',
@@ -88,7 +89,8 @@ export default function CreateProjectForm({
         .from('project-images')
         .getPublicUrl(project.project_image_url).data.publicUrl
     : null;
-  const [loading, setLoading] = useState(false);
+  const {loading, setLoading, error, setError, message, setMessage} =
+    useUpdateStates();
   // TODO: make a ComboBox component ala shadcn
   const [countryPopoverOpen, setCountryPopoverOpen] = useState(false);
 
@@ -122,8 +124,8 @@ export default function CreateProjectForm({
         .upload(filePath, file);
 
       if (uploadError) {
-        // TODO: display to user
         console.error('Error uploading project image:', uploadError);
+        setError('Error uploading project image. Please try again.');
       }
 
       project_image_url = filePath;
@@ -165,12 +167,10 @@ export default function CreateProjectForm({
         ]);
 
     if (error) {
-      console.error('Error creating project:', error);
-      // TODO: display to user
-      // alert('Error creating project');
+      setError(error.message);
     } else {
-      // TODO: show a success toast?
-      router.push('/');
+      setMessage('Success! Redirecting...');
+      router.push('/dashboard');
     }
     setLoading(false);
   }
@@ -535,6 +535,8 @@ export default function CreateProjectForm({
           <Button className="mt-4" type="submit" disabled={loading}>
             {loading ? (
               <LoaderCircle className="w-2 h-2 animate-spin" />
+            ) : message ? (
+              'Success!'
             ) : (
               <>
                 <Plus />
@@ -543,6 +545,12 @@ export default function CreateProjectForm({
             )}
           </Button>
         )}
+
+        {message && (
+          <div className="text-sm text-muted-foreground">{message}</div>
+        )}
+
+        {error && <div className="text-sm text-red-500 ">{error}</div>}
       </form>
     </Form>
   );

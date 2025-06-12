@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 export const useMeasuredElement = () => {
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -32,5 +32,41 @@ export const useMeasuredElement = () => {
   return {
     ref: imageContainerRef,
     dimensions: imageDimensions.current,
+  };
+};
+
+export const useUpdateStates = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  // Clear either if the other is set
+  useEffect(() => {
+    if (error != null) {
+      if (message != null) {
+        setMessage(null);
+      }
+    } else if (message != null) {
+      if (error != null) {
+        setError(null);
+      }
+    }
+  }, [error, message]);
+
+  // Clear on loading
+  useEffect(() => {
+    if (loading) {
+      setError(null);
+      setMessage(null);
+    }
+  }, [loading]);
+
+  return {
+    loading,
+    setLoading,
+    error,
+    setError,
+    message,
+    setMessage,
   };
 };

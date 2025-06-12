@@ -15,6 +15,8 @@ import {z} from 'zod';
 import {createClient} from '@/lib/supabase/client';
 import {type User} from '@supabase/supabase-js';
 import {Tables} from '@/lib/supabase/types/supabase';
+import {useUpdateStates} from '@/lib/hooks';
+import {LoaderCircle} from 'lucide-react';
 
 const ProfileFormSchema = z.object({
   firstName: z.string().min(1, {message: 'First name is required'}),
@@ -29,8 +31,8 @@ export default function ProfileForm({
   profile: Tables<'profiles'> | null;
 }) {
   const supabase = createClient();
-  const [loading, setLoading] = useState(false);
-
+  const {loading, setLoading, error, setError, message, setMessage} =
+    useUpdateStates();
   const form = useForm<z.infer<typeof ProfileFormSchema>>({
     resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
@@ -40,9 +42,9 @@ export default function ProfileForm({
   });
 
   async function onSubmit(data: z.infer<typeof ProfileFormSchema>) {
-    // TODO: display to user?
     if (!user?.id) {
       console.error('User ID is not available');
+      setError('User ID is not available. Please report this error.');
       return;
     }
     setLoading(true);
@@ -57,12 +59,9 @@ export default function ProfileForm({
       .eq('id', user?.id);
 
     if (error) {
-      console.error('Error updating profile:', error);
-      // TODO: display to user
-      // alert('Error updating profile');
+      setError(error.message);
     } else {
-      // TODO: show a success toast?
-      console.log('Profile updated successfully', user?.id);
+      setMessage('Updated your profile!');
     }
     setLoading(false);
   }
@@ -104,8 +103,20 @@ export default function ProfileForm({
           />
 
           <Button type="submit" disabled={loading}>
-            {loading ? 'Loading ...' : 'Update'}
+            {loading ? (
+              <LoaderCircle className="w-2 h-2 animate-spin" />
+            ) : message ? (
+              'Success!'
+            ) : (
+              'Update Profile'
+            )}
           </Button>
+
+          {message && (
+            <div className="text-sm text-muted-foreground">{message}</div>
+          )}
+
+          {error && <div className="text-sm text-red-500 ">{error}</div>}
         </form>
       </Form>
     </div>
