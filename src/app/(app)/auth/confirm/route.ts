@@ -8,13 +8,7 @@ export async function GET(request: NextRequest) {
   const {searchParams} = new URL(request.url);
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type') as EmailOtpType | null;
-  const next = searchParams.get('next') ?? '/';
-
-  // Create redirect link without the secret token
-  const redirectTo = request.nextUrl.clone();
-  redirectTo.pathname = next;
-  redirectTo.searchParams.delete('token_hash');
-  redirectTo.searchParams.delete('type');
+  const next = searchParams.get('next');
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -25,8 +19,16 @@ export async function GET(request: NextRequest) {
     });
     if (!error) {
       // redirect user to specified redirect URL or root of app
-      redirectTo.searchParams.delete('next');
-      NextResponse.redirect(redirectTo);
+      console.log('Redirecting after OTP verified', next);
+      return NextResponse.redirect(next || '/');
+    } else {
+      // redirect the user to an error page with some instructions
+      const errorParams = new URLSearchParams({
+        code: error.code || 'Unknown',
+        message: error.message || 'OTP failed',
+      });
+      console.log('Error', next, error);
+      redirect(`/error?${errorParams.toString()}`);
     }
   }
 

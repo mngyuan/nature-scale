@@ -95,6 +95,12 @@ function LoginForm({
                 </Button>
               </div>
               <FormMessage />
+              <Link
+                href="/login/forgot-password"
+                className="text-sm hover:underline text-muted-foreground"
+              >
+                Forgot your password?
+              </Link>
             </FormItem>
           )}
         />
