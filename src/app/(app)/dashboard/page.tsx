@@ -17,6 +17,7 @@ import APIStatusIndicator from '@/components/APIStatusIndicator';
 import {redirect} from 'next/navigation';
 import {Tables} from '@/lib/supabase/types/supabase';
 import {Metadata} from 'next';
+import NUXDialog from '@/components/NUXDialog';
 
 const PeopleList = ({
   children,
@@ -103,6 +104,7 @@ export default async function Dashboard() {
 
   return (
     <main className="flex flex-col grow w-full">
+      {profile && <NUXDialog profile={profile} />}
       <div className="flex flex-row justify-between items-center px-8 py-4">
         <h2 className="text-3xl">
           {loggedIn && profile?.first_name

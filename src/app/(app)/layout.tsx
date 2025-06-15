@@ -74,6 +74,12 @@ export default async function DashboardLayout({
           <Link href="/faqs" className="hover:underline">
             FAQs
           </Link>
+          <Link
+            href="mailto:kevin.lee@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
+            className="hover:underline"
+          >
+            Feedback
+          </Link>
         </div>
       </footer>
     </div>
