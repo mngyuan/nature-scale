@@ -90,7 +90,7 @@ export default async function ProjectPage({
       <div className="flex flex-col p-8">
         <div className="text-xl font-bold mb-4">Choose a module</div>
         <div className="flex flex-col lg:flex-row gap-4 items-stretch">
-          <Card className="mb-4 basis-3xs grow">
+          <Card className="mb-4 lg:basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/identify-potential`}>
               <CardHeader>
                 <CardTitle>
@@ -99,13 +99,10 @@ export default async function ProjectPage({
                   </div>
                   Identify scaling potential and targets
                 </CardTitle>
-                <CardDescription>
-                  In this section, you can calculate the number of adopters.
-                </CardDescription>
               </CardHeader>
             </Link>
           </Card>
-          <Card className="mb-4 basis-3xs grow">
+          <Card className="mb-4 lg:basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/assess-progress`}>
               <CardHeader>
                 <CardTitle>
@@ -114,14 +111,10 @@ export default async function ProjectPage({
                   </div>
                   Monitor current progress and trajectory
                 </CardTitle>
-                <CardDescription>
-                  In this section, you can check the status of your current
-                  progress and trajectory.
-                </CardDescription>
               </CardHeader>
             </Link>
           </Card>
-          <Card className="mb-4 basis-3xs grow">
+          <Card className="mb-4 lg:basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/context-diagnostic`}>
               <CardHeader>
                 <CardTitle>
@@ -130,14 +123,10 @@ export default async function ProjectPage({
                   </div>
                   Take a context diagnostic
                 </CardTitle>
-                <CardDescription>
-                  In this section, we'll ask questions to help build a better
-                  picture of how your initiative is doing.
-                </CardDescription>
               </CardHeader>
             </Link>
           </Card>
-          <Card className="mb-4 basis-3xs grow">
+          <Card className="mb-4 lg:basis-3xs grow">
             <Link href={`/dashboard/project/${slug}/scaling-suggestions`}>
               <CardHeader>
                 <CardTitle>
@@ -146,10 +135,6 @@ export default async function ProjectPage({
                   </div>
                   Get scaling suggestions
                 </CardTitle>
-                <CardDescription>
-                  In this section, you can get personalized scaling suggestions
-                  for your initiative.
-                </CardDescription>
               </CardHeader>
             </Link>
           </Card>

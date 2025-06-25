@@ -59,18 +59,15 @@ export default async function RootPage() {
         <div className="flex w-full lg:w-128 h-full flex-col space-between space-y-4">
           <div className="flex flex-col space-y-4 font-medium">
             <h2 className="font-semibold text-2xl lg:text-3xl">
-              Relatively basic models based on disease spread can accurately
-              forecast the uptake of conservation programmes among individuals,
-              communities, and countries years ahead of time.
+              Scale4nature is an adaptive management tool to help forecast and
+              manage the trajectory a programme is likely to take.
             </h2>
             <p className="text-sm lg:text-md">
-              Scale4nature is an adaptive management tool to help forecast and
-              manage the trajectory a programme is likely to take – from failure
-              to launch to widespread adoption – with just a handful of years of
-              initial data and basic insights on the program’s fit. The tool
-              will help estimate the number of potential adopters of
-              conservation initiatives and, if the programme is off track, can
-              suggest reasons why.
+              Track and forecast from failure to launch to widespread adoption,
+              with just a handful of years of initial data and basic insights on
+              the program’s fit. The tool will help estimate the number of
+              potential adopters of conservation initiatives and, if the
+              programme is off track, can suggest reasons why.
             </p>
             <p className="text-sm lg:text-md">
               Make evidence informed decisions and track the mechanism(s) of
@@ -78,49 +75,6 @@ export default async function RootPage() {
               the impact of your project over the years or decades to come.
             </p>
           </div>
-          <ol className="list-decimal list-outside space-y-2 text-xs">
-            <li>
-              <Link
-                href="https://doi.org/10.1016/j.oneear.2024.08.017"
-                target="_blank"
-                className="hover:underline"
-              >
-                <i>
-                  Forecasting adoption with epidemiological models can enable
-                  adaptively scaling out conservation,
-                </i>
-              </Link>{' '}
-              Matt Clark, Thomas Pienkowski, Arundhati Jagadish, Carla L.
-              Archibald, Stefan Gelcich, Hugh Govan, Robin Naidoo, Cristina
-              Romero-de-Diego, Rebecca Weeks, Morena Mills.
-            </li>
-            <li>
-              <Link
-                href="https://doi.org/10.1016/j.ecolmodel.2022.110145"
-                target="_blank"
-                className="hover:underline"
-              >
-                <i>
-                  A quantitative application of diffusion of innovations for
-                  modeling the spread of conservation behaviors,
-                </i>
-              </Link>{' '}
-              Matt Clark, Jeffrey Andrews, Vicken Hillis.
-            </li>
-            <li>
-              <Link
-                href="https://doi.org/10.1016/j.ecolmodel.2022.110145"
-                target="_blank"
-                className="hover:underline"
-              >
-                <i>How conservation initiatives go to scale,</i>
-              </Link>{' '}
-              Morena Mills, Michael Bode, Michael B. Mascia, Rebecca Weeks,
-              Stefan Gelcich, Nigel Dudley, Hugh Govan, Carla L. Archibald,
-              Cristina Romero-de-Diego, Matthew Holden, Duan Biggs, Louise Glew,
-              Robin Naidoo & Hugh P. Possingham.
-            </li>
-          </ol>
         </div>
         <Link href="/login?show=signup" className="text-sm font-semibold">
           <Button className="mt-8">Try it out</Button>

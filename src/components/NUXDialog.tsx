@@ -93,7 +93,7 @@ export default function NUXDialog({
                 />
                 <DialogDescription>
                   This tool is designed to help you plan and manage your
-                  convervation efforts, and to give you data-driven insights
+                  conservation efforts, and to give you data-driven insights
                   into the potential impact of your projects and their progress.
                 </DialogDescription>
               </div>
