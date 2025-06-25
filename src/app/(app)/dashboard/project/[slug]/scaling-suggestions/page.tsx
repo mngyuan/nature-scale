@@ -17,7 +17,6 @@ export default async function ScalingSuggestionsPage({
 }) {
   const {slug} = await params;
   const project = await getProject(slug);
-  console.log(project);
   const disagreedItems =
     project?.context_diagnostic &&
     Object.entries(project.context_diagnostic)
@@ -88,13 +87,13 @@ export default async function ScalingSuggestionsPage({
                   <div className="flex flex-col gap-2">
                     {disagreedItems &&
                       disagreedItems
-                        .slice(0, disagreedItems.length / 2)
+                        .slice(disagreedItems.length / 2, disagreedItems.length)
                         .map(([k, v]) => disagreeRecommendations([k, v]))}
                   </div>
                   <div className="flex flex-col gap-2">
                     {disagreedItems &&
                       disagreedItems
-                        .slice(disagreedItems.length / 2, disagreedItems.length)
+                        .slice(0, disagreedItems.length / 2)
                         .map(([k, v]) => disagreeRecommendations([k, v]))}
                   </div>
                 </div>

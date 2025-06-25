@@ -83,13 +83,28 @@ const DiagnosticItem = ({
   );
 };
 
+function isStringRecord(obj: unknown): obj is Record<string, string> {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    !Array.isArray(obj) &&
+    Object.entries(obj).every(
+      ([key, value]) => typeof key === 'string' && typeof value === 'string',
+    )
+  );
+}
+
 export default function ContextDiagnosticForm({
   project,
 }: {
   project: Tables<'projects'> | undefined;
 }) {
   const supabase = createClient();
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [formValues, setFormValues] = useState<Record<string, string>>(
+    isStringRecord(project?.context_diagnostic)
+      ? project.context_diagnostic
+      : {},
+  );
 
   const handleValueChange = (key: string, value: string) =>
     setFormValues((prevValues) => ({
@@ -168,7 +183,7 @@ export default function ContextDiagnosticForm({
           <Button
             role="submit"
             className="mt-4 mr-4"
-            disabled={Object.keys(formValues).length < 19}
+            disabled={Object.keys(formValues).length < 1}
           >
             Submit
           </Button>
