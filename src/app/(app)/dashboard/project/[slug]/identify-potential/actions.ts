@@ -4,18 +4,30 @@ import {R_API_BASE_URL} from '@/lib/constants';
 
 export async function getBoundaryNames({
   country,
-  region,
-  district,
+  regions,
+  districts,
 }: {
   country: string;
-  region?: string;
-  district?: string;
+  regions?: string[];
+  districts?: string[];
 }): Promise<string[]> {
-  const params = new URLSearchParams({
-    country,
-    ...(region && {region: region}),
-    ...(district && {district: district}),
-  });
+  const params = new URLSearchParams([
+    ...Object.entries({
+      country,
+    }),
+
+    ...(regions
+      ? regions.includes('Any')
+        ? []
+        : regions.map((region) => ['region', region])
+      : []),
+
+    ...(districts
+      ? districts.includes('Any')
+        ? []
+        : districts.map((district) => ['district', district])
+      : []),
+  ]);
 
   try {
     const response = await fetch(`${R_API_BASE_URL}/boundary-names?${params}`, {

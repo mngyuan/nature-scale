@@ -127,9 +127,9 @@ const Stage1 = ({
   const [districts, setDistricts] = useState<string[]>([]);
   const [wards, setWards] = useState<string[]>([]);
 
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-  const [selectedWard, setSelectedWard] = useState<string>('');
+  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
+  const [selectedWards, setSelectedWards] = useState<string[]>([]);
 
   const [customBoundary, setCustomBoundary] = useState<FileList | null>(null);
 
@@ -166,7 +166,7 @@ const Stage1 = ({
 
   // Fetch districts when region changes
   useEffect(() => {
-    if (!selectedRegion) {
+    if (!selectedRegions) {
       setDistricts([]);
       return;
     }
@@ -175,7 +175,7 @@ const Stage1 = ({
       if (!country) {
         return;
       }
-      if (selectedRegion === 'Any') {
+      if (selectedRegions.includes('Any')) {
         setDistricts([]);
         return;
       }
@@ -184,7 +184,7 @@ const Stage1 = ({
       try {
         const data = await getBoundaryNames({
           country: countryNameFromCode(country),
-          region: selectedRegion,
+          regions: selectedRegions,
         });
         setDistricts(data); // API returns array directly
       } catch (err) {
@@ -196,11 +196,11 @@ const Stage1 = ({
     };
 
     fetchDistricts();
-  }, [selectedRegion, country]);
+  }, [selectedRegions, country]);
 
   // Fetch wards when district changes
   useEffect(() => {
-    if (!selectedRegion || !selectedDistrict) {
+    if (selectedRegions.length === 0 || selectedDistricts.length === 0) {
       setWards([]);
       return;
     }
@@ -209,7 +209,7 @@ const Stage1 = ({
       if (!country) {
         return;
       }
-      if (selectedDistrict === 'Any') {
+      if (selectedDistricts.includes('Any')) {
         setWards([]);
         return;
       }
@@ -218,8 +218,8 @@ const Stage1 = ({
       try {
         const data = await getBoundaryNames({
           country: countryNameFromCode(country),
-          region: selectedRegion,
-          district: selectedDistrict,
+          regions: selectedRegions,
+          districts: selectedDistricts,
         });
         setWards(data); // API returns array directly
       } catch (err) {
@@ -231,26 +231,28 @@ const Stage1 = ({
     };
 
     fetchWards();
-  }, [selectedRegion, selectedDistrict, country]);
+  }, [selectedRegions, selectedDistricts, country]);
 
   // Fetch image from r API when ward changes or selection ends with 'Any'
   const isValidSelection = (
-    selectedRegion: string,
-    selectedDistrict: string,
-    selectedWard: string,
+    selectedRegions: string[],
+    selectedDistricts: string[],
+    selectedWards: string[],
   ) => {
     return (
-      selectedRegion === 'Any' ||
-      (selectedRegion !== '' && selectedDistrict === 'Any') ||
-      (selectedRegion !== '' &&
-        selectedDistrict !== '' &&
-        selectedWard === 'Any') ||
-      (selectedRegion !== '' && selectedDistrict !== '' && selectedWard !== '')
+      selectedRegions.includes('Any') ||
+      (selectedRegions.length > 0 && selectedDistricts.includes('Any')) ||
+      (selectedRegions.length > 0 &&
+        selectedDistricts.length > 0 &&
+        selectedWards.includes('Any')) ||
+      (selectedRegions.length > 0 &&
+        selectedDistricts.length > 0 &&
+        selectedWards.length > 0)
     );
   };
 
   useEffect(() => {
-    if (!isValidSelection(selectedRegion, selectedDistrict, selectedWard)) {
+    if (!isValidSelection(selectedRegions, selectedDistricts, selectedWards)) {
       return;
     }
 
@@ -262,14 +264,22 @@ const Stage1 = ({
       setError(null);
       try {
         const response = await fetch(
-          `/api/area-of-interest-plot?${new URLSearchParams({
-            country: countryNameFromCode(country),
-            region: selectedRegion === 'Any' ? '' : selectedRegion,
-            district: selectedDistrict === 'Any' ? '' : selectedDistrict,
-            ward: selectedWard === 'Any' ? '' : selectedWard,
-            width: imageDimensions.width.toString(),
-            height: imageDimensions.height.toString(),
-          })}`,
+          `/api/area-of-interest-plot?${new URLSearchParams([
+            ...Object.entries({
+              country: countryNameFromCode(country),
+              width: imageDimensions.width.toString(),
+              height: imageDimensions.height.toString(),
+            }),
+            ...(selectedRegions.includes('Any')
+              ? []
+              : selectedRegions.map((region) => ['region', region])),
+            ...(selectedDistricts.includes('Any')
+              ? []
+              : selectedDistricts.map((district) => ['district', district])),
+            ...(selectedWards.includes('Any')
+              ? []
+              : selectedWards.map((ward) => ['ward', ward])),
+          ])}`,
         );
         if (!response.ok) {
           throw new Error('Failed to fetch plot');
@@ -289,9 +299,9 @@ const Stage1 = ({
 
     fetchPlot();
   }, [
-    selectedRegion,
-    selectedDistrict,
-    selectedWard,
+    selectedRegions,
+    selectedDistricts,
+    selectedWards,
     setPlotImage,
     setPlotImageLoading,
     country,
@@ -343,17 +353,6 @@ const Stage1 = ({
     fetchPlot();
   }, [customBoundary]);
 
-  const handleRegionChange = (value: string) => {
-    setSelectedRegion(value);
-    setSelectedDistrict('');
-    setSelectedWard('');
-  };
-
-  const handleDistrictChange = (value: string) => {
-    setSelectedDistrict(value);
-    setSelectedWard('');
-  };
-
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
       <div className="flex flex-row items-center space-x-1">
@@ -392,93 +391,312 @@ const Stage1 = ({
 
             <div className="flex flex-col space-y-2">
               <Label>Region</Label>
-              <Select value={selectedRegion} onValueChange={handleRegionChange}>
-                <SelectTrigger className="w-full" disabled={loading.regions}>
-                  <SelectValue
-                    placeholder={
-                      loading.regions ? 'Loading...' : 'Select the region'
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Any">Any</SelectItem>
-                  <Separator className="my-2" />
-                  {regions.map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'w-full justify-between h-auto',
+                      !selectedRegions.length && 'text-muted-foreground',
+                    )}
+                    disabled={loading.regions}
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRegions.length > 0
+                        ? selectedRegions.map((item) => (
+                            <div
+                              key={item}
+                              className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
+                            >
+                              {item}
+                            </div>
+                          ))
+                        : loading.districts
+                        ? 'Loading...'
+                        : 'Select region'}
+                    </div>
+                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search regions..." />
+                    <CommandEmpty>No region with that name found.</CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                      <CommandItem
+                        onSelect={() => {
+                          setSelectedRegions(
+                            selectedRegions.includes('Any') ? [] : ['Any'],
+                          );
+                          setSelectedDistricts([]);
+                          setSelectedWards([]);
+                        }}
+                      >
+                        <div
+                          className={cn(
+                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                            selectedRegions.includes('Any')
+                              ? 'bg-primary text-primary-foreground'
+                              : 'opacity-50',
+                          )}
+                        >
+                          {selectedRegions.includes('Any') && (
+                            <Check className="h-3 w-3" />
+                          )}
+                        </div>
+                        Any
+                      </CommandItem>
+                      <Separator className="my-2" />
+                      {regions.map((region) => (
+                        <CommandItem
+                          key={region}
+                          onSelect={() => {
+                            setSelectedRegions(
+                              selectedRegions.includes(region)
+                                ? selectedRegions
+                                    .filter((item) => item !== 'Any')
+                                    .filter((item) => item !== region)
+                                : [
+                                    ...selectedRegions.filter(
+                                      (item) => item !== 'Any',
+                                    ),
+                                    region,
+                                  ],
+                            );
+                            setSelectedDistricts([]);
+                            setSelectedWards([]);
+                          }}
+                        >
+                          <div
+                            className={cn(
+                              'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                              selectedRegions.includes(region)
+                                ? 'bg-primary text-primary-foreground'
+                                : 'opacity-50',
+                            )}
+                          >
+                            {selectedRegions.includes(region) && (
+                              <Check className="h-3 w-3" />
+                            )}
+                          </div>
+                          {region}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="flex flex-col space-y-2">
               <Label>District</Label>
-              <Select
-                value={selectedDistrict}
-                onValueChange={handleDistrictChange}
-                disabled={
-                  !selectedRegion ||
-                  loading.districts ||
-                  selectedRegion === 'Any'
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      loading.districts ? 'Loading...' : 'Select the district'
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'w-full justify-between h-auto',
+                      !selectedDistricts.length && 'text-muted-foreground',
+                    )}
+                    disabled={
+                      selectedRegions.length <= 0 ||
+                      loading.districts ||
+                      selectedRegions.includes('Any')
                     }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Any">Any</SelectItem>
-                  <Separator className="my-2" />
-                  {districts.map((district) => (
-                    <SelectItem key={district} value={district}>
-                      {district}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {selectedDistricts.length > 0
+                        ? selectedDistricts.map((item) => (
+                            <div
+                              key={item}
+                              className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
+                            >
+                              {item}
+                            </div>
+                          ))
+                        : loading.districts
+                        ? 'Loading...'
+                        : 'Select districts'}
+                    </div>
+                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search districts..." />
+                    <CommandEmpty>
+                      No district with that name found.
+                    </CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                      <CommandItem
+                        onSelect={() => {
+                          setSelectedDistricts(
+                            selectedDistricts.includes('Any') ? [] : ['Any'],
+                          );
+                          setSelectedWards([]);
+                        }}
+                      >
+                        <div
+                          className={cn(
+                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                            selectedDistricts.includes('Any')
+                              ? 'bg-primary text-primary-foreground'
+                              : 'opacity-50',
+                          )}
+                        >
+                          {selectedDistricts.includes('Any') && (
+                            <Check className="h-3 w-3" />
+                          )}
+                        </div>
+                        Any
+                      </CommandItem>
+                      <Separator className="my-2" />
+                      {districts.map((district) => (
+                        <CommandItem
+                          key={district}
+                          onSelect={() => {
+                            setSelectedDistricts(
+                              selectedDistricts.includes(district)
+                                ? selectedDistricts
+                                    .filter((item) => item !== 'Any')
+                                    .filter((item) => item !== district)
+                                : [
+                                    ...selectedDistricts.filter(
+                                      (item) => item !== 'Any',
+                                    ),
+                                    district,
+                                  ],
+                            );
+                            setSelectedWards([]);
+                          }}
+                        >
+                          <div
+                            className={cn(
+                              'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                              selectedDistricts.includes(district)
+                                ? 'bg-primary text-primary-foreground'
+                                : 'opacity-50',
+                            )}
+                          >
+                            {selectedDistricts.includes(district) && (
+                              <Check className="h-3 w-3" />
+                            )}
+                          </div>
+                          {district}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="flex flex-col space-y-2">
               <Label>Ward</Label>
-              <Select
-                value={selectedWard}
-                onValueChange={setSelectedWard}
-                disabled={
-                  !selectedDistrict ||
-                  loading.wards ||
-                  selectedDistrict === 'Any'
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      loading.wards ? 'Loading...' : 'Select the ward'
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      'w-full justify-between h-auto',
+                      !selectedWards.length && 'text-muted-foreground',
+                    )}
+                    disabled={
+                      selectedDistricts.length <= 0 ||
+                      loading.wards ||
+                      selectedDistricts.includes('Any')
                     }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Any">Any</SelectItem>
-                  <Separator className="my-2" />
-                  {wards.map((ward) => (
-                    <SelectItem key={ward} value={ward}>
-                      {ward}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {selectedWards.length > 0
+                        ? selectedWards.map((item) => (
+                            <div
+                              key={item}
+                              className="bg-black text-white rounded-md px-2 py-1 text-xs flex items-center"
+                            >
+                              {item}
+                            </div>
+                          ))
+                        : loading.wards
+                        ? 'Loading...'
+                        : 'Select wards'}
+                    </div>
+                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search wards..." />
+                    <CommandEmpty>No ward with that name found.</CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                      <CommandItem
+                        onSelect={() =>
+                          setSelectedWards(
+                            selectedWards.includes('Any') ? [] : ['Any'],
+                          )
+                        }
+                      >
+                        <div
+                          className={cn(
+                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                            selectedWards.includes('Any')
+                              ? 'bg-primary text-primary-foreground'
+                              : 'opacity-50',
+                          )}
+                        >
+                          {selectedWards.includes('Any') && (
+                            <Check className="h-3 w-3" />
+                          )}
+                        </div>
+                        Any
+                      </CommandItem>
+                      <Separator className="my-2" />
+                      {wards.map((ward) => (
+                        <CommandItem
+                          key={ward}
+                          onSelect={() =>
+                            setSelectedWards(
+                              selectedWards.includes(ward)
+                                ? selectedWards
+                                    .filter((item) => item !== 'Any')
+                                    .filter((item) => item !== ward)
+                                : [
+                                    ...selectedWards.filter(
+                                      (item) => item !== 'Any',
+                                    ),
+                                    ward,
+                                  ],
+                            )
+                          }
+                        >
+                          <div
+                            className={cn(
+                              'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                              selectedWards.includes(ward)
+                                ? 'bg-primary text-primary-foreground'
+                                : 'opacity-50',
+                            )}
+                          >
+                            {selectedWards.includes(ward) && (
+                              <Check className="h-3 w-3" />
+                            )}
+                          </div>
+                          {ward}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="text-right">
               <Button
                 disabled={
                   !isValidSelection(
-                    selectedRegion,
-                    selectedDistrict,
-                    selectedWard,
+                    selectedRegions,
+                    selectedDistricts,
+                    selectedWards,
                   )
                 }
                 onClick={() => setStage(2)}

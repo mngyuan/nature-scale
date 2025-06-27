@@ -61,6 +61,9 @@ function() {
 #* Return regions of given country
 #* @serializer json
 #* @get /boundary-names
+#* @param country:string
+#* @param region:[string]
+#* @param district:[string]
 function(country=NA, region=NA, district=NA) {
   future_promise({
     folder<-paste0("./Data/CountryShapes/",country)
@@ -87,6 +90,12 @@ function(country=NA, region=NA, district=NA) {
 #* Plot the given area of interest
 #* @serializer json
 #* @get /plot-area-of-interest
+#* @param country:string
+#* @param region:[string]
+#* @param district:[string]
+#* @param ward:[string]
+#* @param width:number
+#* @param height:number
 function(country=NA, region=NA, district=NA, ward=NA, width=800, height=600) {
   future_promise({
     # TODO: does this handle arrays?
