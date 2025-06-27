@@ -112,18 +112,27 @@ export default function AssessProgressClientPage({
           <p className="font-semibold text-sm">
             Enter data to assess if your project is on track
           </p>
-          <Tooltip>
-            <TooltipTrigger>
-              <Info size={16} />
-            </TooltipTrigger>
-            <TooltipContent>Assess Progress</TooltipContent>
-          </Tooltip>
         </div>
+        <p className="text-sm text-muted-foreground">
+          Using our statistical model, analyze your past data to forecast future
+          adoption trends and compare with your project's target
+        </p>
         <div className="flex flex-col space-y-2">
-          <Label>Adopter population estimate</Label>
+          <div className="flex flex-row gap-1">
+            <Label>Adopter population estimate</Label>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info size={16} />
+              </TooltipTrigger>
+              <TooltipContent>
+                Total number of possible adopters within the project area.
+                Calculated in the previous module
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Input
             type="number"
-            placeholder="An educated guess at the number of potential adopters"
+            placeholder="An educated guess at the total number of potential adopters"
             value={potentialAdopters}
             onChange={(e) => setPotentialAdopters(e.target.value)}
           />
@@ -138,6 +147,7 @@ export default function AssessProgressClientPage({
           />
         </div>
         <div className="flex flex-col space-y-2">
+          <Label>Standard Reporting Form</Label>
           <Input
             type="file"
             accept=".csv"

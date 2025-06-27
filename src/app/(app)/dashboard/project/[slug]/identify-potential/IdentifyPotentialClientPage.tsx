@@ -49,6 +49,7 @@ import {
 import {createClient} from '@/lib/supabase/client';
 import {Checkbox} from '@/components/ui/checkbox';
 import {useMeasuredElement} from '@/lib/hooks';
+import Link from 'next/link';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -90,6 +91,7 @@ const Stages = ({
         imageDimensions={imageDimensions}
       />
       <Stage2
+        project={project}
         hidden={stage !== 2}
         setStage={setStage}
         setPlotImage={setPlotImage}
@@ -357,13 +359,11 @@ const Stage1 = ({
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
       <div className="flex flex-row items-center space-x-1">
         <p className="font-semibold text-sm">Project boundary</p>
-        <Tooltip>
-          <TooltipTrigger>
-            <Info size={16} />
-          </TooltipTrigger>
-          <TooltipContent>Assess Progress</TooltipContent>
-        </Tooltip>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Define the area used to calculate the total number of potential adopters
+        of your project.
+      </p>
       <Tabs defaultValue="jurisdictional">
         <TabsList className="grid w-full grid-cols-2 h-full mb-2">
           <TabsTrigger
@@ -412,8 +412,8 @@ const Stage1 = ({
                             </div>
                           ))
                         : loading.districts
-                        ? 'Loading...'
-                        : 'Select region'}
+                          ? 'Loading...'
+                          : 'Select region'}
                     </div>
                     <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
@@ -515,8 +515,8 @@ const Stage1 = ({
                             </div>
                           ))
                         : loading.districts
-                        ? 'Loading...'
-                        : 'Select districts'}
+                          ? 'Loading...'
+                          : 'Select districts'}
                     </div>
                     <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
@@ -618,8 +618,8 @@ const Stage1 = ({
                             </div>
                           ))
                         : loading.wards
-                        ? 'Loading...'
-                        : 'Select wards'}
+                          ? 'Loading...'
+                          : 'Select wards'}
                     </div>
                     <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
@@ -710,6 +710,9 @@ const Stage1 = ({
         <TabsContent value="custom">
           <div className="flex flex-col space-y-2">
             <Label htmlFor="custom-boundary">Custom boundary</Label>
+            <p className="text-sm text-muted-foreground mb-2">
+              Upload one of each of the following: .shp, .cpg, .dbf, .prj
+            </p>
             <Input
               id="custom-boundary"
               type="file"
@@ -734,6 +737,7 @@ const Stage1 = ({
 };
 
 const Stage2 = ({
+  project,
   hidden,
   setStage,
   setPlotImage,
@@ -746,6 +750,7 @@ const Stage2 = ({
   potentialAdopters,
   setPotentialAdopters,
 }: {
+  project?: Tables<'projects'>;
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
   hidden: boolean | undefined;
@@ -859,14 +864,12 @@ const Stage2 = ({
   return (
     <div className={`${hidden ? 'hidden' : ''} flex flex-col space-y-4`}>
       <div className="flex flex-row items-center space-x-1">
-        <p className="font-semibold text-sm">Eligibility</p>
-        <Tooltip>
-          <TooltipTrigger>
-            <Info size={16} />
-          </TooltipTrigger>
-          <TooltipContent>Assess Progress</TooltipContent>
-        </Tooltip>
+        <p className="font-semibold text-sm">Eligibility (optional)</p>
       </div>
+      <p className="text-sm text-muted-foreground mb-8">
+        Limit the calculation of potential adopters to within a set distance
+        from your specified resources types.
+      </p>
       {engagementType === 'settlement' && (
         <div className="flex flex-col space-y-2">
           <Label>Settlement size (in persons)</Label>
@@ -1011,7 +1014,22 @@ const Stage2 = ({
               {potentialAdopters}.
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={() => setDialogOpen(false)}>Okay</Button>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setDialogOpen(false)}
+              className="grow"
+            >
+              <Calculator />
+              Recalculate
+            </Button>
+            <Link href={`/dashboard/project/${project?.id}`} className="grow">
+              <Button onClick={() => setDialogOpen(false)} className="w-full">
+                <ArrowRight />
+                Done
+              </Button>
+            </Link>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
