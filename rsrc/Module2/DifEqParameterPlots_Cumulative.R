@@ -1,3 +1,28 @@
+DifEqParameterPlots_CumulativeAPIWrapper<-function(mod, width=800, height=600) {
+  # Write to an image file for returning to the api
+  img_file <- tempfile(fileext = ".png")
+  png(img_file, width = width, height = height)
+
+  calcs<-DifEqParameterPlots_Cumulative(mod)
+
+  # Prepare data for api
+  # Close graphics device
+  dev.off()
+  plot_data <- readBin(img_file, "raw", n = file.info(img_file)$size)
+  plot_base64 <- jsonlite::base64_enc(plot_data)
+  # Unlink the temporary image file
+  unlink(img_file)
+
+  return(list(
+    ind=calcs$ind,
+    soc=calcs$soc,
+    plot = list(
+      type = "image/png",
+      base64 = plot_base64
+    )
+  ))
+}
+
 DifEqParameterPlots_Cumulative<-function(mod) {
   modd<-extract(mod)
   modd<-as.data.frame(modd)
@@ -16,7 +41,7 @@ DifEqParameterPlots_Cumulative<-function(mod) {
     theme_classic()+  xlab("Parameter")+ylab("Estimate")+
     theme(axis.title = element_text(colour = "black",size=16),
           axis.text=element_text(color="black",size=14))
-  p2
+  print(p2)
 
   Ind<-paste0("The estimated rate of independent uptake for this initiative is ",round(modd[2,2],2)*100,"%",", meaning that on average this percent of the population has adopted the initiative in each sampling time, independent of whether their peers have adopted.")
 

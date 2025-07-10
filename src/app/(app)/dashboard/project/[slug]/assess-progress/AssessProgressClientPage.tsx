@@ -1,9 +1,7 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {Calculator, Info, LoaderIcon} from 'lucide-react';
-import Link from 'next/link';
-import {format} from 'date-fns';
+import {Calculator, Info, LoaderCircle, LoaderIcon} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
@@ -14,6 +12,7 @@ import {Tables} from '@/lib/supabase/types/supabase';
 import StandardReportingFormLink from '@/components/StandardReportingFormLink';
 import {createClient} from '@/lib/supabase/client';
 import {useMeasuredElement} from '@/lib/hooks';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -42,6 +41,7 @@ export default function AssessProgressClientPage({
 
   const [plotImage, setPlotImage] = useState<string | null>(null);
   const [plotImageLoading, setPlotImageLoading] = useState(false);
+  const [paramPlotImage, setParamPlotImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [potentialAdopters, setPotentialAdopters] = useState<string>(
     project?.details?.potentialAdopters || '',
@@ -63,8 +63,8 @@ export default function AssessProgressClientPage({
         `${R_API_BASE_URL}/run-forecast?${new URLSearchParams({
           potentialAdopters: potentialAdopters,
           targetAdoption,
-          width: imageDimensions.width.toString(),
-          height: imageDimensions.height.toString(),
+          iwidth: imageDimensions.width.toString(),
+          iheight: imageDimensions.height.toString(),
         })}`,
         {
           method: 'POST',
@@ -79,6 +79,9 @@ export default function AssessProgressClientPage({
       }
       const respJSON = await response.json();
       setPlotImage(`data:${respJSON.plot.type};base64,${respJSON.plot.base64}`);
+      setParamPlotImage(
+        `data:${respJSON.parameters.plot.type};base64,${respJSON.parameters.plot.base64}`,
+      );
       if (project) {
         const {error} = await supabase
           .from('projects')
@@ -176,33 +179,83 @@ export default function AssessProgressClientPage({
         <div className="text-right">
           <Button
             role="submit"
-            disabled={!(csvFile && potentialAdopters)}
-            className="shrink"
+            disabled={!(csvFile && potentialAdopters) || plotImageLoading}
+            className="w-full lg:w-auto shrink"
             onClick={() => fetchPlot()}
           >
-            <Calculator />
-            Calculate
+            {plotImageLoading ? (
+              <>
+                <LoaderCircle className="w-2 h-2 animate-spin" />
+                Calculating...
+              </>
+            ) : (
+              <>
+                <Calculator />
+                Calculate
+              </>
+            )}
           </Button>
         </div>
       </div>
-      <div className="flex flex-col grow">
+      <div className="flex flex-col grow gap-2">
         {error && <div className="text-red-500 text-sm">{error}</div>}
         <h2 className="text-sm text-muted-foreground">Visualisation</h2>
         <p className="font-semibold text-sm">{project?.description}</p>
-        <div
-          className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto"
-          ref={imageContainerRef}
-        >
-          {plotImageLoading ? (
-            <LoaderIcon className="animate-spin" />
-          ) : plotImage ? (
-            <img src={plotImage} className="object-contain h-full" alt="Plot" />
-          ) : (
-            <div className="text-sm text-muted-foreground">
-              Complete the form to see an adoption forecast
+        <Tabs defaultValue="forecast" className="h-full w-full">
+          <TabsList className="mb-2">
+            <TabsTrigger
+              value="forecast"
+              className="grow"
+              disabled={plotImage == null}
+            >
+              Forecast
+            </TabsTrigger>
+            <TabsTrigger
+              value="parameters"
+              className="grow"
+              disabled={paramPlotImage == null}
+            >
+              Adoption parameters
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="forecast" className="h-full w-full">
+            <div
+              className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto"
+              ref={imageContainerRef}
+            >
+              {plotImageLoading ? (
+                <LoaderIcon className="animate-spin" />
+              ) : plotImage ? (
+                <img
+                  src={plotImage}
+                  className="object-contain h-full"
+                  alt="Plot"
+                />
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  Complete the form to see an adoption forecast
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </TabsContent>
+          <TabsContent value="parameters">
+            <div className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto">
+              {plotImageLoading ? (
+                <LoaderIcon className="animate-spin" />
+              ) : paramPlotImage ? (
+                <img
+                  src={paramPlotImage}
+                  className="object-contain h-full"
+                  alt="Adoption parameters plot"
+                />
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  Complete the form to see adoption parameters
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

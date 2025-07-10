@@ -14,7 +14,6 @@ RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width
   png(img_file, width = width, height = height)
 
   mod<-RunForecast(csv, potentialAdopters, targetAdoption)
-  calcs<-DifEqParameterPlots_Cumulative(mod)
 
   # Prepare data for api
   # Close graphics device
@@ -24,10 +23,14 @@ RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width
   # Unlink the temporary image file
   unlink(img_file)
 
+  # Call this after because it creates its own image file
+  calcs<-DifEqParameterPlots_CumulativeAPIWrapper(mod, width, height)
+
   return(list(
     parameters = list(
       independent = calcs$ind[1]$med[1],
-      social = calcs$soc[1]$med[1]
+      social = calcs$soc[1]$med[1],
+      plot = calcs$plot
     ),
     plot = list(
       type = "image/png",

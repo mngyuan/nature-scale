@@ -251,7 +251,7 @@ function(req, countries, resourceTypes, bufferDistance = NA, settlementSizes, wi
 #* @param potentialAdopters:int
 #* @parser csv
 #* @post /run-forecast
-# TODO: this route doesn't work with parellization, the png created isn't detected
+# TODO: this route doesn't work with paralellization, the png created isn't detected
 function(req, potentialAdopters, targetAdoption=NA, width=800, height=600) {
   potentialAdopters <- as.integer(potentialAdopters)
   targetAdoption <- as.integer(targetAdoption)
