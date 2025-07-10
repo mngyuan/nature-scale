@@ -952,35 +952,38 @@ const Stage2 = ({
             className="h-4 w-4"
           />
         </div>
-        <div
-          className={`flex flex-row items-center justify-between ${
-            useBuffer ? '' : 'text-muted-foreground pointer-events-none'
-          }`}
-        >
-          <Label>Buffer from resources (km)</Label>
-          <Input
-            placeholder="0"
-            className="w-16 text-center border-transparent hover:border-input hover:border text-muted-foreground hover:text-inherit focus:text-inherit"
-            type="number"
-            value={bufferAmount}
-            onChange={(e) => setBufferAmount(parseInt(e.target.value))}
+        <div onClick={() => (!useBuffer ? setUseBuffer(true) : null)}>
+          <div
+            className={`flex flex-row items-center justify-between ${
+              useBuffer ? '' : 'text-muted-foreground'
+            }`}
+          >
+            <Label>Buffer from resources (km)</Label>
+            <Input
+              placeholder="0"
+              className="w-16 text-center border-transparent hover:border-input hover:border text-muted-foreground hover:text-inherit focus:text-inherit"
+              type="number"
+              value={bufferAmount}
+              onChange={(e) => setBufferAmount(parseInt(e.target.value))}
+              disabled={!useBuffer}
+            />
+          </div>
+          <Slider
+            max={20}
+            min={1}
+            step={1}
+            className="py-2"
+            value={[bufferAmount]}
+            onValueChange={(values) => setBufferAmount(values[0])}
             disabled={!useBuffer}
           />
+          {engagementType === 'settlement' ? (
+            <p className="text-xs text-muted-foreground">
+              Using a buffer will cause the calculation to take longer than
+              usual.
+            </p>
+          ) : null}
         </div>
-        <Slider
-          max={20}
-          min={1}
-          step={1}
-          className="py-2"
-          value={[bufferAmount]}
-          onValueChange={(values) => setBufferAmount(values[0])}
-          disabled={!useBuffer}
-        />
-        {bufferAmount > 0 && engagementType === 'settlement' ? (
-          <p className="text-xs text-muted-foreground">
-            Using a buffer will cause the calculation to take longer than usual.
-          </p>
-        ) : null}
       </div>
       <div className="flex flex-row justify-between">
         <Button onClick={() => setStage(1)}>
@@ -1002,7 +1005,7 @@ const Stage2 = ({
           }
         >
           {loading ? <LoaderCircle className="animate-spin" /> : <Calculator />}
-          {loading ? 'Loading ...' : 'Calculate'}
+          {loading ? 'Calculating...' : 'Calculate'}
         </Button>
       </div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
