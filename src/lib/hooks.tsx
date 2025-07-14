@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
+import {wakeRAPI} from '@/app/actions';
 
 export const useMeasuredElement = () => {
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -68,5 +69,39 @@ export const useUpdateStates = () => {
     setError,
     message,
     setMessage,
+  };
+};
+
+type APIResponseType = Awaited<ReturnType<typeof wakeRAPI>>;
+
+export const useAPIStatus = () => {
+  const [apiResponse, setAPIResponse] = useState<APIResponseType>({
+    apiStatus: 'loading',
+    apiStatusReason: '',
+  });
+
+  const {apiStatus, apiStatusReason, httpCode, httpBody} = apiResponse;
+
+  const fetchAPIStatus = async () => {
+    if (document && document.hidden) {
+      return;
+    }
+    setAPIResponse({apiStatus: 'loading', apiStatusReason: ''});
+    const response = await wakeRAPI();
+    setAPIResponse({...response});
+  };
+
+  useEffect(() => {
+    fetchAPIStatus();
+    const intervalID = setInterval(fetchAPIStatus, 60 * 1000);
+    return () => clearInterval(intervalID);
+  }, []);
+
+  return {
+    apiStatus,
+    apiStatusReason,
+    httpCode,
+    httpBody,
+    fetchAPIStatus,
   };
 };

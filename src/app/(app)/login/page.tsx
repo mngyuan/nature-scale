@@ -6,6 +6,7 @@ import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import {redirect} from 'next/navigation';
 import {Metadata} from 'next';
+import APIStatusIndicator from '@/components/APIStatusIndicator';
 
 export default async function LoginPage() {
   const supabase = await createClient();
@@ -32,6 +33,7 @@ export default async function LoginPage() {
           <LogInSignUpForm loginAction={login} signupAction={signup} />
         </Suspense>
       </div>
+      <APIStatusIndicator hidden={true} />
     </main>
   );
 }

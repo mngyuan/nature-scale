@@ -2,7 +2,6 @@ import {createClient} from '@/lib/supabase/server';
 import {getProfile} from '@/lib/utils';
 import Link from 'next/link';
 import Image from 'next/image';
-import {redirect} from 'next/navigation';
 import {Globe} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 

@@ -1,34 +1,21 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import {wakeRAPI} from '@/app/actions';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {useAPIStatus} from '@/lib/hooks';
 import {LoaderCircle} from 'lucide-react';
 
-type APIResponseType = Awaited<ReturnType<typeof wakeRAPI>>;
-
-export default function APIStatusIndicator() {
-  const [apiResponse, setAPIResponse] = useState<APIResponseType>({
-    apiStatus: 'loading',
-    apiStatusReason: '',
-  });
-
-  const {apiStatus, apiStatusReason, httpCode, httpBody} = apiResponse;
-
-  const fetchAPIStatus = async () => {
-    setAPIResponse({apiStatus: 'loading', apiStatusReason: ''});
-    const response = await wakeRAPI();
-    setAPIResponse({...response});
-  };
-
-  useEffect(() => {
-    fetchAPIStatus();
-    const intervalID = setInterval(fetchAPIStatus, 60 * 1000);
-    return () => clearInterval(intervalID);
-  }, []);
+export default function APIStatusIndicator({
+  hidden = false,
+}: {
+  hidden?: boolean;
+}) {
+  const {apiStatus, apiStatusReason, httpCode, httpBody, fetchAPIStatus} =
+    useAPIStatus();
 
   return (
-    <div className="flex flex-row text-xs text-muted-foreground space-x-1 items-center">
+    <div
+      className={`flex flex-row text-xs text-muted-foreground space-x-1 items-center ${hidden ? 'hidden' : ''}`}
+    >
       <Tooltip>
         <TooltipTrigger>
           {apiStatus === 'loading' ? (
