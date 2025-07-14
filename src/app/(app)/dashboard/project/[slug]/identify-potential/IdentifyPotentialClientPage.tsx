@@ -5,24 +5,15 @@ import {
   Calculator,
   Check,
   ChevronDown,
-  Info,
   LoaderCircle,
   LoaderIcon,
 } from 'lucide-react';
-import {useState, useEffect, useRef} from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import {useState, useEffect} from 'react';
 import {ArrowRight} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {Separator} from '@/components/ui/separator';
 import {Slider} from '@/components/ui/slider';
 import {getBoundaryNames} from './actions';
@@ -766,7 +757,8 @@ const Stage2 = ({
   const [bufferAmount, setBufferAmount] = useState<number>(1);
   const [settlementSizes, setSettlementSizes] = useState<string[]>([]);
   const [useBuffer, setUseBuffer] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  // TODO: use useUpdateStates
+  const [_, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 

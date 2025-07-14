@@ -1,8 +1,10 @@
 'use client';
 
+import {useEffect} from 'react';
+import {LoaderCircle} from 'lucide-react';
+import {useRouter} from 'next/navigation';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-
 import {
   Form,
   FormField,
@@ -14,9 +16,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {createClient} from '@/lib/supabase/client';
-import {useEffect, useState} from 'react';
-import {LoaderCircle} from 'lucide-react';
-import {useRouter} from 'next/navigation';
 import {useUpdateStates} from '@/lib/hooks';
 
 const ForgotPasswordFormSchema = z.object({

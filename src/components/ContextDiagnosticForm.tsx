@@ -7,7 +7,6 @@ import {Button} from '@/components/ui/button';
 import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 import {createClient} from '@/lib/supabase/client';
 import {Tables} from '@/lib/supabase/types/supabase';
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {cn} from '@/lib/utils';
 
 const DiagnosticItem = ({

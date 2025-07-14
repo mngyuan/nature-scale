@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const {loggedIn, profile} = await getProfile(supabase);
+  const {loggedIn} = await getProfile(supabase);
 
   return (
     <div className="flex flex-col items-center min-h-screen">

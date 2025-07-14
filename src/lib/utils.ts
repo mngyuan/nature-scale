@@ -30,7 +30,7 @@ export const countryNameFromCode = (code: string): string => {
     return new Intl.DisplayNames(['en'], {
       type: 'region',
     }).of(code)!;
-  } catch (e) {
+  } catch (_) {
     // Don't choke the frontend if code is invalid (i.e. ISO 3166-1 alpha-3)
     return code;
   }
