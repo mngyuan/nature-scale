@@ -9,6 +9,7 @@ import {
 import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
+import Image from 'next/image';
 
 export default async function ScalingSuggestionsPage({
   params,

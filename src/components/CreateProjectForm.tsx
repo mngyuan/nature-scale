@@ -117,7 +117,10 @@ export default function CreateProjectForm({
     if (data.projectPhoto) {
       const file = data.projectPhoto;
       const fileExt = file.name.split('.').pop();
-      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const uuid = crypto.randomUUID();
+      // TODO: this should use project ID
+      const filePath = `${user?.id}/${timestamp}_${uuid}.${fileExt}`;
 
       const {error: uploadError} = await supabase.storage
         .from('project-images')

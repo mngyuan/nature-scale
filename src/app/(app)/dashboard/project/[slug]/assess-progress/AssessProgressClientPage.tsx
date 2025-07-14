@@ -13,6 +13,7 @@ import StandardReportingFormLink from '@/components/StandardReportingFormLink';
 import {createClient} from '@/lib/supabase/client';
 import {useMeasuredElement} from '@/lib/hooks';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {savePlotToProject} from '../actions';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -78,9 +79,17 @@ export default function AssessProgressClientPage({
         throw new Error('Failed to fetch plot');
       }
       const respJSON = await response.json();
-      setPlotImage(`data:${respJSON.plot.type};base64,${respJSON.plot.base64}`);
+      setPlotImage(
+        `data:${respJSON.plot.type};base64,${respJSON.plot.base64[0]}`,
+      );
+      savePlotToProject(project, 'forecast', respJSON.plot.base64[0]);
       setParamPlotImage(
-        `data:${respJSON.parameters.plot.type};base64,${respJSON.parameters.plot.base64}`,
+        `data:${respJSON.parameters.plot.type};base64,${respJSON.parameters.plot.base64[0]}`,
+      );
+      savePlotToProject(
+        project,
+        'forecast-parameters',
+        respJSON.parameters.plot.base64[0],
       );
       if (project) {
         const {error} = await supabase

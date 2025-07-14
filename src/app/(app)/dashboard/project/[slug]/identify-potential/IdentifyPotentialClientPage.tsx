@@ -41,6 +41,7 @@ import {createClient} from '@/lib/supabase/client';
 import {Checkbox} from '@/components/ui/checkbox';
 import {useMeasuredElement} from '@/lib/hooks';
 import Link from 'next/link';
+import {savePlotToProject} from '../actions';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -73,6 +74,7 @@ const Stages = ({
   return (
     <>
       <Stage1
+        project={project}
         hidden={stage !== 1}
         setPlotImage={setPlotImage}
         setPlotImageLoading={setPlotImageLoading}
@@ -100,6 +102,7 @@ const Stages = ({
 };
 
 const Stage1 = ({
+  project,
   setPlotImage,
   setPlotImageLoading,
   setStage,
@@ -108,6 +111,7 @@ const Stage1 = ({
   setSerializedData,
   imageDimensions,
 }: {
+  project?: Tables<'projects'>;
   setPlotImage: (url: string) => void;
   setPlotImageLoading: (loading: boolean) => void;
   setStage: (stage: number) => void;
@@ -279,8 +283,9 @@ const Stage1 = ({
         }
         const respJSON = await response.json();
         setPlotImage(
-          `data:${respJSON.plot.type};base64,${respJSON.plot.base64}`,
+          `data:${respJSON.plot.type};base64,${respJSON.plot.base64[0]}`,
         );
+        savePlotToProject(project, 'area-of-interest', respJSON.plot.base64[0]);
         setSerializedData(respJSON.data);
       } catch (err) {
         setError('Failed to load plot. Please try again later.');
@@ -332,8 +337,9 @@ const Stage1 = ({
         }
         const respJSON = await response.json();
         setPlotImage(
-          `data:${respJSON.plot.type};base64,${respJSON.plot.base64}`,
+          `data:${respJSON.plot.type};base64,${respJSON.plot.base64[0]}`,
         );
+        savePlotToProject(project, 'area-of-interest', respJSON.plot.base64[0]);
         setSerializedData(respJSON.data);
       } catch (err) {
         setError('Failed to load plot. Please try again later.');
@@ -799,7 +805,10 @@ const Stage2 = ({
         throw new Error('Failed to fetch plot');
       }
       const respJSON = await response.json();
-      setPlotImage(`data:${respJSON.plot.type};base64,${respJSON.plot.base64}`);
+      setPlotImage(
+        `data:${respJSON.plot.type};base64,${respJSON.plot.base64[0]}`,
+      );
+      savePlotToProject(project, 'potential-adopters', respJSON.plot.base64[0]);
       setPotentialAdopters(respJSON.potentialAdopters);
       setDialogOpen(true);
     } catch (err) {
