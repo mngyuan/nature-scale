@@ -10,6 +10,8 @@ import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import Image from 'next/image';
+import {createClient} from '@/lib/supabase/server';
+import {getPlot} from '@/lib/utils';
 
 export default async function ScalingSuggestionsPage({
   params,
@@ -18,6 +20,21 @@ export default async function ScalingSuggestionsPage({
 }) {
   const {slug} = await params;
   const project = await getProject(slug);
+  const supabase = await createClient();
+
+  const aoiPlot = await getPlot(supabase, project, 'area-of-interest');
+  const potentialAdoptersPlot = await getPlot(
+    supabase,
+    project,
+    'potential-adopters',
+  );
+  const forecastPlot = await getPlot(supabase, project, 'forecast');
+  const forecastParamsPlot = await getPlot(
+    supabase,
+    project,
+    'forecast-parameters',
+  );
+
   const disagreedItems =
     project?.context_diagnostic &&
     Object.entries(project.context_diagnostic)
@@ -25,7 +42,6 @@ export default async function ScalingSuggestionsPage({
       // Only keep the "disagree" responses
       .filter(([_, value]) => value === '3')
       .map(([key, value]) => [Number(key), value]);
-
   const disagreeRecommendations = ([key, _]: [
     number,
     (typeof CONTEXT_DIAGNOSTIC_ITEMS)[number],
@@ -50,29 +66,79 @@ export default async function ScalingSuggestionsPage({
       </Tooltip>
     ));
 
+  const insightsSection =
+    project?.details?.growth ||
+    aoiPlot ||
+    potentialAdoptersPlot ||
+    forecastPlot ? (
+      <div className="flex flex-col lg:flex-row gap-4">
+        {project?.details?.growth && (
+          <div className="grow space-y-2">
+            <div className="flex flex-row items-center space-x-1">
+              <Sun size={16} className="" />
+              <p className="font-semibold text-lg">Insights</p>
+            </div>
+            <ul className="list-disc list-inside text-sm">
+              <li>
+                The rate of social spread is{' '}
+                <b>{project.details.growth.social}</b>
+              </li>
+              <li>
+                The rate of independent adoption is{' '}
+                <b>{project.details.growth.independent}</b>
+              </li>
+            </ul>
+            {forecastParamsPlot && (
+              <Image
+                src={forecastParamsPlot || ''}
+                alt="Forecast Parameters Plot"
+                width={400}
+                height={300}
+                className="rounded-lg"
+              />
+            )}
+          </div>
+        )}
+        {(aoiPlot || potentialAdoptersPlot || forecastPlot) && (
+          <div className="grow gap-2">
+            {aoiPlot && (
+              <Image
+                src={aoiPlot || ''}
+                alt="Area of Interest Plot"
+                width={400}
+                height={300}
+                className="rounded-lg"
+              />
+            )}
+            {potentialAdoptersPlot && (
+              <Image
+                src={potentialAdoptersPlot || ''}
+                alt="Potential Adopters Plot"
+                width={400}
+                height={300}
+                className="rounded-lg"
+              />
+            )}
+            {forecastPlot && (
+              <Image
+                src={forecastPlot || ''}
+                alt="Forecast Plot"
+                width={400}
+                height={300}
+                className="rounded-lg"
+              />
+            )}
+          </div>
+        )}
+      </div>
+    ) : null;
+
   return (
     <main className="flex flex-col grow w-full">
       <h2 className="p-8 text-3xl">Suggestions to improve scale</h2>
       <div className="px-8 pb-8 space-x-6">
         <div className="flex flex-col space-y-4">
-          {project?.details?.growth && (
-            <div className="space-y-2">
-              <div className="flex flex-row items-center space-x-1">
-                <Sun size={16} className="" />
-                <p className="font-semibold text-lg">Insights</p>
-              </div>
-              <ul className="list-disc list-inside text-sm">
-                <li>
-                  The rate of social spread is{' '}
-                  <b>{project.details.growth.social}</b>
-                </li>
-                <li>
-                  The rate of independent adoption is{' '}
-                  <b>{project.details.growth.independent}</b>
-                </li>
-              </ul>
-            </div>
-          )}
+          {insightsSection}
           <div className="space-y-2">
             <div className="flex flex-row items-center space-x-1">
               <ChartNoAxesCombinedIcon size={16} className="" />

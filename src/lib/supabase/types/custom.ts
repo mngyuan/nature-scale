@@ -1,10 +1,5 @@
 import {EngagementType} from '@/components/CreateProjectForm';
 
-type PlotData = {
-  filePath: string;
-  createdAt: string;
-};
-
 export type ProjectDetails = {
   potentialAdopters?: string;
   startingDate?: string;
@@ -19,12 +14,10 @@ export type ProjectDetails = {
     lastReportedAdoption?: number;
   };
   targetAdoption?: string;
-  plots?: {
-    'area-of-interest'?: PlotData;
-    'potential-adopters'?: PlotData;
-    forecast?: PlotData;
-    'forecast-parameters'?: PlotData;
-  };
 };
 
-export type PlotType = keyof NonNullable<ProjectDetails['plots']>;
+export type PlotType =
+  | 'area-of-interest'
+  | 'potential-adopters'
+  | 'forecast'
+  | 'forecast-parameters';

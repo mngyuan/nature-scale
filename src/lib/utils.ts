@@ -2,7 +2,8 @@ import {SupabaseClient} from '@supabase/supabase-js';
 import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 import {titleCase} from 'title-case';
-import {Database} from '@/lib/supabase/types/supabase';
+import {Database, Tables} from '@/lib/supabase/types/supabase';
+import {PlotType} from './supabase/types/custom';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -64,16 +65,47 @@ export const getPublicStorageURL = (
   return data.publicUrl;
 };
 
-export async function getSignedStorageUrl(
+export async function getSignedStorageURL(
   supabase: SupabaseClient<Database>,
   bucketName: string,
-  filePath: string,
+  filePath: string | null | undefined,
   expiresIn: number = 3600,
-): Promise<string> {
+): Promise<string | null> {
+  if (!filePath) {
+    return null;
+  }
+
   const {data, error} = await supabase.storage
     .from(bucketName)
     .createSignedUrl(filePath, expiresIn);
 
   if (error) throw error;
+
   return data.signedUrl;
+}
+
+export async function getPlot(
+  supabase: SupabaseClient<Database>,
+  project: Tables<'projects'> | undefined,
+  plotType: PlotType,
+): Promise<string | null> {
+  if (!project || !project.id) {
+    return null;
+  }
+  const filePath = `${project.id}/${plotType}.png`;
+  try {
+    const url = await getSignedStorageURL(
+      supabase,
+      'project-plots',
+      filePath,
+      3600, // 1 hour
+    );
+    return url;
+  } catch (error) {
+    if (error instanceof Error) {
+      // Plot just hasn't been generated yet
+      if (error.message !== 'Object not found') console.error(error);
+    }
+    return null;
+  }
 }

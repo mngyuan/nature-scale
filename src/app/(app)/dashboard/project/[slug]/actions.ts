@@ -13,7 +13,7 @@ export async function getProject(slug: string) {
   return data?.[0];
 }
 
-export async function savePlotToProject(
+export async function savePlot(
   project: Tables<'projects'> | undefined,
   plotType: PlotType,
   plotData: string,
@@ -36,20 +36,4 @@ export async function savePlotToProject(
   if (uploadError) {
     console.error('Error uploading project plot:', uploadError);
   }
-
-  await supabase
-    .from('projects')
-    .update({
-      details: {
-        ...project.details,
-        plots: {
-          ...project.details?.plots,
-          [plotType]: {
-            filePath,
-            createdAt: new Date().toISOString(),
-          },
-        },
-      },
-    })
-    .eq('id', project.id);
 }
