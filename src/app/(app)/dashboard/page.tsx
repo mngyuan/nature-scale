@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
-import {getProfile} from '@/lib/utils';
+import {getProfile, getPublicStorageURL} from '@/lib/utils';
 import APIStatusIndicator from '@/components/APIStatusIndicator';
 import {redirect} from 'next/navigation';
 import {Tables} from '@/lib/supabase/types/supabase';
@@ -91,12 +91,14 @@ export default async function Dashboard() {
   if (projects) {
     for (const project of projects) {
       if (project.project_image_url) {
-        const {data} = supabase.storage
-          .from('project-images')
-          .getPublicUrl(project.project_image_url);
+        const publicURL = getPublicStorageURL(
+          supabase,
+          'project-images',
+          project.project_image_url,
+        );
 
-        if (data) {
-          projectImages[project.id] = data.publicUrl;
+        if (publicURL) {
+          projectImages[project.id] = publicURL;
         }
       }
     }

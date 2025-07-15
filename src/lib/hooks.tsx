@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {wakeRAPI} from '@/app/actions';
+import {createClient} from '@/lib/supabase/client';
 
 export const useMeasuredElement = () => {
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -105,3 +106,62 @@ export const useAPIStatus = () => {
     fetchAPIStatus,
   };
 };
+
+export function useStorageAsset(
+  bucketName: string,
+  filePath: string | null | undefined,
+  options: {
+    signedUrl?: boolean;
+    expiresIn?: number; // seconds, default 3600 (1 hour)
+  } = {},
+) {
+  const {signedUrl = false, expiresIn = 3600} = options;
+
+  const [url, setUrl] = useState<string | null>(null);
+  const {loading, setLoading, error, setError} = useUpdateStates();
+
+  useEffect(() => {
+    if (!filePath) {
+      setUrl(null);
+      setError('Empty file path');
+      return;
+    }
+
+    const getUrl = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const supabase = createClient();
+
+        if (signedUrl) {
+          // Generate signed URL
+          const {data, error} = await supabase.storage
+            .from(bucketName)
+            .createSignedUrl(filePath, expiresIn);
+
+          if (error) throw error;
+          setUrl(data.signedUrl);
+        } else {
+          // Get public URL
+          const {data} = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(filePath);
+
+          setUrl(data.publicUrl);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to get storage URL',
+        );
+        setUrl(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUrl();
+  }, [filePath, bucketName, signedUrl, expiresIn]);
+
+  return {url, loading, error};
+}

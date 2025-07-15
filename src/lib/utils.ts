@@ -50,3 +50,30 @@ export const getProfile = async (supabase: SupabaseClient<Database>) => {
   }
   return {loggedIn, profile};
 };
+
+export const getPublicStorageURL = (
+  supabase: SupabaseClient<Database>,
+  bucketName: string,
+  filePath: string | null | undefined,
+): string | null => {
+  if (!filePath) {
+    return null;
+  }
+
+  const {data} = supabase.storage.from(bucketName).getPublicUrl(filePath);
+  return data.publicUrl;
+};
+
+export async function getSignedStorageUrl(
+  supabase: SupabaseClient<Database>,
+  bucketName: string,
+  filePath: string,
+  expiresIn: number = 3600,
+): Promise<string> {
+  const {data, error} = await supabase.storage
+    .from(bucketName)
+    .createSignedUrl(filePath, expiresIn);
+
+  if (error) throw error;
+  return data.signedUrl;
+}

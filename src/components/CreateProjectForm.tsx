@@ -40,7 +40,7 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import {cn, countryNameFromCode} from '@/lib/utils';
+import {cn, countryNameFromCode, getPublicStorageURL} from '@/lib/utils';
 import {createClient} from '@/lib/supabase/client';
 import {COUNTRY_BY_ISO3166, RESOURCE_TYPES} from '@/lib/constants';
 import {User} from '@supabase/supabase-js';
@@ -85,9 +85,7 @@ export default function CreateProjectForm({
   const router = useRouter();
   const supabase = createClient();
   const projectImage = project?.project_image_url
-    ? supabase.storage
-        .from('project-images')
-        .getPublicUrl(project.project_image_url).data.publicUrl
+    ? getPublicStorageURL(supabase, 'project-images', project.project_image_url)
     : null;
   const {loading, setLoading, error, setError, message, setMessage} =
     useUpdateStates();

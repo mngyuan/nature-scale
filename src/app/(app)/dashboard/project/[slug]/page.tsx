@@ -1,7 +1,7 @@
 import {Badge} from '@/components/ui/badge';
 import {Card, CardHeader, CardTitle} from '@/components/ui/card';
 import {RESOURCE_TYPES} from '@/lib/constants';
-import {formatPathCrumb} from '@/lib/utils';
+import {formatPathCrumb, getPublicStorageURL} from '@/lib/utils';
 import {
   BookOpenCheck,
   Flag,
@@ -26,9 +26,7 @@ export default async function ProjectPage({
   const project = await getProject(slug);
   const supabase = await createClient();
   const projectImage = project?.project_image_url
-    ? supabase.storage
-        .from('project-images')
-        .getPublicUrl(project.project_image_url).data.publicUrl
+    ? getPublicStorageURL(supabase, 'project-images', project.project_image_url)
     : null;
 
   // Redirect to dashboard if project is not found
