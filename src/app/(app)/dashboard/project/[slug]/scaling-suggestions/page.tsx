@@ -138,6 +138,20 @@ export default async function ScalingSuggestionsPage({
       <h2 className="p-8 text-3xl">Suggestions to improve scale</h2>
       <div className="px-8 pb-8 space-x-6">
         <div className="flex flex-col space-y-4">
+          <div>
+            {project?.details?.potentialAdopters && (
+              <p className="text-sm text-muted-foreground">
+                Your potential pool of adopters is{' '}
+                {project.details.potentialAdopters} people.
+              </p>
+            )}
+            {project?.details?.targetAdoption && (
+              <p className="text-sm text-muted-foreground">
+                You stated your goal was to reach
+                {project.details.targetAdoption}
+              </p>
+            )}
+          </div>
           {insightsSection}
           <div className="space-y-2">
             <div className="flex flex-row items-center space-x-1">

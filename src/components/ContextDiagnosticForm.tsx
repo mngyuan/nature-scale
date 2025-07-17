@@ -131,52 +131,18 @@ export default function ContextDiagnosticForm({
       <form className="flex flex-col grow px-8 pb-8 w-full" onSubmit={onSubmit}>
         <ul className="space-y-4">
           {CONTEXT_DIAGNOSTIC_ITEMS &&
-            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
-              .filter(([key]) => [1, 2, 3, 7, 8, 9, 10].includes(Number(key)))
-              .map(([key, item]) => (
-                <li key={key}>
-                  <DiagnosticItem
-                    key={key}
-                    itemKey={key}
-                    itemValue={formValues[key] || ''}
-                    title={item.title}
-                    description={item.description}
-                    onChange={handleValueChange}
-                  />
-                </li>
-              ))}
-          {CONTEXT_DIAGNOSTIC_ITEMS &&
-            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
-              .filter(([key]) =>
-                [6, 11, 12, 13, 15, 16, 17, 18, 19].includes(Number(key)),
-              )
-              .map(([key, item]) => (
-                <li key={key}>
-                  <DiagnosticItem
-                    key={key}
-                    itemKey={key}
-                    itemValue={formValues[key] || ''}
-                    title={item.title}
-                    description={item.description}
-                    onChange={handleValueChange}
-                  />
-                </li>
-              ))}
-          {CONTEXT_DIAGNOSTIC_ITEMS &&
-            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS)
-              .filter(([key]) => [4, 5, 14].includes(Number(key)))
-              .map(([key, item]) => (
-                <li key={key}>
-                  <DiagnosticItem
-                    key={key}
-                    itemKey={key}
-                    itemValue={formValues[key] || ''}
-                    title={item.title}
-                    description={item.description}
-                    onChange={handleValueChange}
-                  />
-                </li>
-              ))}
+            Object.entries(CONTEXT_DIAGNOSTIC_ITEMS).map(([key, item]) => (
+              <li key={key}>
+                <DiagnosticItem
+                  key={key}
+                  itemKey={key}
+                  itemValue={formValues[key] || ''}
+                  title={item.title}
+                  description={item.description}
+                  onChange={handleValueChange}
+                />
+              </li>
+            ))}
         </ul>
         <div>
           <Button

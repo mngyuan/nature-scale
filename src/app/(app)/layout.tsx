@@ -42,7 +42,7 @@ export default async function DashboardLayout({
           {loggedIn ? (
             <Link
               href="/profile"
-              className="flex flex-row items-center text-sm font-semibold"
+              className="flex flex-row items-center text-sm font-semibold print:hidden"
             >
               <Button variant="outline" className="flex items-center">
                 <User />
