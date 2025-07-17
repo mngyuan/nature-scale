@@ -105,6 +105,7 @@ export default function ProfilePictureForm({
       <Label htmlFor="single">{loading ? 'Uploading ...' : 'Upload'}</Label>
       <Input
         type="file"
+        className="cursor-pointer"
         id="single"
         accept="image/*"
         onChange={uploadProfilePicture}

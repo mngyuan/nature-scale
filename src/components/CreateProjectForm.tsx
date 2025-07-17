@@ -231,6 +231,7 @@ export default function CreateProjectForm({
               )}
               <Input
                 type="file"
+                className="cursor-pointer"
                 id="project-photo"
                 accept="image/*"
                 onChange={(e) => {
@@ -259,7 +260,7 @@ export default function CreateProjectForm({
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={cn('w-full justify-between h-auto font-normal')}
+                    className="w-full justify-between h-auto cursor-pointer font-medium text-muted-foreground hover:bg-accent"
                   >
                     {field.value ? (
                       <div>{countryNameFromCode(field.value)}</div>
@@ -382,7 +383,7 @@ export default function CreateProjectForm({
             <FormItem>
               <FormLabel>Engagement Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full cursor-pointer font-medium text-muted-foreground hover:bg-accent">
                   <SelectValue placeholder="Select one engagement type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -408,7 +409,7 @@ export default function CreateProjectForm({
             <FormItem>
               <FormLabel>Monitoring Frequency</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full cursor-pointer font-medium text-muted-foreground hover:bg-accent">
                   <SelectValue placeholder="Every 2 months" />
                 </SelectTrigger>
                 <SelectContent>
