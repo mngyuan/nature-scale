@@ -11,7 +11,7 @@ import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
-import {getPlot} from '@/lib/utils';
+import {getPlot} from '../actions';
 
 export default async function ScalingSuggestionsPage({
   params,

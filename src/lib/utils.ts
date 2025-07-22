@@ -3,7 +3,6 @@ import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 import {titleCase} from 'title-case';
 import {Database, Tables} from '@/lib/supabase/types/supabase';
-import {PlotType} from './supabase/types/custom';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -52,6 +51,28 @@ export const getProfile = async (supabase: SupabaseClient<Database>) => {
   return {loggedIn, profile};
 };
 
+export const getProfileDisplayName = (
+  profile:
+    | Tables<'profiles'>
+    | {first_name: string | null; last_name: string | null},
+) => {
+  if (profile.first_name && profile.last_name) {
+    return `${profile.first_name} ${profile.last_name}`;
+  }
+  return profile.first_name || profile.last_name || 'Unknown User';
+};
+
+export const getProfileInitials = (
+  profile:
+    | Tables<'profiles'>
+    | {first_name: string | null; last_name: string | null},
+) => {
+  return (
+    `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}`.toUpperCase() ||
+    'U'
+  );
+};
+
 export const getPublicStorageURL = (
   supabase: SupabaseClient<Database>,
   bucketName: string,
@@ -82,30 +103,4 @@ export async function getSignedStorageURL(
   if (error) throw error;
 
   return data.signedUrl;
-}
-
-export async function getPlot(
-  supabase: SupabaseClient<Database>,
-  project: Tables<'projects'> | undefined,
-  plotType: PlotType,
-): Promise<string | null> {
-  if (!project || !project.id) {
-    return null;
-  }
-  const filePath = `${project.id}/${plotType}.png`;
-  try {
-    const url = await getSignedStorageURL(
-      supabase,
-      'project-plots',
-      filePath,
-      3600, // 1 hour
-    );
-    return url;
-  } catch (error) {
-    if (error instanceof Error) {
-      // Plot just hasn't been generated yet
-      if (error.message !== 'Object not found') console.error(error);
-    }
-    return null;
-  }
 }

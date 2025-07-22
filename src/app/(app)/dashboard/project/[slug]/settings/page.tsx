@@ -3,6 +3,7 @@ import {getProject} from '../actions';
 import {createClient} from '@/lib/supabase/server';
 import Link from 'next/link';
 import CreateProjectForm from '@/components/CreateProjectForm';
+import CollaboratorManager from '@/components/CollaboratorManager';
 
 export default async function SettingsPage({
   params,
@@ -15,6 +16,16 @@ export default async function SettingsPage({
   const {
     data: {user},
   } = await supabase.auth.getUser();
+  const isOwner =
+    project && user
+      ? await supabase
+          .from('project_members')
+          .select('role')
+          .eq('project_id', project.id)
+          .eq('profile_id', user.id)
+          .single()
+          .then(({data}) => data?.role === 'owner')
+      : false;
 
   return (
     <main className="flex flex-col grow w-full">
@@ -30,6 +41,16 @@ export default async function SettingsPage({
             <Button type="submit">Save</Button>
           </div>
         </CreateProjectForm>
+        {project && user && (
+          <div>
+            <h3 className="text-2xl mb-4">Collaborators</h3>
+            <CollaboratorManager
+              projectId={project.id}
+              currentUserId={user.id}
+              isOwner={isOwner}
+            />
+          </div>
+        )}
       </div>
     </main>
   );
