@@ -44,8 +44,7 @@ export default function UserSearch({
     async function searchUsers() {
       if (searchTerm.trim()) {
         setLoading(true);
-        const results = await searchVisibleUsers(supabase, searchTerm);
-        console.log(results);
+        const results = await searchVisibleUsers(searchTerm);
         setUsers(results);
         setLoading(false);
       } else {
@@ -91,8 +90,8 @@ export default function UserSearch({
               {loading
                 ? 'Searching...'
                 : searchTerm
-                ? 'No users found.'
-                : 'Type to search users.'}
+                  ? 'No users found.'
+                  : 'Type to search users.'}
             </CommandEmpty>
             <CommandGroup>
               {users.map((user) => (

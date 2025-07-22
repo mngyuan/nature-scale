@@ -28,7 +28,6 @@ export default function ProfilePictureForm({
         const {data, error} = await supabase.storage
           .from('profile-photos')
           .download(path);
-        console.log('Image data: ', data);
         if (error) {
           throw error;
         }

@@ -125,11 +125,9 @@ export type VisibleUsersQueryResult = Pick<
 >;
 
 export async function searchVisibleUsers(
-  supabase: SupabaseClient<Database>,
   searchTerm: string,
 ): Promise<VisibleUsersQueryResult[]> {
-  if (!searchTerm.trim()) return [];
-
+  const supabase = await createClient();
   const {data, error} = await supabase
     .from('profiles')
     .select('id, first_name, last_name, profile_picture_url, search_visible')

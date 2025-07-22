@@ -1,3 +1,4 @@
+import CollaborationVisibilityForm from '@/components/CollaborationVisibilityForm';
 import ProfileForm from '@/components/ProfileForm';
 import ProfilePictureForm from '@/components/ProfilePictureForm';
 import {Button} from '@/components/ui/button';
@@ -35,6 +36,11 @@ export default async function ProfilePage() {
             <div>
               <h3 className="text-2xl mb-4">Profile Picture</h3>
               <ProfilePictureForm size={150} user={user} profile={profile} />
+            </div>
+
+            <div>
+              <h3 className="text-2xl mb-4">Visibility</h3>
+              <CollaborationVisibilityForm user={user} profile={profile} />
             </div>
 
             <form action="/auth/signout" method="post">
