@@ -13,6 +13,8 @@ import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
 import {getPlot} from '../actions';
 import PrintButton from '@/components/PrintButton';
+import {asPercentage, formatAdoptionUnit} from '@/lib/utils';
+import {format} from 'date-fns';
 
 export default async function ScalingSuggestionsPage({
   params,
@@ -30,11 +32,6 @@ export default async function ScalingSuggestionsPage({
     'potential-adopters',
   );
   const forecastPlot = await getPlot(supabase, project, 'forecast');
-  const forecastParamsPlot = await getPlot(
-    supabase,
-    project,
-    'forecast-parameters',
-  );
 
   const disagreedItems =
     project?.context_diagnostic &&
@@ -81,23 +78,19 @@ export default async function ScalingSuggestionsPage({
             </div>
             <ul className="list-disc list-inside text-sm">
               <li>
-                The rate of social spread is{' '}
-                <b>{project.details.growth.social}</b>
+                The estimated rate of independent uptake is{' '}
+                <b>{project.details.growth.independent}%</b>, meaning that on
+                average this percent of the population has adopted the
+                initiative in each sampling time, independent of whether their
+                peers have adopted.
               </li>
               <li>
-                The rate of independent adoption is{' '}
-                <b>{project.details.growth.independent}</b>
+                The estimated rate of social transmission is{' '}
+                <b>{project.details.growth.social}%</b>, meaning that on average
+                each adopter caused {project.details.growth.social} new
+                adoptions in the next sampling time.
               </li>
             </ul>
-            {forecastParamsPlot && (
-              <Image
-                src={forecastParamsPlot || ''}
-                alt="Forecast Parameters Plot"
-                width={400}
-                height={300}
-                className="rounded-lg"
-              />
-            )}
           </div>
         )}
         {(aoiPlot || potentialAdoptersPlot || forecastPlot) && (
@@ -143,13 +136,44 @@ export default async function ScalingSuggestionsPage({
             {project?.details?.potentialAdopters && (
               <p className="text-sm text-muted-foreground">
                 Your potential pool of adopters is{' '}
-                {project.details.potentialAdopters} people.
+                {project.details.potentialAdopters}{' '}
+                {formatAdoptionUnit(project, true)}.
               </p>
             )}
             {project?.details?.targetAdoption && (
               <p className="text-sm text-muted-foreground">
                 You stated your goal was to reach{' '}
                 {project.details.targetAdoption}
+                {project.details.potentialAdopters
+                  ? ` (${asPercentage(
+                      project.details.targetAdoption,
+                      project.details.potentialAdopters,
+                    )}) of your pool of potential ${formatAdoptionUnit(project, true)}.`
+                  : null}
+              </p>
+            )}
+            {project?.details?.growth?.lastReportedAdoption && (
+              <p className="text-sm text-muted-foreground">
+                Currently you have reached{' '}
+                {project.details.growth.lastReportedAdoption}
+                {project.details.potentialAdopters
+                  ? ` (${asPercentage(
+                      project.details.growth.lastReportedAdoption,
+                      project.details.potentialAdopters,
+                    )}) of your potential pool of ${formatAdoptionUnit(project, true)}`
+                  : null}
+                .
+              </p>
+            )}
+            {project?.details?.growth?.probabilityOfSuccess && (
+              <p className="text-sm text-muted-foreground">
+                Given current trends, we project that you have{' '}
+                {project.details.growth.probabilityOfSuccess}% probability that
+                you will reach of exceed you target
+                {project.details.endingDate
+                  ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
+                  : '.'}
+                .
               </p>
             )}
           </div>

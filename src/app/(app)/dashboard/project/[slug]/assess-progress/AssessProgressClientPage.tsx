@@ -116,8 +116,10 @@ export default function AssessProgressClientPage({
               growth: {
                 independent: respJSON.parameters.independent[0],
                 social: respJSON.parameters.social[0],
-                // TODO: get last non-NA value for lastReportedAdoption
-                // (in R or here)
+                lastReportedAdoption: Object.values<number>(
+                  respJSON.lastReportedAdoption[0],
+                )[0],
+                probabilityOfSuccess: respJSON.probabilityOfSuccess[0],
               },
             },
           })

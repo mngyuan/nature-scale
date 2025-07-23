@@ -123,3 +123,36 @@ export async function downloadFromBucket(
     return null;
   }
 }
+
+export const asPercentage = (
+  value: number | string,
+  total: number | string,
+): string => {
+  if (typeof value === 'string') {
+    value = parseFloat(value);
+  }
+  if (typeof total === 'string') {
+    total = parseFloat(total);
+  }
+  return total > 0 ? `${((value / total) * 100).toFixed(2)}%` : '0%';
+};
+
+export const formatAdoptionUnit = (
+  project: Tables<'projects'> | undefined,
+  value?: number | boolean,
+) => {
+  const engagementType = project?.details?.engagementType;
+  if (typeof value === 'boolean') {
+    return engagementType === 'municipality'
+      ? 'municipalities'
+      : `${engagementType}s`;
+  }
+  if (value && (value > 1 || Number.isInteger(value) === false)) {
+    if (engagementType === 'municipality') {
+      return `${value} municipalities`;
+    } else {
+      return `${value} ${engagementType}s`;
+    }
+  }
+  return engagementType;
+};

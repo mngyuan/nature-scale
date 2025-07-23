@@ -12,8 +12,10 @@ export type ProjectDetails = {
     social?: number;
     independent?: number;
     lastReportedAdoption?: number;
+    probabilityOfSuccess?: number;
   };
   targetAdoption?: string;
+  currentAdoption?: number;
 };
 
 export type PlotType =

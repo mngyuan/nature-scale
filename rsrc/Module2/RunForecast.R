@@ -13,7 +13,10 @@ RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width
   img_file <- tempfile(fileext = ".png")
   png(img_file, width = width, height = height)
 
-  mod<-RunForecast(csv, potentialAdopters, targetAdoption)
+  results <- RunForecast(csv, potentialAdopters, targetAdoption)
+  mod <- results$mod
+  ProbabilityOfSuccess <- results$ProbabilityOfSuccess
+  lastReportedAdoption <- results$lastReportedAdoption
 
   # Prepare data for api
   # Close graphics device
@@ -35,7 +38,9 @@ RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width
     plot = list(
       type = "image/png",
       base64 = plot_base64
-    )
+    ),
+    probabilityOfSuccess = ProbabilityOfSuccess,
+    lastReportedAdoption = lastReportedAdoption
   ))
 }
 
@@ -135,7 +140,12 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
   draws<-as_tibble(posts$fake_I[,,2])%>%add_column(draw=1:3000)
   names(draws)[1:t_max]<-1:t_max
   draws <-  pivot_longer(draws, c(1:t_max) , names_to = "mod_time")
-
+  
+  # Calculate probability of success and current adoption to send back
+  successfulDraws<-nrow(draws%>%dplyr::filter(mod_time==t_max)%>%filter(value>=targetAdoption/sample_n))
+  allDraws<-nrow(draws%>%dplyr::filter(mod_time==t_max))
+  ProbabilityOfSuccess<-100*(successfulDraws/allDraws)
+  lastReportedAdoption<-tail(csv%>%filter(is.na(csv[,3])==FALSE),n=1)[,3]
 
   #Plot forecast
   p<-ggplot(draws, aes(x=as.integer(mod_time), y=value)) +
@@ -173,13 +183,17 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
     }
   print(p)
 
-  return(mod)
+  return(
+    list(
+      mod=mod,
+      ProbabilityOfSuccess=ProbabilityOfSuccess,
+      lastReportedAdoption=lastReportedAdoption
+    )
+  )
 }
 
 #c<-read.csv("./Module2/ExampleAdoptionK2CSettlements.csv")
 #RunForecast(c, 338, 152)
-
-
 
 
 
