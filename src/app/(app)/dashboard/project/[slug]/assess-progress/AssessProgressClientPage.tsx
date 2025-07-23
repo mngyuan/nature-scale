@@ -1,7 +1,13 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {Calculator, Info, LoaderCircle, LoaderIcon} from 'lucide-react';
+import {
+  ArrowRight,
+  Calculator,
+  Info,
+  LoaderCircle,
+  LoaderIcon,
+} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
@@ -14,6 +20,14 @@ import {createClient} from '@/lib/supabase/client';
 import {useMeasuredElement} from '@/lib/hooks';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {savePlot} from '../actions';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import Link from 'next/link';
 
 const MONITORING_TIME_UNITS = {
   daily: 'days',
@@ -49,6 +63,7 @@ export default function AssessProgressClientPage({
   );
   const [targetAdoption, setTargetAdoption] = useState<string>('');
   const [csvFile, setCSVFile] = useState<File | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const {ref: imageContainerRef, dimensions: imageDimensions} =
     useMeasuredElement();
@@ -109,6 +124,7 @@ export default function AssessProgressClientPage({
           .eq('id', project?.id);
         if (error) throw error;
       }
+      setDialogOpen(true);
     } catch (err) {
       setError('Failed to load plot. Please try again later.');
       console.error(err);
@@ -266,6 +282,35 @@ export default function AssessProgressClientPage({
           </TabsContent>
         </Tabs>
       </div>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Forecast complete</DialogTitle>
+            <DialogDescription>
+              Our model has successfully calculated the adoption forecast and
+              adoption parameters for your project, and the graphs have been
+              saved in your project. You can also view them in the reporting
+              module.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setDialogOpen(false)}
+              className="grow"
+            >
+              <Calculator />
+              Recalculate
+            </Button>
+            <Link href={`/dashboard/project/${project?.id}`} className="grow">
+              <Button onClick={() => setDialogOpen(false)} className="w-full">
+                <ArrowRight />
+                Done
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

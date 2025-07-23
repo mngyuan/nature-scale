@@ -8,6 +8,15 @@ import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
 import {createClient} from '@/lib/supabase/client';
 import {Tables} from '@/lib/supabase/types/supabase';
 import {cn} from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import Link from 'next/link';
+import {ArrowRight, Calculator, NotebookPen} from 'lucide-react';
 
 const DiagnosticItem = ({
   itemKey,
@@ -104,6 +113,7 @@ export default function ContextDiagnosticForm({
       ? project.context_diagnostic
       : {},
   );
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleValueChange = (key: string, value: string) =>
     setFormValues((prevValues) => ({
@@ -124,11 +134,13 @@ export default function ContextDiagnosticForm({
       })
       .eq('id', project?.id);
     if (error) throw error;
+
+    setDialogOpen(true);
   };
 
   return (
     <>
-      <form className="flex flex-col grow px-8 pb-8 w-full" onSubmit={onSubmit}>
+      <form className="flex flex-col grow px-8 pb-8 w-full">
         <ul className="space-y-4">
           {CONTEXT_DIAGNOSTIC_ITEMS &&
             Object.entries(CONTEXT_DIAGNOSTIC_ITEMS).map(([key, item]) => (
@@ -146,14 +158,42 @@ export default function ContextDiagnosticForm({
         </ul>
         <div>
           <Button
-            role="submit"
+            type="button"
             className="mt-4 mr-4"
             disabled={Object.keys(formValues).length < 1}
+            onClick={onSubmit}
           >
             Submit
           </Button>
         </div>
       </form>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Suggestions ready</DialogTitle>
+            <DialogDescription>
+              Your answers have been saved. You can now view suggestions for
+              scaling your project based on the context diagnostic you provided.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setDialogOpen(false)}
+              className="grow"
+            >
+              <NotebookPen />
+              Change answers
+            </Button>
+            <Link href={`/dashboard/project/${project?.id}`} className="grow">
+              <Button onClick={() => setDialogOpen(false)} className="w-full">
+                <ArrowRight />
+                Done
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

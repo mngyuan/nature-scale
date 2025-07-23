@@ -147,7 +147,7 @@ export default async function ScalingSuggestionsPage({
             )}
             {project?.details?.targetAdoption && (
               <p className="text-sm text-muted-foreground">
-                You stated your goal was to reach
+                You stated your goal was to reach{' '}
                 {project.details.targetAdoption}
               </p>
             )}
