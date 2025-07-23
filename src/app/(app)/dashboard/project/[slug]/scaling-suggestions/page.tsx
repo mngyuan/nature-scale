@@ -12,6 +12,7 @@ import {Button} from '@/components/ui/button';
 import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
 import {getPlot} from '../actions';
+import PrintButton from '@/components/PrintButton';
 
 export default async function ScalingSuggestionsPage({
   params,
@@ -197,8 +198,10 @@ export default async function ScalingSuggestionsPage({
               </div>
             )}
           </div>
+          <div className="print:hidden">
+            <PrintButton />
+          </div>
         </div>
-        <div className="flex flex-col"></div>
       </div>
     </main>
   );
