@@ -104,3 +104,22 @@ export async function getSignedStorageURL(
 
   return data.signedUrl;
 }
+
+export async function downloadFromBucket(
+  supabase: SupabaseClient<Database>,
+  bucket: string,
+  path: string,
+) {
+  try {
+    const {data, error} = await supabase.storage.from(bucket).download(path);
+    if (error) {
+      throw error;
+    }
+
+    const url = URL.createObjectURL(data);
+    return url;
+  } catch (error) {
+    console.error('Error downloading profile picture: ', error);
+    return null;
+  }
+}

@@ -9,21 +9,16 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {Button} from '@/components/ui/button';
 import {ChevronsUpDown, UserPlus} from 'lucide-react';
-import {createClient} from '@/lib/supabase/client';
-import {
-  getPublicStorageURL,
-  getProfileInitials,
-  getProfileDisplayName,
-} from '@/lib/utils';
+import {getProfileDisplayName} from '@/lib/utils';
 import {useUpdateStates} from '@/lib/hooks';
 import {
   searchVisibleUsers,
   VisibleUsersQueryResult,
 } from '@/app/(app)/dashboard/project/[slug]/actions';
+import ProfileHead from './ProfileHead';
 
 interface UserSearchProps {
   onUserSelect(user: VisibleUsersQueryResult): void;
@@ -38,7 +33,6 @@ export default function UserSearch({
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<VisibleUsersQueryResult[]>([]);
   const {loading, setLoading} = useUpdateStates();
-  const supabase = createClient();
 
   useEffect(() => {
     async function searchUsers() {
@@ -86,12 +80,12 @@ export default function UserSearch({
             onValueChange={setSearchTerm}
           />
           <CommandList>
-            <CommandEmpty>
+            <CommandEmpty className="px-6 pt-4 pb-3 text-sm">
               {loading
                 ? 'Searching...'
                 : searchTerm
                   ? 'No users found.'
-                  : 'Type to search users.'}
+                  : 'Users with their profile set to visible will appear here.'}
             </CommandEmpty>
             <CommandGroup>
               {users.map((user) => (
@@ -102,23 +96,7 @@ export default function UserSearch({
                   className="cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={
-                          user.profile_picture_url
-                            ? getPublicStorageURL(
-                                supabase,
-                                'profile-pictures',
-                                user.profile_picture_url,
-                              ) || undefined
-                            : undefined
-                        }
-                        alt={getProfileDisplayName(user)}
-                      />
-                      <AvatarFallback>
-                        {getProfileInitials(user)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <ProfileHead profile={user} className="h-8 w-8" />
                     <span>{getProfileDisplayName(user)}</span>
                   </div>
                 </CommandItem>

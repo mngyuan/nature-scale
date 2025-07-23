@@ -7,6 +7,7 @@ import {Label} from '@/components/ui/label';
 import {User} from '@supabase/supabase-js';
 import {Tables} from '@/lib/supabase/types/supabase';
 import {useUpdateStates} from '@/lib/hooks';
+import {downloadFromBucket} from '@/lib/utils';
 
 export default function ProfilePictureForm({
   user,
@@ -24,19 +25,8 @@ export default function ProfilePictureForm({
 
   useEffect(() => {
     async function downloadImage(path: string) {
-      try {
-        const {data, error} = await supabase.storage
-          .from('profile-photos')
-          .download(path);
-        if (error) {
-          throw error;
-        }
-
-        const url = URL.createObjectURL(data);
-        setProfilePictureURL(url);
-      } catch (error) {
-        console.error('Error downloading profile picture: ', error);
-      }
+      const url = await downloadFromBucket(supabase, 'profile-photos', path);
+      if (url) setProfilePictureURL(url);
     }
 
     if (profile?.profile_picture_url)
@@ -59,7 +49,8 @@ export default function ProfilePictureForm({
 
     const file = event.target.files[0];
     const fileExt = file.name.split('.').pop();
-    const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+    // Allow only one profile picture per user
+    const filePath = `${user.id}.${fileExt}`;
 
     const {error: uploadError} = await supabase.storage
       .from('profile-photos')

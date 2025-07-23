@@ -12,27 +12,43 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
-import {getProfile, getPublicStorageURL} from '@/lib/utils';
+import {
+  getProfile,
+  getProfileDisplayName,
+  getProfileInitials,
+  getPublicStorageURL,
+} from '@/lib/utils';
 import APIStatusIndicator from '@/components/APIStatusIndicator';
 import {redirect} from 'next/navigation';
 import {Tables} from '@/lib/supabase/types/supabase';
 import {Metadata} from 'next';
 import NUXDialog from '@/components/NUXDialog';
+import {getProjectMembers} from './project/[slug]/actions';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import ProfileHead from '@/components/ProfileHead';
 
-const PeopleList = ({
-  children,
+const PeopleList = async ({
+  project,
 }: {
-  children: React.ReactNode;
-}): React.JSX.Element => (
-  <div className="flex flex-row -space-x-2">{children}</div>
-);
-const ProfileHead = ({src}: {src: string}): React.JSX.Element => (
-  <div className="w-12 h-12 border-grey-500 border-1 rounded-full">
-    <div className="rounded-full overflow-hidden border-white border-3">
-      <Image src={src} alt="Profile picture" width={48} height={48} />
+  project: Tables<'projects'>;
+}): Promise<React.JSX.Element> => {
+  const projectMembers = await getProjectMembers(project.id);
+
+  return (
+    <div className="flex flex-row -space-x-2">
+      {projectMembers.map(
+        (member) =>
+          member.profiles && (
+            <ProfileHead
+              key={member.id}
+              profile={member.profiles}
+              className="h-10 w-10"
+            />
+          ),
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 const ProjectCard = ({
   project,
@@ -54,12 +70,7 @@ const ProjectCard = ({
       <CardDescription>{project.description}</CardDescription>
     </CardHeader>
     <CardContent>
-      <PeopleList>
-        <ProfileHead src="/matt.jpeg" />
-        <ProfileHead src="/morena.jpeg" />
-        <ProfileHead src="/marco.jpeg" />
-        <ProfileHead src="/kevin.jpeg" />
-      </PeopleList>
+      <PeopleList project={project} />
     </CardContent>
     <CardFooter>
       <Link href={`/dashboard/project/${project.id}`} className="w-full">

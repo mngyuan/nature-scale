@@ -54,6 +54,7 @@ export default function CollaboratorManager({
     if (isOwner === false) {
       return;
     }
+    // TODO: handle case where user is already a member
     const result = await addProjectMember(projectId, user.id);
     if (result.success) {
       loadMembers();
@@ -107,14 +108,14 @@ export default function CollaboratorManager({
                         member.profiles.profile_picture_url
                           ? getPublicStorageURL(
                               supabase,
-                              'profile-pictures',
+                              'profile-photos',
                               member.profiles.profile_picture_url,
                             ) || undefined
                           : undefined
                       }
                       alt={getProfileDisplayName(member.profiles)}
                     />
-                    <AvatarFallback>
+                    <AvatarFallback className="select-none">
                       {getProfileInitials(member.profiles)}
                     </AvatarFallback>
                   </Avatar>
@@ -156,4 +157,3 @@ export default function CollaboratorManager({
     </div>
   );
 }
-
