@@ -18,7 +18,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex flex-col items-center min-h-screen">
-      <header className="flex flex-row items-center w-full p-4 justify-between border-b border-gray-200">
+      <header className="flex flex-row items-center w-full p-4 justify-between border-b border-gray-200 print:hidden">
         <Link
           href="/dashboard"
           className="flex flex-row items-center space-x-2"
@@ -66,7 +66,7 @@ export default async function DashboardLayout({
         <Breadcrumbs />
         {children}
       </ProjectProvider>
-      <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200">
+      <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200 print:hidden">
         <div className="text-sm flex flex-row space-x-4">
           <a target="_blank" rel="noopener noreferrer">
             © 2025 Scale4Nature, LTD

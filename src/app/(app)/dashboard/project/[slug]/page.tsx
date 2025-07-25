@@ -17,6 +17,8 @@ import {createClient} from '@/lib/supabase/server';
 import {Button} from '@/components/ui/button';
 import {Metadata} from 'next';
 import {redirect} from 'next/navigation';
+import {titleCase} from 'title-case';
+import ProjectSummary from '@/components/ProjectSummary';
 
 export default async function ProjectPage({
   params,
@@ -49,7 +51,7 @@ export default async function ProjectPage({
           </Link>
         </div>
         <div className="grow" />
-        <div className="w-full max-w-2xl space-y-2 text-white space-x-1 flex flex-col lg:block">
+        <div className="w-full max-w-2xl space-y-2 space-x-1 flex flex-col lg:block text-white">
           {[...(project?.details?.resourcesType || [])]?.map(
             (resource: string) => (
               <Badge key={resource}>
@@ -68,7 +70,7 @@ export default async function ProjectPage({
               : 'ongoing'}
           </span>
           <h2 className="text-3xl font-medium">
-            {formatPathCrumb(project?.name)}
+            {project?.name ? titleCase(project?.name) : ''}
           </h2>
           <div>{project?.description}</div>
         </div>

@@ -6,7 +6,7 @@ import {
   LightbulbIcon,
   Sun,
 } from 'lucide-react';
-import {CONTEXT_DIAGNOSTIC_ITEMS} from '@/lib/constants';
+import {CONTEXT_DIAGNOSTIC_ITEMS, RESOURCE_TYPES} from '@/lib/constants';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 import Image from 'next/image';
@@ -15,6 +15,9 @@ import {getPlot} from '../actions';
 import PrintButton from '@/components/PrintButton';
 import {asPercentage, formatAdoptionUnit} from '@/lib/utils';
 import {format} from 'date-fns';
+import ProjectSummary from '@/components/ProjectSummary';
+import {Badge} from '@/components/ui/badge';
+import {titleCase} from 'title-case';
 
 export default async function SummaryReportPage({
   params,
@@ -93,90 +96,100 @@ export default async function SummaryReportPage({
             </ul>
           </div>
         )}
-        {(aoiPlot || potentialAdoptersPlot || forecastPlot) && (
-          <div className="grow gap-2">
-            {aoiPlot && (
-              <Image
-                src={aoiPlot || ''}
-                alt="Area of Interest Plot"
-                width={400}
-                height={300}
-                className="rounded-lg"
-              />
-            )}
-            {potentialAdoptersPlot && (
-              <Image
-                src={potentialAdoptersPlot || ''}
-                alt="Potential Adopters Plot"
-                width={400}
-                height={300}
-                className="rounded-lg"
-              />
-            )}
-            {forecastPlot && (
-              <Image
-                src={forecastPlot || ''}
-                alt="Forecast Plot"
-                width={400}
-                height={300}
-                className="rounded-lg"
-              />
-            )}
-          </div>
-        )}
       </div>
     ) : null;
 
   return (
-    <main className="flex flex-col grow w-full">
-      <h2 className="p-8 text-3xl">Suggestions to improve scale</h2>
+    <main className="flex flex-col grow w-full print:text-sm">
+      <h2 className="p-8 pb-4 text-3xl print:text-2xl">
+        Summary Report:{' '}
+        <b className="font-medium">
+          {project?.name ? titleCase(project?.name) : ''}
+        </b>
+      </h2>
       <div className="px-8 pb-8 space-x-6">
         <div className="flex flex-col space-y-4">
-          <div>
-            {project?.details?.potentialAdopters && (
-              <p className="text-sm text-muted-foreground">
-                Your potential pool of adopters is{' '}
-                {project.details.potentialAdopters}{' '}
-                {formatAdoptionUnit(project, true)}.
-              </p>
+          <div className="space-y-2 space-x-1 flex flex-col lg:block">
+            {[...(project?.details?.resourcesType || [])]?.map(
+              (resource: string) => (
+                <Badge key={resource}>
+                  {RESOURCE_TYPES[resource].label || resource}
+                </Badge>
+              ),
             )}
-            {project?.details?.targetAdoption && (
-              <p className="text-sm text-muted-foreground">
-                You stated your goal was to reach{' '}
-                {project.details.targetAdoption}
-                {project.details.potentialAdopters
-                  ? ` (${asPercentage(
-                      project.details.targetAdoption,
-                      project.details.potentialAdopters,
-                    )}) of your pool of potential ${formatAdoptionUnit(project, true)}.`
-                  : null}
-              </p>
-            )}
-            {project?.details?.growth?.lastReportedAdoption && (
-              <p className="text-sm text-muted-foreground">
-                Currently you have reached{' '}
-                {project.details.growth.lastReportedAdoption}
-                {project.details.potentialAdopters
-                  ? ` (${asPercentage(
-                      project.details.growth.lastReportedAdoption,
-                      project.details.potentialAdopters,
-                    )}) of your potential pool of ${formatAdoptionUnit(project, true)}`
-                  : null}
-                .
-              </p>
-            )}
-            {project?.details?.growth?.probabilityOfSuccess && (
-              <p className="text-sm text-muted-foreground">
-                Given current trends, we project that you have{' '}
-                {project.details.growth.probabilityOfSuccess}% probability that
-                you will reach or exceed your target
-                {project.details.endingDate
-                  ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
-                  : '.'}
-                .
-              </p>
-            )}
+            <span className="text-xs pl-1">
+              {project?.details?.monitoringFrequency &&
+                `Monitoring ${project.details.monitoringFrequency} from `}
+              {project?.details?.startingDate
+                ? `${format(project?.details?.startingDate, 'MMMM dd, yyyy')} to `
+                : 'Starting date not specified to '}
+              {project?.details?.endingDate
+                ? format(project?.details?.endingDate, 'MMMM dd, yyyy')
+                : 'ongoing'}
+            </span>
+            <div className="text-muted-foreground">{project?.description}</div>
           </div>
+
+          {project?.details?.potentialAdopters && (
+            <p className="text-sm">
+              Your potential pool of adopters is{' '}
+              {project.details.potentialAdopters}{' '}
+              {formatAdoptionUnit(project, true)}.
+            </p>
+          )}
+          {aoiPlot && (
+            <Image
+              src={aoiPlot || ''}
+              alt="Area of Interest Plot"
+              width={800}
+              height={600}
+              className="rounded-lg"
+            />
+          )}
+          {project?.details?.targetAdoption && (
+            <p className="text-sm">
+              You stated your goal was to reach {project.details.targetAdoption}
+              {project.details.potentialAdopters
+                ? ` (${asPercentage(
+                    project.details.targetAdoption,
+                    project.details.potentialAdopters,
+                  )}) of your pool of potential ${formatAdoptionUnit(project, true)}.`
+                : null}
+            </p>
+          )}
+          {project?.details?.growth?.lastReportedAdoption && (
+            <p className="text-sm">
+              Currently you have reached{' '}
+              {project.details.growth.lastReportedAdoption}
+              {project.details.potentialAdopters
+                ? ` (${asPercentage(
+                    project.details.growth.lastReportedAdoption,
+                    project.details.potentialAdopters,
+                  )}) of your potential pool of ${formatAdoptionUnit(project, true)}`
+                : null}
+              .
+            </p>
+          )}
+          {forecastPlot && (
+            <Image
+              src={forecastPlot || ''}
+              alt="Forecast Plot"
+              width={800}
+              height={600}
+              className="rounded-lg"
+            />
+          )}
+          {project?.details?.growth?.probabilityOfSuccess && (
+            <p className="text-sm">
+              Given current trends, we project that you have{' '}
+              {project.details.growth.probabilityOfSuccess}% probability that
+              you will reach or exceed your target
+              {project.details.endingDate
+                ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
+                : '.'}
+              .
+            </p>
+          )}
           {insightsSection}
           <div className="space-y-2">
             <div className="flex flex-row items-center space-x-1">

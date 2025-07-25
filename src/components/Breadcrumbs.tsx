@@ -39,7 +39,7 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <nav className="w-full flex flex-row p-4 justify-between border-b border-gray-200">
+    <nav className="w-full flex flex-row p-4 justify-between border-b border-gray-200 print:hidden">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
