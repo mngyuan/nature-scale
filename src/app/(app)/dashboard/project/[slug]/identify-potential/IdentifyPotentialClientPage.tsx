@@ -41,7 +41,7 @@ import {createClient} from '@/lib/supabase/client';
 import {Checkbox} from '@/components/ui/checkbox';
 import {useMeasuredElement} from '@/lib/hooks';
 import Link from 'next/link';
-import {savePlot} from '../actions';
+import {savePlot, updateLastUpdated} from '../actions';
 
 const SETTLEMENT_SIZES = [
   '1-50',
@@ -809,6 +809,7 @@ const Stage2 = ({
         `data:${respJSON.plot.type};base64,${respJSON.plot.base64[0]}`,
       );
       savePlot(project, 'potential-adopters', respJSON.plot.base64[0]);
+      updateLastUpdated(project, 'identifyPotential');
       setPotentialAdopters(respJSON.potentialAdopters);
       setDialogOpen(true);
     } catch (err) {
@@ -852,6 +853,7 @@ const Stage2 = ({
         throw new Error('Failed to fetch plot');
       }
       const respJSON = await response.json();
+      updateLastUpdated(project, 'identifyPotential');
       setPotentialAdopters(respJSON[0]);
       setDialogOpen(true);
     } catch (err) {

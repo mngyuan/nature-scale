@@ -1,4 +1,4 @@
-import {ProjectDetails} from './custom';
+import {ProjectDetails, ProjectLastUpdated} from './custom';
 
 export type Json =
   | string
@@ -113,7 +113,9 @@ export type Database = {
           description: string | null;
           details: ProjectDetails | null;
           id: number;
+          last_updated: ProjectLastUpdated | null;
           name: string;
+          owner_id: string | null;
           profile_id: string | null;
           project_image_url: string | null;
         };
@@ -124,7 +126,9 @@ export type Database = {
           description?: string | null;
           details?: ProjectDetails | null;
           id?: number;
+          last_updated?: ProjectLastUpdated | null;
           name?: string;
+          owner_id?: string | null;
           profile_id?: string | null;
           project_image_url?: string | null;
         };
@@ -135,7 +139,9 @@ export type Database = {
           description?: string | null;
           details?: ProjectDetails | null;
           id?: number;
+          last_updated?: ProjectLastUpdated | null;
           name?: string;
+          owner_id?: string | null;
           profile_id?: string | null;
           project_image_url?: string | null;
         };

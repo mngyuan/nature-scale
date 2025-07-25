@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import Link from 'next/link';
 import {ArrowRight, Calculator, NotebookPen} from 'lucide-react';
+import {updateLastUpdated} from '@/app/(app)/dashboard/project/[slug]/actions';
 
 const DiagnosticItem = ({
   itemKey,
@@ -135,6 +136,7 @@ export default function ContextDiagnosticForm({
       .eq('id', project?.id);
     if (error) throw error;
 
+    updateLastUpdated(project, 'contextDiagnostic');
     setDialogOpen(true);
   };
 

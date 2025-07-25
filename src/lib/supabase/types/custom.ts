@@ -18,6 +18,12 @@ export type ProjectDetails = {
   currentAdoption?: number;
 };
 
+export type ProjectLastUpdated = {
+  identifyPotential?: string;
+  assessProgress?: string;
+  contextDiagnostic?: string;
+};
+
 export type PlotType =
   | 'area-of-interest'
   | 'potential-adopters'

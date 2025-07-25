@@ -1,7 +1,7 @@
 'use server';
 
 import {createClient} from '@/lib/supabase/server';
-import {PlotType} from '@/lib/supabase/types/custom';
+import {PlotType, ProjectLastUpdated} from '@/lib/supabase/types/custom';
 import {Database, Tables} from '@/lib/supabase/types/supabase';
 import {SupabaseClient} from '@supabase/supabase-js';
 import {getSignedStorageURL} from '@/lib/utils';
@@ -166,5 +166,34 @@ export async function getPlot(
       if (error.message !== 'Object not found') console.error(error);
     }
     return null;
+  }
+}
+
+export async function updateLastUpdated(
+  project: Tables<'projects'> | undefined,
+  module: keyof NonNullable<ProjectLastUpdated>,
+) {
+  if (!project || !project.id) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const {data, error} = await supabase
+    .from('projects')
+    .update({
+      last_updated: {
+        ...project.last_updated,
+        [module]: new Date().toISOString(),
+      },
+    })
+    .eq('id', Number(project?.id))
+    .select();
+  if (error) {
+    console.error(`Error updating last updated for ${module}:`, error);
+    // TODO: display to user
+    // alert('Error updating potential adopters');
+  } else {
+    // TODO: show a success toast?
+    console.log(`last updated updated successfully for ${module}`, data);
   }
 }

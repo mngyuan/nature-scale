@@ -19,7 +19,7 @@ import StandardReportingFormLink from '@/components/StandardReportingFormLink';
 import {createClient} from '@/lib/supabase/client';
 import {useMeasuredElement} from '@/lib/hooks';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
-import {savePlot} from '../actions';
+import {savePlot, updateLastUpdated} from '../actions';
 import {
   Dialog,
   DialogContent,
@@ -106,6 +106,7 @@ export default function AssessProgressClientPage({
         'forecast-parameters',
         respJSON.parameters.plot.base64[0],
       );
+      updateLastUpdated(project, 'assessProgress');
       if (project) {
         const {error} = await supabase
           .from('projects')

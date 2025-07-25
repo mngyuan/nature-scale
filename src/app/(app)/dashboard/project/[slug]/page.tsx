@@ -4,6 +4,7 @@ import {RESOURCE_TYPES} from '@/lib/constants';
 import {formatPathCrumb, getPublicStorageURL} from '@/lib/utils';
 import {
   BookOpenCheck,
+  Check,
   Flag,
   Settings,
   TrendingUp,
@@ -90,6 +91,13 @@ export default async function ProjectPage({
                     <Flag size={48} />
                   </div>
                   Identify scaling potential and targets
+                  {project?.last_updated?.identifyPotential && (
+                    <div className="text-muted-foreground text-xs mt-2 flex flex-row items-center">
+                      Last updated{' '}
+                      {format(project.last_updated.identifyPotential, 'PPPp')}
+                      <Check className="inline-block ml-2 bg-green-500 rounded-xl p-1 text-white" />
+                    </div>
+                  )}
                 </CardTitle>
               </CardHeader>
             </Link>
@@ -102,6 +110,13 @@ export default async function ProjectPage({
                     <TrendingUp size={48} />
                   </div>
                   Monitor current progress and trajectory
+                  {project?.last_updated?.assessProgress && (
+                    <div className="text-muted-foreground text-xs mt-2 flex flex-row items-center">
+                      Last updated{' '}
+                      {format(project.last_updated.assessProgress, 'PPPp')}
+                      <Check className="inline-block ml-2 bg-green-500 rounded-xl p-1 text-white" />
+                    </div>
+                  )}
                 </CardTitle>
               </CardHeader>
             </Link>
@@ -114,23 +129,31 @@ export default async function ProjectPage({
                     <BookOpenCheck size={48} />
                   </div>
                   Take a context diagnostic
-                </CardTitle>
-              </CardHeader>
-            </Link>
-          </Card>
-          <Card className="mb-4 lg:basis-3xs grow">
-            <Link href={`/dashboard/project/${slug}/scaling-suggestions`}>
-              <CardHeader>
-                <CardTitle>
-                  <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
-                    <WandSparkles size={48} />
-                  </div>
-                  Get scaling suggestions
+                  {project?.last_updated?.contextDiagnostic && (
+                    <div className="text-muted-foreground text-xs mt-2 flex flex-row items-center">
+                      Last updated{' '}
+                      {format(project.last_updated.contextDiagnostic, 'PPPp')}
+                      <Check className="inline-block ml-2 bg-green-500 rounded-xl p-1 text-white" />
+                    </div>
+                  )}
                 </CardTitle>
               </CardHeader>
             </Link>
           </Card>
         </div>
+        <div className="text-xl font-bold mb-4">View the results</div>
+        <Card className="mb-4 grow">
+          <Link href={`/dashboard/project/${slug}/scaling-suggestions`}>
+            <CardHeader>
+              <CardTitle className="">
+                <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
+                  <WandSparkles size={48} />
+                </div>
+                Summary Report
+              </CardTitle>
+            </CardHeader>
+          </Link>
+        </Card>
       </div>
     </main>
   );
