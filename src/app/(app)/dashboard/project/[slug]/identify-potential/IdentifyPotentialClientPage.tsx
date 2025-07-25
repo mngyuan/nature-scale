@@ -978,7 +978,8 @@ const Stage2 = ({
             onValueChange={(values) => setBufferAmount(values[0])}
             disabled={!useBuffer}
           />
-          {engagementType === 'settlement' ? (
+          {bufferAmount > 0 ? (
+            // TODO: this introduces layout shift
             <p className="text-xs text-muted-foreground">
               Using a buffer will cause the calculation to take longer than
               usual.

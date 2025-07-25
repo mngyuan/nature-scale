@@ -141,7 +141,7 @@ export default function ContextDiagnosticForm({
   return (
     <>
       <form className="flex flex-col grow px-8 pb-8 w-full">
-        <ul className="space-y-4">
+        <ul className="space-y-8">
           {CONTEXT_DIAGNOSTIC_ITEMS &&
             Object.entries(CONTEXT_DIAGNOSTIC_ITEMS).map(([key, item]) => (
               <li key={key}>

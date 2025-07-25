@@ -169,7 +169,7 @@ export default async function ScalingSuggestionsPage({
               <p className="text-sm text-muted-foreground">
                 Given current trends, we project that you have{' '}
                 {project.details.growth.probabilityOfSuccess}% probability that
-                you will reach of exceed you target
+                you will reach or exceed your target
                 {project.details.endingDate
                   ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
                   : '.'}
