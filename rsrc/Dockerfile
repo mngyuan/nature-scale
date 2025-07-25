@@ -13,6 +13,8 @@ RUN R -e "install.packages(c('tidyverse', 'sf', 'terra', 'zoo'))"
 RUN R -e "install.packages(c('logger','tictoc', 'fs'))"
 # For parallel processing
 RUN R -e "install.packages(c('future', 'promises'))"
+# For image trimming
+RUN R -e "install.packages(c('magick'))"
 
 # FROM rstudio/plumber:latest AS runtime
 # COPY --from=builder /usr/local/lib/R/site-library/ /usr/local/lib/R/site-library/

@@ -1,5 +1,6 @@
 library(tidyverse)
 library(sf)
+library(magick)
 
 plotAoiAPIWrapper<-function(aoi, width=800, height=600) {
   # Write to an image file for returning to the api
@@ -13,6 +14,12 @@ plotAoiAPIWrapper<-function(aoi, width=800, height=600) {
   dev.off()
   plot_data <- readBin(img_file, "raw", n = file.info(img_file)$size)
   plot_base64 <- jsonlite::base64_enc(plot_data)
+  
+  img <-magick::image_read(img_file)
+  trimmed_img <- magick::image_trim(img)
+  trimmed_img_data <- magick::image_write(trimmed_img)
+  trimmed_img_base64 <- jsonlite::base64_enc(trimmed_img_data)
+
   # Unlink the temporary image file
   unlink(img_file)
 
@@ -20,7 +27,7 @@ plotAoiAPIWrapper<-function(aoi, width=800, height=600) {
     r = terra::wrap(r), # Allows us to send over API for parallel
     plot = list(
       type = "image/png",
-      base64 = plot_base64
+      base64 = trimmed_img_base64
     )
   ))
 }
