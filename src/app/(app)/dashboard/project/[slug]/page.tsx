@@ -143,7 +143,7 @@ export default async function ProjectPage({
         </div>
         <div className="text-xl font-bold mb-4">View the results</div>
         <Card className="mb-4 grow">
-          <Link href={`/dashboard/project/${slug}/scaling-suggestions`}>
+          <Link href={`/dashboard/project/${slug}/summary-report`}>
             <CardHeader>
               <CardTitle className="">
                 <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">

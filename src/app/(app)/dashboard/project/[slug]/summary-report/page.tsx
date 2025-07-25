@@ -16,7 +16,7 @@ import PrintButton from '@/components/PrintButton';
 import {asPercentage, formatAdoptionUnit} from '@/lib/utils';
 import {format} from 'date-fns';
 
-export default async function ScalingSuggestionsPage({
+export default async function SummaryReportPage({
   params,
 }: {
   params: Promise<{slug: string}>;
