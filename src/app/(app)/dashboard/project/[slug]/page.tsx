@@ -18,7 +18,6 @@ import {Button} from '@/components/ui/button';
 import {Metadata} from 'next';
 import {redirect} from 'next/navigation';
 import {titleCase} from 'title-case';
-import ProjectSummary from '@/components/ProjectSummary';
 
 export default async function ProjectPage({
   params,

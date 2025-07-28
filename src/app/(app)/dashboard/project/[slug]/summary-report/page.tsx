@@ -15,7 +15,6 @@ import {getPlot} from '../actions';
 import PrintButton from '@/components/PrintButton';
 import {asPercentage, formatAdoptionUnit} from '@/lib/utils';
 import {format} from 'date-fns';
-import ProjectSummary from '@/components/ProjectSummary';
 import {Badge} from '@/components/ui/badge';
 import {titleCase} from 'title-case';
 
