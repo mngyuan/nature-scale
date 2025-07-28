@@ -1,4 +1,3 @@
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 import {getProject} from '../actions';
 import {
   ArrowRight,
@@ -48,7 +47,7 @@ export default async function SummaryReportPage({
       CONTEXT_DIAGNOSTIC_ITEMS[key].title,
       CONTEXT_DIAGNOSTIC_ITEMS[key].recommendations,
     ])
-    .reduce((agg: Record<string, Array<any>>, cur) => {
+    .reduce((agg: Record<string, string[][]>, cur) => {
       const [_, title, recommendations] = cur;
       if (!agg[title]) {
         agg[title] = [];
