@@ -66,7 +66,25 @@ export default async function DashboardLayout({
         <Breadcrumbs />
         {children}
       </ProjectProvider>
-      <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200 print:hidden">
+      <footer className="w-full flex flex-row items-center p-4 justify-between border-t border-gray-200 text-muted-foreground print:hidden">
+        <div className="space-x-2">
+          <Image
+            className={`${styles.logo} inline`}
+            src="/Imperial logo.png"
+            alt="scale4nature logo"
+            width={2142 / 20}
+            height={562 / 20}
+            priority
+          />
+          <Image
+            className={`${styles.logo} inline`}
+            src="/Leverhulme_Trust_CMYK_black.jpg"
+            alt="scale4nature logo"
+            width={1418 / 10}
+            height={474 / 10}
+            priority
+          />
+        </div>
         <div className="text-sm flex flex-row space-x-4">
           <a target="_blank" rel="noopener noreferrer">
             © 2025 Scale4Nature, LTD
