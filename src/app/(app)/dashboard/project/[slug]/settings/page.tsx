@@ -4,6 +4,7 @@ import {createClient} from '@/lib/supabase/server';
 import Link from 'next/link';
 import CreateProjectForm from '@/components/CreateProjectForm';
 import CollaboratorManager from '@/components/CollaboratorManager';
+import ProjectDeleteButton from '@/components/ProjectDeleteButton';
 
 export default async function SettingsPage({
   params,
@@ -51,6 +52,15 @@ export default async function SettingsPage({
             />
           </div>
         )}
+        {
+          // The example project should not be deleted
+          project && project.id != 1 && (
+            <div>
+              <h3 className="text-2xl mb-4">Delete</h3>
+              <ProjectDeleteButton project={project} />
+            </div>
+          )
+        }
       </div>
     </main>
   );

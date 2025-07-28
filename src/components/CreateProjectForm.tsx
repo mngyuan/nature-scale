@@ -164,6 +164,7 @@ export default function CreateProjectForm({
               startingDate: data.startingDate,
               endingDate: data.endingDate,
             },
+            owner_id: user?.id || null,
           },
         ]);
 
