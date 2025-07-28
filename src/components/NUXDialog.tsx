@@ -102,16 +102,16 @@ export default function NUXDialog({
                 <DialogTitle>Feedback welcome!</DialogTitle>
                 <MailQuestion className="w-24 h-24 mx-auto mb-2 grow" />
                 <DialogDescription>
-                  Thanks for using this early access version of Scale4Nature.
+                  Thanks for using this beta version of Scale4Nature.
                   <br />
                   <br />
                   If you have any questions, comments, or concerns, please send
                   any feedback (screenshots welcome) to{' '}
                   <Link
-                    href="mailto:kevin.lee@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
+                    href="mailto:m.mills@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
                     className="hover:underline"
                   >
-                    kevin.lee@imperial.ac.uk
+                    m.mills@imperial.ac.uk
                   </Link>
                   .
                 </DialogDescription>

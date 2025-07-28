@@ -32,7 +32,7 @@ export default async function DashboardLayout({
             priority
           />
           <span className="text-blue-300 text-xs lg:text-sm font-bold">
-            Early Access
+            Beta
           </span>
         </Link>
         <div className="flex flex-row space-x-4">
@@ -75,7 +75,7 @@ export default async function DashboardLayout({
             FAQs
           </Link>
           <Link
-            href="mailto:kevin.lee@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
+            href="mailto:m.mills@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
             className="hover:underline"
           >
             Feedback
