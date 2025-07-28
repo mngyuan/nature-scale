@@ -22,18 +22,17 @@ import {updateLastUpdated} from '@/app/(app)/dashboard/project/[slug]/actions';
 const DiagnosticItem = ({
   itemKey,
   itemValue,
-  description,
   onChange,
+  title,
 }: {
   title?: string;
   itemKey: string;
   itemValue: string;
-  description?: string;
   onChange: (key: string, value: string) => void;
 }) => {
   return (
     <div className="flex flex-col space-y-4">
-      {description && <p className="text-sm font-medium">{description}</p>}
+      {title && <p className="text-sm font-medium">{title}</p>}
       <RadioGroup
         value={itemValue}
         onValueChange={(value) => onChange(itemKey, value)}
@@ -142,7 +141,7 @@ export default function ContextDiagnosticForm({
 
   return (
     <>
-      <form className="flex flex-col grow px-8 pb-8 w-full">
+      <form className="flex flex-col grow px-8 pb-8 w-full space-y-4">
         <ul className="space-y-8">
           {CONTEXT_DIAGNOSTIC_ITEMS &&
             Object.entries(CONTEXT_DIAGNOSTIC_ITEMS).map(([key, item]) => (
@@ -152,7 +151,6 @@ export default function ContextDiagnosticForm({
                   itemKey={key}
                   itemValue={formValues[key] || ''}
                   title={item.title}
-                  description={item.description}
                   onChange={handleValueChange}
                 />
               </li>

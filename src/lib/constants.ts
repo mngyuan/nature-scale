@@ -40,17 +40,16 @@ export const RESOURCE_TYPES: Record<string, {value: number; label: string}> = {
 
 export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
   number,
-  {title: string; description: string; recommendations: string[]}
+  {title: string; recommendations: string[]}
 > = {
   1: {
-    title: 'Overall Benefits vs Costs',
-    description:
-      'Overall, engaging in [the initiative] will be advantageous for participants and outweighs the costs of adoption and implementation',
+    title:
+      'How might the initiative provide greater benefits or less costs and associated risks?',
     recommendations: [
       'Introduce or increase direct payments (e.g., incentives or results-based payments tied to measurable outcomes)',
       'Facilitate access to microfinance or low-interest loans for participants',
       'Support income diversification linked to the initiative (e.g., ecotourism or sustainable value chains)',
-      'Consider ways to reduce risks associated to financial benefits, by guaranteeing minimum payments or facilitating access to established markets',
+      'Consider ways to reduce risks. For example, you can reduce risk for financial benefits by guaranteeing minimum payments or facilitating access to established markets',
       'Co-develop benefit sharing mechanisms to distribute benefits equitably and appropriately, especially when multiple benefits are available',
       'Publicly celebrate adopters at local events or through media',
       'Conduct focus groups to understand how adoption could pose reputational risks and work to minimize those risks',
@@ -58,39 +57,34 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   2: {
-    title: 'Direct Need Alignment',
-    description:
-      '[The initiative] addresses critical needs of potential participants.',
+    title:
+      'What are the adopters needs and priorities and how can the initiative help address them?',
     recommendations: [
       'Conduct needs assessments to identify and prioritize outcomes or areas that communities value most (e.g., through participatory mapping)',
-      'Continuously assess whether the initiative is addressing critical needs',
+      'Continuously assess whether the initiative is addressing',
     ],
   },
   3: {
-    title: 'Timing of Benefits',
-    description:
-      'Key benefits of the [the initiative] are realized quickly for all participants.',
+    title:
+      'How can the initiative be designed to allow the adopters to experience the benefits more quickly?',
     recommendations: [
       'Provide upfront support or "quick wins" like equipment or stipends',
       'Emphasize immediate co-benefits like reduced labor or social recognition',
-      'Introduce companion conservation practices that have immediate, visible benefits (e.g., erosion control or mangrove planting)',
-      'Time visible activities or benefits to local calendars, including market days or holidays',
     ],
   },
   4: {
-    title: 'Observable Benefits',
-    description:
-      'The benefits of participating in the initiative are easily observable.',
+    title:
+      'How can the visibility of the benefits of the initiative be improved?',
     recommendations: [
       'Showcase the environmental benefits through before/after photos or testimonials',
       'Use environmental markers/metrics where possible (e.g., tidal flood distance for mangrove conservation, aboveground biomass for rangelands)',
       'Use livelihood markers/metrics where possible (e.g., numbers of households reporting skipping meals, fish catch, price per livestock)',
+      'Introduce companion conservation practices that have immediate, visible benefits (e.g., erosion control or mangrove planting)',
+      'Time visible activities or benefits to local calendars, including market days or holidays',
     ],
   },
   5: {
-    title: 'Community Visibility',
-    description:
-      'Potential participants can easily see who in their community is participating in [the initiative].',
+    title: 'How can the visibility of the initiative be improved?',
     recommendations: [
       'Offer signs, branded tools, or clothing (e.g., hats or shirts) for adopters',
       'Advertise communities or individuals who have adopted through social or traditional media',
@@ -98,9 +92,8 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   6: {
-    title: 'Adaptability of Intervention',
-    description:
-      '[The initiative] is flexible and can be modified to suit the needs of the participant.',
+    title:
+      'How can the initiative be designed to be easy to modify to fit local priorities and contexts?',
     recommendations: [
       'Increase the number of actions that can be conducted, adapted, or excluded for participants to engage with the initiative',
       'Train local facilitators in adaptive management to modify relevant activities as needed',
@@ -108,9 +101,8 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   7: {
-    title: 'Alignment with Current Practices',
-    description:
-      'Engaging in [the initiative] generally requires very few and/or very easy modifications to the current practices of participants.',
+    title:
+      'How can the initiative be designed to be easy to modify to fit local practices?',
     recommendations: [
       'Tailor interventions to existing livelihood calendars and workflows',
       'Provide inputs/tools that ease the shift in activities (e.g., improved cookstoves or agricultural inputs)',
@@ -118,9 +110,8 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   8: {
-    title: 'Trialability',
-    description:
-      '[The initiative] and/or required actions are easy for participants to trial and later disengage.',
+    title:
+      'How can the initiative be designed so that it can be tested before it is adopted fully?',
     recommendations: [
       'Develop easy and low-risk mechanisms for potential adopters to trial the initiative and later disengage',
       'Create demonstration plots or test sites within communities',
@@ -128,8 +119,8 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   9: {
-    title: 'Simplicity',
-    description: 'The [initiative] is simple to understand and use.',
+    title:
+      'How can the initiative be made easier to understand, access and implement?',
     recommendations: [
       'Increase the simplicity with which the initiative is communicated. Use common metaphors from local languages',
       'Train peer mentors to give 1-minute "elevator pitches" describing the initiative and its benefits',
@@ -137,17 +128,15 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   10: {
-    title: 'Familiarity',
-    description:
-      'The participants are familiar with the initiative and its consequences.',
+    title:
+      "How can the adopter's familiarity with the initiative and its consequences be increased?",
     recommendations: [
       "Look for opportunities to design and implement the initiative so that it engages with the adopter's existing knowledge and experiences",
     ],
   },
   11: {
-    title: 'Economic Wellbeing Prior to Adoption',
-    description:
-      'Potential participants generally have sufficient financial and/or other resources (e.g., access to food) to adopt and implement the initiative.',
+    title:
+      'How can the initiative be designed so that it works within the personnel, budgetary and operational constraints of the adopter?',
     recommendations: [
       'Bundle the initiative with basic services available to entire communities (not just adopters) such as healthcare outreach or school meals',
       'Work with government agencies or NGOs to provide aid, cash transfers, or livelihood starter kits (e.g., seeds or livestock) to communities',
@@ -155,17 +144,15 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   12: {
-    title: 'Empowerment',
-    description:
-      'The potential participants are politically empowered to make decisions on what to adopt and how.',
+    title:
+      'How can the participation and representation of the adopter population in decision making be improved?',
     recommendations: [
       'Support community tenure rights and autonomy over resource management decisions',
     ],
   },
   13: {
-    title: 'Support Systems',
-    description:
-      'Comprehensive and reliable technical support (e.g. by NGOs, universities, governments and other organizations) is available to assist participants in adopting and implementing the initiative.',
+    title:
+      'What types of support is needed to allow adopters to effectively engage in adopting and implementing the initiative?',
     recommendations: [
       'Increase the availability or visit frequency with technical support staff (extension support)',
       'Use mobile platforms (e.g., dedicated WhatsApp channel) to provide low-cost, real-time support',
@@ -174,19 +161,16 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   14: {
-    title: 'Local Champions',
-    description:
-      'There are local champions to actively promote [the initiative].',
+    title: 'How can local champions be supported and encouraged?',
     recommendations: [
-      'Recruit individuals with local influence to champion the initiative (e.g., religious or political leaders)',
+      'Recruit individuals with local influence to champion the initiative (e.g., religious or political leaders).',
       'Identify and find compromise with groups or individuals who actively oppose the initiative',
       'Recognize local champions with awards or celebrations',
     ],
   },
   15: {
-    title: 'Social Connectivity',
-    description:
-      'Potential participants have well-developed ways of sharing knowledge to facilitate the spread of information.',
+    title:
+      'How might can the exchange of experiences and knowledge of initiatives amongst adopters and between adopters and other potential adopters be encouraged?',
     recommendations: [
       'Support the establishment of knowledge-sharing networks or meetings between potential adopters',
       'Establish "farmer field schools" or equivalent',
@@ -195,9 +179,8 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   16: {
-    title: 'Proximity',
-    description:
-      'Potential participants are geographically well-connected, driving frequent social interaction.',
+    title:
+      'How can the physical barriers for adopters to communicate amongst themselves and with potential adopters be reduced?',
     recommendations: [
       'Support learning exchanges where individuals are brought to meetings in communities of other potential adopters they might not otherwise interact with',
       'Organize "exposure visits" where potential adopters can visit demonstration sites or successful communities',
@@ -206,13 +189,12 @@ export const CONTEXT_DIAGNOSTIC_ITEMS: Record<
     ],
   },
   17: {
-    title: 'Policy Support',
-    description:
-      'The [initiative] is strongly supported by both regional, national and international policies.',
+    title:
+      'How can the implementation of national policies that support adopters to engage with the conservation initiative be encouraged?',
     recommendations: [
       'Highlight connections to national and global initiatives where possible, e.g., 30 by 30',
       'Seek formal recognition (e.g., awards or certifications) from national or global programs aligned with the initiative',
-      'Invite government representatives or donors to see and promote the initiative on their social media or traditional media channels',
+      'Invite government representatives or donors to see and promote the initiative on their social media or traditional media channels.',
     ],
   },
 } as const;

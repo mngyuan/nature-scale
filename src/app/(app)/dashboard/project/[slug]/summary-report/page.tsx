@@ -35,36 +35,46 @@ export default async function SummaryReportPage({
   );
   const forecastPlot = await getPlot(supabase, project, 'forecast');
 
-  const disagreedItems =
-    project?.context_diagnostic &&
-    Object.entries(project.context_diagnostic)
-      .sort(([key, _]) => Number(key))
-      // Only keep the "disagree" responses
-      .filter(([_, value]) => value === '3')
-      .map(([key, value]) => [Number(key), value]);
-  const disagreeRecommendations = ([key, _]: [
-    number,
-    (typeof CONTEXT_DIAGNOSTIC_ITEMS)[number],
-  ]) =>
-    CONTEXT_DIAGNOSTIC_ITEMS[key] &&
-    CONTEXT_DIAGNOSTIC_ITEMS[key].recommendations.map((recommendation) => (
-      <Tooltip key={recommendation}>
-        <TooltipTrigger className="w-full">
-          <div className="flex flex-row items-center space-between p-4 bg-secondary rounded-lg text-left space-x-2">
-            <LightbulbIcon className="shrink-0 ml-2 mr-4" />
-            <div className="flex flex-col">
-              <div className="uppercase text-xs text-muted-foreground">
-                {CONTEXT_DIAGNOSTIC_ITEMS[key].title}
+  const disagreedItems = project?.context_diagnostic
+    ? Object.entries(project.context_diagnostic)
+        .sort(([key, _]) => Number(key))
+        // Only keep the "disagree" responses
+        .filter(([_, value]) => value === '3')
+        .map(([key, value]) => [Number(key), value])
+    : null;
+  const groupedRecommendations = disagreedItems
+    ?.map(([key, _]) => [
+      key,
+      CONTEXT_DIAGNOSTIC_ITEMS[key].title,
+      CONTEXT_DIAGNOSTIC_ITEMS[key].recommendations,
+    ])
+    .reduce((agg: Record<string, Array<any>>, cur) => {
+      const [_, title, recommendations] = cur;
+      if (!agg[title]) {
+        agg[title] = [];
+      }
+      agg[title].push(recommendations);
+      return agg;
+    }, {});
+  const recommendationGroup = (title: string) => (
+    <div key={title} className="space-y-2">
+      <h3 className="text-md print:text-sm font-semibold">{title}</h3>
+      {groupedRecommendations &&
+        groupedRecommendations[title].map((recommendation) =>
+          recommendation.map((rec: string) => (
+            <div
+              className="flex flex-row items-center space-between p-4 bg-secondary rounded-lg text-left space-x-2"
+              key={rec}
+            >
+              <LightbulbIcon className="shrink-0 ml-2 mr-4" />
+              <div className="flex flex-col">
+                <p className="text-sm">{rec}</p>
               </div>
-              <p className="text-sm">{recommendation}</p>
             </div>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          {CONTEXT_DIAGNOSTIC_ITEMS[key].description}
-        </TooltipContent>
-      </Tooltip>
-    ));
+          )),
+        )}
+    </div>
+  );
 
   const insightsSection =
     project?.details?.growth ||
@@ -129,66 +139,140 @@ export default async function SummaryReportPage({
             <div className="text-muted-foreground">{project?.description}</div>
           </div>
 
-          {project?.details?.potentialAdopters && (
-            <p className="text-sm">
-              Your potential pool of adopters is{' '}
-              {project.details.potentialAdopters}{' '}
-              {formatAdoptionUnit(project, true)}.
-            </p>
-          )}
-          {aoiPlot && (
-            <Image
-              src={aoiPlot || ''}
-              alt="Area of Interest Plot"
-              width={800}
-              height={600}
-              className="rounded-lg"
-            />
-          )}
-          {project?.details?.targetAdoption && (
-            <p className="text-sm">
-              You stated your goal was to reach {project.details.targetAdoption}
-              {project.details.potentialAdopters
-                ? ` (${asPercentage(
-                    project.details.targetAdoption,
-                    project.details.potentialAdopters,
-                  )}) of your pool of potential ${formatAdoptionUnit(project, true)}.`
-                : null}
-            </p>
-          )}
-          {project?.details?.growth?.lastReportedAdoption && (
-            <p className="text-sm">
-              Currently you have reached{' '}
-              {project.details.growth.lastReportedAdoption}
-              {project.details.potentialAdopters
-                ? ` (${asPercentage(
-                    project.details.growth.lastReportedAdoption,
-                    project.details.potentialAdopters,
-                  )}) of your potential pool of ${formatAdoptionUnit(project, true)}`
-                : null}
-              .
-            </p>
-          )}
-          {forecastPlot && (
-            <Image
-              src={forecastPlot || ''}
-              alt="Forecast Plot"
-              width={800}
-              height={600}
-              className="rounded-lg"
-            />
-          )}
-          {project?.details?.growth?.probabilityOfSuccess && (
-            <p className="text-sm">
-              Given current trends, we project that you have{' '}
-              {project.details.growth.probabilityOfSuccess}% probability that
-              you will reach or exceed your target
-              {project.details.endingDate
-                ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
-                : '.'}
-              .
-            </p>
-          )}
+          {/* two column grid layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            {project?.details?.potentialAdopters && (
+              <p className="text-sm">
+                Your potential pool of adopters is{' '}
+                <b className="font-semibold">
+                  {project.details.potentialAdopters}{' '}
+                  {formatAdoptionUnit(project, true)}
+                </b>
+                .
+              </p>
+            )}
+            {potentialAdoptersPlot &&
+            project?.details?.engagementType != 'individual' ? (
+              // height and width props are required but if they're smaller than
+              // the unknown image size, it will load pixelated; so using a huge #
+              <span className="text-xs text-muted-foreground">
+                <Image
+                  src={potentialAdoptersPlot || ''}
+                  alt="Potential adopters plot"
+                  className="rounded-lg w-full"
+                  width={99999}
+                  height={99999}
+                />
+                <div className="flex flex-row items-center justify-between">
+                  <div>
+                    <h2 className="text-muted-foreground inline">
+                      Eligible Settlements{' '}
+                    </h2>
+                    <span className="font-semibold text-right">
+                      <div className="rounded-xl h-3 w-3 bg-[#dd3487] inline-block mx-1" />
+                      {project?.details?.potentialAdopters}{' '}
+                    </span>
+                  </div>
+                  <div>
+                    Created{' '}
+                    {project?.last_updated?.identifyPotential != null &&
+                      format(project.last_updated.identifyPotential, 'PPPp')}
+                  </div>
+                </div>
+              </span>
+            ) : (
+              aoiPlot && (
+                <div className="text-xs text-muted-foreground">
+                  <Image
+                    src={aoiPlot || ''}
+                    alt="Area of Interest Plot"
+                    className="rounded-lg w-full"
+                    width={99999}
+                    height={99999}
+                  />
+                  <div className="flex flex-row items-center justify-end">
+                    Created{' '}
+                    {project?.last_updated?.identifyPotential != null &&
+                      format(project.last_updated.identifyPotential, 'PPPp')}
+                  </div>
+                </div>
+              )
+            )}
+
+            <div className="">
+              {project?.details?.targetAdoption && (
+                <p className="text-sm">
+                  You stated your goal was to reach{' '}
+                  <b className="font-semibold">
+                    {project.details.targetAdoption}
+                  </b>
+                  {project.details.potentialAdopters ? (
+                    <>
+                      <b className="font-semibold">{` (${asPercentage(
+                        project.details.targetAdoption,
+                        project.details.potentialAdopters,
+                      )})`}</b>{' '}
+                      of your pool of potential{' '}
+                      <b className="font-semibold">{`${formatAdoptionUnit(project, true)}.`}</b>
+                    </>
+                  ) : null}
+                </p>
+              )}
+              {project?.details?.growth?.lastReportedAdoption && (
+                <p className="text-sm">
+                  Currently you have reached{' '}
+                  <b className="font-semibold">
+                    {project.details.growth.lastReportedAdoption}
+                  </b>
+                  {project.details.potentialAdopters ? (
+                    <>
+                      <b className="font-semibold">{` (${asPercentage(
+                        project.details.growth.lastReportedAdoption,
+                        project.details.potentialAdopters,
+                      )})`}</b>{' '}
+                      of your potential pool of{' '}
+                      {`${formatAdoptionUnit(project, true)}`}
+                    </>
+                  ) : null}
+                  .
+                </p>
+              )}
+              {project?.details?.growth?.probabilityOfSuccess != null &&
+              project.details.targetAdoption ? (
+                <p className="text-sm">
+                  Given current trends, we project that you have{' '}
+                  <b className="font-semibold">
+                    {project.details.growth.probabilityOfSuccess.toFixed(2)}%
+                  </b>{' '}
+                  probability that you will reach or exceed your target of{' '}
+                  <b className="font-semibold">
+                    {project.details.targetAdoption}
+                  </b>
+                  {project.details.endingDate
+                    ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
+                    : '.'}
+                  .
+                </p>
+              ) : null}
+            </div>
+            {forecastPlot && (
+              <div className="text-xs text-muted-foreground space-y-1">
+                <Image
+                  src={forecastPlot || ''}
+                  alt="Forecast Plot"
+                  width={99999}
+                  height={99999}
+                  className="rounded-lg"
+                />
+                <div className="flex flex-row items-center justify-end">
+                  Created{' '}
+                  {project?.last_updated?.assessProgress != null &&
+                    format(project.last_updated.assessProgress, 'PPPp')}
+                </div>
+              </div>
+            )}
+          </div>
+
           {insightsSection}
           <div className="space-y-2">
             <div className="flex flex-row items-center space-x-1">
@@ -201,31 +285,40 @@ export default async function SummaryReportPage({
                   Based on the project stage, your data, and your responses, the
                   following suggestions may help improve the adoption rate.
                 </p>
-                <div className="hidden lg:grid grid-cols-2 gap-2">
-                  <div className="flex flex-col gap-2">
-                    {disagreedItems &&
-                      disagreedItems
-                        .slice(disagreedItems.length / 2, disagreedItems.length)
-                        .map(([k, v]) => disagreeRecommendations([k, v]))}
+                <div className="hidden lg:grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-4">
+                    {groupedRecommendations &&
+                      Object.keys(groupedRecommendations)
+                        .slice(
+                          0,
+                          Object.keys(groupedRecommendations).length / 2,
+                        )
+                        .map((title) => recommendationGroup(title))}
                   </div>
-                  <div className="flex flex-col gap-2">
-                    {disagreedItems &&
-                      disagreedItems
-                        .slice(0, disagreedItems.length / 2)
-                        .map(([k, v]) => disagreeRecommendations([k, v]))}
+                  <div className="flex flex-col gap-4">
+                    {groupedRecommendations &&
+                      Object.keys(groupedRecommendations)
+                        .slice(
+                          Object.keys(groupedRecommendations).length / 2,
+                          Object.keys(groupedRecommendations).length,
+                        )
+                        .map((title) => recommendationGroup(title))}
                   </div>
                 </div>
-                <div className="flex flex-col lg:hidden gap-2">
-                  {disagreedItems &&
-                    disagreedItems.map(([k, v]) =>
-                      disagreeRecommendations([k, v]),
+                <div className="flex flex-col lg:hidden gap-4">
+                  {groupedRecommendations &&
+                    Object.keys(groupedRecommendations).map((title) =>
+                      recommendationGroup(title),
                     )}
                 </div>
               </>
             ) : (
               <div className="space-y-2 text-sm">
                 <p>Complete the context diagnostic to receive suggestions.</p>
-                <Link href={`/dashboard/project/${slug}/context-diagnostic`}>
+                <Link
+                  href={`/dashboard/project/${slug}/context-diagnostic`}
+                  className="print:hidden"
+                >
                   <Button>
                     <ArrowRight />
                     Take me there
