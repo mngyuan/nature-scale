@@ -248,7 +248,7 @@ export default function AssessProgressClientPage({
           </TabsList>
           <TabsContent value="forecast" className="h-full w-full">
             <div
-              className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto"
+              className={`flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto ${!plotImageLoading && plotImage == null ? 'bg-gray-100 rounded-lg border border-gray-300 p-4 text-center' : ''}`}
               ref={imageContainerRef}
             >
               {plotImageLoading ? (
@@ -260,14 +260,16 @@ export default function AssessProgressClientPage({
                   alt="Plot"
                 />
               ) : (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground p-8">
                   Complete the form to see an adoption forecast
                 </div>
               )}
             </div>
           </TabsContent>
           <TabsContent value="parameters">
-            <div className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto">
+            <div
+              className={`flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto ${!plotImageLoading && plotImage == null ? 'bg-gray-100 rounded-lg border border-gray-300 p-4 text-center' : ''}`}
+            >
               {plotImageLoading ? (
                 <LoaderIcon className="animate-spin" />
               ) : paramPlotImage ? (
@@ -277,7 +279,7 @@ export default function AssessProgressClientPage({
                   alt="Adoption parameters plot"
                 />
               ) : (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground p-8">
                   Complete the form to see adoption parameters
                 </div>
               )}

@@ -1131,7 +1131,7 @@ export default function IdentifyPotentialClientPage({
           </span>
         )}
         <div
-          className="flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto"
+          className={`flex items-center justify-center h-full min-w-full min-h-64 lg:min-w-auto lg:min-h-auto ${!plotImageLoading && plotImage == null ? 'bg-gray-100 rounded-lg border border-gray-300 p-4 text-center' : ''}`}
           ref={imageContainerRef}
         >
           {plotImageLoading ? (
@@ -1139,8 +1139,9 @@ export default function IdentifyPotentialClientPage({
           ) : plotImage ? (
             <img src={plotImage} className="object-contain h-full" alt="Plot" />
           ) : (
-            <div className="text-sm text-muted-foreground">
-              Select or upload a project boundary
+            <div className="text-sm text-muted-foreground p-8">
+              Define or upload a project boundary to see a map of the area of
+              interest
             </div>
           )}
         </div>
