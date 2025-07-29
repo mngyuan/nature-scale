@@ -1,4 +1,4 @@
-# [scale4nature](https://nature-scale.vercel.app/)
+# [Scale for Nature](https://nature-scale.vercel.app/)
 
 Next.js app hosted on Vercel using Supabase for auth and postgres and Docker container for [R API](/rsrc/)
 

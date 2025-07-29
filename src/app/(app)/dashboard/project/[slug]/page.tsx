@@ -110,7 +110,7 @@ export default async function ProjectPage({
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
                     <TrendingUp size={48} />
                   </div>
-                  Monitor current progress and trajectory
+                  Monitor current adoption progress and trajectory
                   {project?.last_updated?.assessProgress && (
                     <div className="text-muted-foreground text-xs mt-2 flex flex-row items-center">
                       Last updated{' '}
@@ -129,7 +129,7 @@ export default async function ProjectPage({
                   <div className="flex items-center justify-center p-4 mb-4 bg-gray-100 w-24 h-24 rounded-lg">
                     <BookOpenCheck size={48} />
                   </div>
-                  Take a context diagnostic
+                  Understand how you might better scale your project
                   {project?.last_updated?.contextDiagnostic && (
                     <div className="text-muted-foreground text-xs mt-2 flex flex-row items-center">
                       Last updated{' '}

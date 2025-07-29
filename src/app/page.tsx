@@ -58,20 +58,19 @@ export default async function RootPage() {
         <div className="flex w-full lg:w-128 h-full flex-col space-between space-y-4">
           <div className="flex flex-col space-y-4 font-medium">
             <h2 className="font-semibold text-2xl lg:text-3xl">
-              Scale4nature is an adaptive management tool to help forecast and
-              manage the trajectory a programme is likely to take.
+              ScaleForNature is a tool to forecast and adaptively manage how
+              conservation and restoration projects go to scale.
             </h2>
             <p className="text-sm lg:text-md">
-              Track and forecast from failure to launch to widespread adoption,
-              with just a handful of years of initial data and basic insights on
-              the program’s fit. The tool will help estimate the number of
-              potential adopters of conservation initiatives and, if the
-              programme is off track, can suggest reasons why.
+              Use models from quantitative social science to estimate how your
+              project will scale over time and, if your project is off track,
+              suggest practical ways to improve the speed, extent, and stability
+              of adoption.
             </p>
             <p className="text-sm lg:text-md">
-              Make evidence informed decisions and track the mechanism(s) of
-              spread – whether it's social or independent learning – to manage
-              the impact of your project over the years or decades to come.
+              Empower yourself to make evidence informed decisions and
+              adaptively manage the uptake of your project over the years to
+              come.
             </p>
           </div>
         </div>

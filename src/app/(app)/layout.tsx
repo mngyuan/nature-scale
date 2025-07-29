@@ -87,13 +87,13 @@ export default async function DashboardLayout({
         </div>
         <div className="text-sm flex flex-row space-x-4">
           <a target="_blank" rel="noopener noreferrer">
-            © 2025 Scale4Nature, LTD
+            © 2025 Scale for Nature, LTD
           </a>
           <Link href="/faqs" className="hover:underline">
             FAQs
           </Link>
           <Link
-            href="mailto:m.mills@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
+            href="mailto:m.mills@imperial.ac.uk?subject=Scale for Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
             className="hover:underline"
           >
             Feedback

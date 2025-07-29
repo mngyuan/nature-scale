@@ -240,9 +240,10 @@ export default async function SummaryReportPage({
                         project.details.potentialAdopters,
                       )})`}</b>{' '}
                       of your pool of potential{' '}
-                      <b className="font-semibold">{`${formatAdoptionUnit(project, true)}.`}</b>
+                      <b className="font-semibold">{`${formatAdoptionUnit(project, true)}`}</b>
                     </>
                   ) : null}
+                  .
                 </p>
               )}
               {project?.details?.growth?.lastReportedAdoption && (
@@ -277,7 +278,7 @@ export default async function SummaryReportPage({
                   </b>
                   {project.details.endingDate
                     ? ` by ${format(project.details.endingDate, 'MMMM dd, yyyy')}`
-                    : '.'}
+                    : ''}
                   .
                 </p>
               ) : null}

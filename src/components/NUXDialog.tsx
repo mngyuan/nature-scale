@@ -69,20 +69,36 @@ export default function NUXDialog({
           <CarouselContent>
             <CarouselItem>
               <div className="p-1 text-center flex flex-col h-full">
-                <DialogTitle>Welcome to Scale4Nature.</DialogTitle>
+                <DialogTitle>Welcome to Scale for Nature.</DialogTitle>
                 <img
                   src="/example project.jpg"
                   className="p-12 grow object-cover mb-2"
                 />
                 <DialogDescription>
-                  We've started you off with an example project to help you get
-                  familiar with the interface and features. You can explore this
-                  project, or create your own.
+                  This tool will help you with three tasks. It will help you:
+                  <ol className="list-decimal list-inside text-left">
+                    <li>
+                      Define your scaling target by providing insight into the
+                      number of adopters for a given nature conservation or
+                      restoration initiative. This feature can currently only be
+                      used for projects in Sub-Saharan Africa.
+                    </li>
+                    <li>
+                      Use data from your existing project to estimate the
+                      current trajectory of adoption and how likely you are to
+                      reach your target
+                    </li>
+                    <li>
+                      Help you understand how you might improve the speed and
+                      extent to which your project will scale
+                    </li>
+                  </ol>
                 </DialogDescription>
               </div>
             </CarouselItem>
             <CarouselItem>
               <div className="p-1 text-center flex flex-col h-full">
+                <DialogTitle>Collaborate</DialogTitle>
                 <video
                   src="/demo.mp4"
                   autoPlay
@@ -91,9 +107,21 @@ export default function NUXDialog({
                   className="m-12 h-48 object-cover rounded-lg border-2 border-gray-200 drop-shadow-md grow"
                 />
                 <DialogDescription>
-                  This tool is designed to help you plan and manage your
-                  conservation efforts, and to give you data-driven insights
-                  into the potential impact of your projects and their progress.
+                  You can invite your colleagues to collaborate. Just ask them
+                  to set up an account.
+                </DialogDescription>
+              </div>
+            </CarouselItem>
+            <CarouselItem>
+              <div className="p-1 text-center flex flex-col h-full">
+                <img
+                  src="/example project.jpg"
+                  className="p-12 grow object-cover mb-2"
+                />
+                <DialogDescription>
+                  We've started you off with an example project to help you get
+                  familiar with the interface and features. you can explore this
+                  project or create your own.
                 </DialogDescription>
               </div>
             </CarouselItem>
@@ -102,13 +130,13 @@ export default function NUXDialog({
                 <DialogTitle>Feedback welcome!</DialogTitle>
                 <MailQuestion className="w-24 h-24 mx-auto mb-2 grow" />
                 <DialogDescription>
-                  Thanks for using this beta version of Scale4Nature.
+                  You have early access to the beta version of Scale for Nature.
                   <br />
                   <br />
-                  If you have any questions, comments, or concerns, please send
-                  any feedback (screenshots welcome) to{' '}
+                  If you have any questions, comments or concerns, please send
+                  any feedback (screenshots encouraged) to{' '}
                   <Link
-                    href="mailto:m.mills@imperial.ac.uk?subject=Scale4Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
+                    href="mailto:m.mills@imperial.ac.uk?subject=Scale for Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
                     className="hover:underline"
                   >
                     m.mills@imperial.ac.uk

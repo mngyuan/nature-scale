@@ -65,7 +65,7 @@ export default async function FAQsPage() {
               <li className="text-xl lg:text-2xl space-y-2">
                 Who is this tool for?
                 <p className="text-base font-normal">
-                  Scale4Nature is designed for conservation practitioners,
+                  Scale for Nature is designed for conservation practitioners,
                   researchers, and decision-makers who want to scale their
                   conservation efforts effectively.
                 </p>
@@ -92,7 +92,7 @@ export default async function FAQsPage() {
                 What are some things I should keep in mind when I'm making
                 decisions using this tool?
                 <p className="text-base font-normal">
-                  While Scale4Nature provides valuable insights, it is important
+                  While Scale for Nature provides valuable insights, it is important
                   to remember that it is a forecasting tool based on
                   probabilistic modeling.
                 </p>
