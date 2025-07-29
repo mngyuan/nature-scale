@@ -6,6 +6,7 @@ import {
   getProfileInitials,
   getPublicStorageURL,
 } from '@/lib/utils';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 
 export default function ProfileHead({
   profile,
@@ -23,21 +24,27 @@ export default function ProfileHead({
   const supabase = createClient();
   return (
     <Avatar className={className}>
-      <AvatarImage
-        src={
-          profile.profile_picture_url
-            ? getPublicStorageURL(
-                supabase,
-                'profile-photos',
-                profile.profile_picture_url,
-              ) || undefined
-            : undefined
-        }
-        alt={getProfileDisplayName(profile)}
-      />
-      <AvatarFallback className="select-none">
-        {getProfileInitials(profile)}
-      </AvatarFallback>
+      <Tooltip>
+        <TooltipTrigger>
+          <AvatarImage
+            src={
+              profile.profile_picture_url
+                ? getPublicStorageURL(
+                    supabase,
+                    'profile-photos',
+                    profile.profile_picture_url,
+                  ) || undefined
+                : undefined
+            }
+            alt={getProfileDisplayName(profile)}
+            className="object-cover"
+          />
+          <AvatarFallback className="select-none h-10 w-10">
+            {getProfileInitials(profile)}
+          </AvatarFallback>
+        </TooltipTrigger>
+        <TooltipContent>{getProfileDisplayName(profile)}</TooltipContent>
+      </Tooltip>
     </Avatar>
   );
 }
