@@ -1,3 +1,4 @@
+import {Metadata} from 'next';
 import {getProject} from '../actions';
 import AssessProgressClientPage from './AssessProgressClientPage';
 
@@ -18,3 +19,7 @@ export default async function AssessPotentialPage({
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Assess Progress',
+};

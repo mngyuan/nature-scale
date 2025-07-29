@@ -18,6 +18,7 @@ import {format} from 'date-fns';
 import {Badge} from '@/components/ui/badge';
 import {titleCase} from 'title-case';
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
+import {Metadata} from 'next';
 
 export default async function SummaryReportPage({
   params,
@@ -368,3 +369,7 @@ export default async function SummaryReportPage({
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Summary Report',
+};

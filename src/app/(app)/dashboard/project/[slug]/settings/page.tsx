@@ -5,6 +5,7 @@ import Link from 'next/link';
 import CreateProjectForm from '@/components/CreateProjectForm';
 import CollaboratorManager from '@/components/CollaboratorManager';
 import ProjectDeleteButton from '@/components/ProjectDeleteButton';
+import {Metadata} from 'next';
 
 export default async function SettingsPage({
   params,
@@ -65,3 +66,7 @@ export default async function SettingsPage({
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Project Settings',
+};

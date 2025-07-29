@@ -1,5 +1,6 @@
 import ContextDiagnosticForm from '@/components/ContextDiagnosticForm';
 import {getProject} from '../actions';
+import {Metadata} from 'next';
 
 export default async function ContextDiagnosticPage({
   params,
@@ -20,3 +21,7 @@ export default async function ContextDiagnosticPage({
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: 'Context Diagnostic',
+};
