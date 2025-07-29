@@ -48,10 +48,26 @@ RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width
 # Save model otherwise docker will always recompile
 # This adds ~2min to loading the server
 model = stan_model("./Module2/SIaM.stan")
+model_low = stan_model("./Module2/SIaM_Low.stan")
+model_high = stan_model("./Module2/SIaM_High.stan")
 RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
 
   #### STEP 1: Load adoption data
   df<-csv
+
+  ##remove leading 0s
+  # Find first non-zero value index
+  first_non_zero_idx <- which(df[["Adopters"]] != 0)[1]
+  # Clip leading zero rows
+  df <- df[first_non_zero_idx:nrow(df), ]
+
+  # Replace remaining 0s in the column with 1 (a bit hacky)
+  Zeros<-which(df[["Adopters"]]==0)
+
+  if(length(Zeros)>=1){
+  df[Zeros,]$Adopters<-1}
+
+
   df <- df %>% mutate(Time = as.character(Time)) %>%
     mutate(Time = factor(Time, levels = df$Time)) #Make time an ordered categorical
   df2 <- df #save full version
@@ -111,13 +127,38 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
 
   #### STEP 5: run model
 
+  ##choose the right model
+  MAX<-max(df$Adopters,na.rm=T)
+
+  if(MAX/sample_n>=0.9){
   # Fit and sample from the posterior
-  mod = sampling(model,
-             data = stan_d,
-             pars = params_monitor,seed = 123,
-             chains = 3,cores=3,
-             warmup = 500,#8000
-             iter = 1500) #10000
+    mod = stan(model_high,
+               data = stan_d,
+               pars = params_monitor,seed = 123,
+               chains = 3,
+               warmup = 500,#8000
+               iter = 1500) #10000
+  }
+   
+  if(MAX/sample_n<=0.1){
+    # Fit and sample from the posterior
+    mod = stan(model_low,
+               data = stan_d,
+               pars = params_monitor,seed = 123,
+               chains = 3,
+               warmup = 500,#8000
+               iter = 1500) #10000
+  }
+
+  if(MAX/sample_n>0.1 & MAX/sample_n<0.9){
+    # Fit and sample from the posterior
+    mod = sampling(model,
+               data = stan_d,
+               pars = params_monitor,seed = 123,
+               chains = 3,cores=3,
+               warmup = 500,#8000
+               iter = 1500) #10000
+  }
 
   #### These are supplemental/diagnostic figs. Need to figure out 
   #What to do with these
