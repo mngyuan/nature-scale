@@ -12,20 +12,14 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import {createClient} from '@/lib/supabase/server';
-import {
-  getProfile,
-  getProfileDisplayName,
-  getProfileInitials,
-  getPublicStorageURL,
-} from '@/lib/utils';
+import {getProfile, getPublicStorageURL} from '@/lib/utils';
 import APIStatusIndicator from '@/components/APIStatusIndicator';
 import {redirect} from 'next/navigation';
 import {Tables} from '@/lib/supabase/types/supabase';
 import {Metadata} from 'next';
-import NUXDialog from '@/components/NUXDialog';
 import {getProjectMembers} from './project/[slug]/actions';
-import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import ProfileHead from '@/components/ProfileHead';
+import NUXButton from '@/components/NUXButton';
 
 const PeopleList = async ({
   project,
@@ -117,7 +111,6 @@ export default async function Dashboard() {
 
   return (
     <main className="flex flex-col grow w-full">
-      {profile && <NUXDialog profile={profile} />}
       <div className="flex flex-row justify-between items-center px-8 py-4">
         <h2 className="text-3xl">
           {loggedIn && profile?.first_name
@@ -131,15 +124,15 @@ export default async function Dashboard() {
           </Button>
         </Link>
       </div>
-      <div className="px-8 pb-4 grow flex flex-col justify-between gap-4">
+      <div className="px-8 pb-4 grow flex flex-col gap-4">
         <Tabs defaultValue="my-projects">
-          <TabsList className="grid grid-cols-3">
-            <TabsTrigger value="my-projects">My projects</TabsTrigger>
-            <TabsTrigger value="shared-with-me">Shared with me</TabsTrigger>
-            <TabsTrigger value="projects-to-update">
-              Projects to update
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex flex-row items-center gap-2">
+            <TabsList className="grid grid-cols-2">
+              <TabsTrigger value="my-projects">My projects</TabsTrigger>
+              <TabsTrigger value="shared-with-me">Shared with me</TabsTrigger>
+            </TabsList>
+            <NUXButton profile={profile} />
+          </div>
           <TabsContent
             value="my-projects"
             className="flex flex-row flex-wrap gap-2"

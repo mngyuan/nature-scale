@@ -24,9 +24,11 @@ import {MailQuestion} from 'lucide-react';
 export default function NUXDialog({
   profile,
   show,
+  onClose = () => {},
 }: {
   profile: Tables<'profiles'>;
   show?: boolean;
+  onClose(): void;
 }): JSX.Element {
   const supabase = createClient();
   const [dialogOpen, setDialogOpen] = useState(
@@ -43,6 +45,7 @@ export default function NUXDialog({
           .from('profiles')
           .update({seen_nux: new Date().toISOString()})
           .eq('id', profile.id);
+        onClose();
       }
       setDialogOpen(open);
     },
@@ -62,49 +65,56 @@ export default function NUXDialog({
     });
   }, [api]);
 
+  useEffect(() => {
+    if (show !== undefined) {
+      setDialogOpen(show);
+    }
+  }, [show]);
+
   return (
     <Dialog open={dialogOpen} onOpenChange={updateDialogState}>
       <DialogContent>
-        <Carousel setApi={setApi} className="w-full">
+        <Carousel setApi={setApi} className="w-full max-w-full overflow-hidden">
           <CarouselContent>
             <CarouselItem>
-              <div className="p-1 text-center flex flex-col h-full">
+              <div className="text-center flex flex-col h-full">
                 <DialogTitle>Welcome to Scale for Nature.</DialogTitle>
-                <img
-                  src="/example project.jpg"
-                  className="p-12 grow object-cover mb-2"
-                />
-                <DialogDescription>
-                  This tool will help you with three tasks. It will help you:
-                  <ol className="list-decimal list-inside text-left">
-                    <li>
-                      Define your scaling target by providing insight into the
-                      number of adopters for a given nature conservation or
-                      restoration initiative. This feature can currently only be
-                      used for projects in Sub-Saharan Africa.
-                    </li>
-                    <li>
-                      Use data from your existing project to estimate the
-                      current trajectory of adoption and how likely you are to
-                      reach your target
-                    </li>
-                    <li>
-                      Help you understand how you might improve the speed and
-                      extent to which your project will scale
-                    </li>
-                  </ol>
-                </DialogDescription>
-              </div>
-            </CarouselItem>
-            <CarouselItem>
-              <div className="p-1 text-center flex flex-col h-full">
-                <DialogTitle>Collaborate</DialogTitle>
                 <video
                   src="/demo.mp4"
                   autoPlay
                   loop
                   muted
                   className="m-12 h-48 object-cover rounded-lg border-2 border-gray-200 drop-shadow-md grow"
+                />
+                <DialogDescription className="text-left">
+                  This tool will help you with three tasks. It will help you:
+                </DialogDescription>
+                <br />
+                <ol className="list-decimal list-inside text-left text-sm text-muted-foreground space-y-4">
+                  <li>
+                    Define your scaling target by providing insight into the
+                    number of adopters for a given nature conservation or
+                    restoration initiative. This feature can currently only be
+                    used for projects in Sub-Saharan Africa.
+                  </li>
+                  <li>
+                    Use data from your existing project to estimate the current
+                    trajectory of adoption and how likely you are to reach your
+                    target
+                  </li>
+                  <li>
+                    Help you understand how you might improve the speed and
+                    extent to which your project will scale
+                  </li>
+                </ol>
+              </div>
+            </CarouselItem>
+            <CarouselItem>
+              <div className="p-1 text-center flex flex-col h-full">
+                <DialogTitle>Collaborate</DialogTitle>
+                <img
+                  src="/collaboration.png"
+                  className="p-12 grow object-contain mb-2"
                 />
                 <DialogDescription>
                   You can invite your colleagues to collaborate. Just ask them
@@ -134,10 +144,12 @@ export default function NUXDialog({
                   <br />
                   <br />
                   If you have any questions, comments or concerns, please send
-                  any feedback (screenshots encouraged) to{' '}
+                  any feedback (screenshots encouraged) to:
+                  <br />
+                  <br />
                   <Link
                     href="mailto:m.mills@imperial.ac.uk?subject=Scale for Nature Feedback&body=If reporting a specific issue, please include relevant any screenshots and steps to reproduce the issue or error"
-                    className="hover:underline"
+                    className="hover:underline inline"
                   >
                     m.mills@imperial.ac.uk
                   </Link>
@@ -146,8 +158,8 @@ export default function NUXDialog({
               </div>
             </CarouselItem>
           </CarouselContent>
-          {current !== 1 && <CarouselPrevious />}
-          {current !== count && <CarouselNext />}
+          {current !== 1 && <CarouselPrevious className="left-0" />}
+          {current !== count && <CarouselNext className="right-0" />}
         </Carousel>
         {current === count ? (
           <Button onClick={() => updateDialogState(false)}>Get started</Button>
