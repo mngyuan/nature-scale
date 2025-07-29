@@ -52,13 +52,17 @@ const ProjectCard = ({
   projectImage: string;
 }): React.JSX.Element => (
   <Card className="w-sm pt-0 overflow-hidden">
-    <Image
-      src={projectImage || '/rangelands.png'}
-      alt="Project photo"
-      width={800}
-      height={529}
-      className="object-cover max-h-48 w-full"
-    />
+    {projectImage ? (
+      <Image
+        src={projectImage}
+        alt="Project photo"
+        width={800}
+        height={529}
+        className="object-cover max-h-48 w-full"
+      />
+    ) : (
+      <div className="w-[800px] h-[529px] bg-gray-300 max-h-48" />
+    )}
     <CardHeader className="grow">
       <CardTitle>{project.name}</CardTitle>
       <CardDescription>{project.description}</CardDescription>
@@ -137,13 +141,32 @@ export default async function Dashboard() {
             value="my-projects"
             className="flex flex-row flex-wrap gap-2"
           >
-            {projects?.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                projectImage={projectImages[project.id] || ''}
-              />
-            ))}
+            {projects
+              ?.filter(
+                (project) =>
+                  project.owner_id === profile?.id || project.id === 1,
+              )
+              .map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  projectImage={projectImages[project.id] || ''}
+                />
+              ))}
+          </TabsContent>
+          <TabsContent
+            value="shared-with-me"
+            className="flex flex-row flex-wrap gap-2"
+          >
+            {projects
+              ?.filter((project) => project.owner_id !== profile?.id)
+              .map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  projectImage={projectImages[project.id] || ''}
+                />
+              ))}
           </TabsContent>
         </Tabs>
         <Link href="/dashboard/new-project" className="lg:hidden text-center">
