@@ -16,23 +16,23 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import Link from 'next/link';
-import {ArrowRight, Calculator, NotebookPen} from 'lucide-react';
+import {ArrowRight, NotebookPen} from 'lucide-react';
 import {updateLastUpdated} from '@/app/(app)/dashboard/project/[slug]/actions';
 
 const DiagnosticItem = ({
   itemKey,
   itemValue,
   onChange,
-  title,
+  prompt,
 }: {
-  title?: string;
+  prompt?: string;
   itemKey: string;
   itemValue: string;
   onChange: (key: string, value: string) => void;
 }) => {
   return (
     <div className="flex flex-col space-y-4">
-      {title && <p className="text-sm font-medium">{title}</p>}
+      {prompt && <p className="text-sm font-medium">{prompt}</p>}
       <RadioGroup
         value={itemValue}
         onValueChange={(value) => onChange(itemKey, value)}
@@ -150,7 +150,7 @@ export default function ContextDiagnosticForm({
                   key={key}
                   itemKey={key}
                   itemValue={formValues[key] || ''}
-                  title={item.title}
+                  prompt={item.prompt}
                   onChange={handleValueChange}
                 />
               </li>

@@ -2,6 +2,7 @@ import {getProject} from '../actions';
 import {
   ArrowRight,
   ChartNoAxesCombinedIcon,
+  Info,
   LightbulbIcon,
   Sun,
 } from 'lucide-react';
@@ -16,6 +17,7 @@ import {asPercentage, formatAdoptionUnit} from '@/lib/utils';
 import {format} from 'date-fns';
 import {Badge} from '@/components/ui/badge';
 import {titleCase} from 'title-case';
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip';
 
 export default async function SummaryReportPage({
   params,
@@ -44,22 +46,48 @@ export default async function SummaryReportPage({
   const groupedRecommendations = disagreedItems
     ?.map(([key, _]) => [
       key,
-      CONTEXT_DIAGNOSTIC_ITEMS[key].title,
-      CONTEXT_DIAGNOSTIC_ITEMS[key].recommendations,
+      // Despite typescript not recognizing this, it's theoretically possible
+      // for key to be not a key of CONTEXT_DIAGNOSTIC_ITEMS i.e. if the questions
+      // change on rare occasssion a removed question will cause this
+      CONTEXT_DIAGNOSTIC_ITEMS[key]?.recommendationPrompt,
+      CONTEXT_DIAGNOSTIC_ITEMS[key]?.recommendations,
     ])
+    .filter((item) => item[1] && item[2])
     .reduce((agg: Record<string, string[][]>, cur) => {
-      const [_, title, recommendations] = cur;
-      if (!agg[title]) {
-        agg[title] = [];
+      const [_, recommendationPrompt, recommendations] = cur;
+      if (!agg[recommendationPrompt]) {
+        agg[recommendationPrompt] = [];
       }
-      agg[title].push(recommendations);
+      agg[recommendationPrompt].push(recommendations);
       return agg;
     }, {});
-  const recommendationGroup = (title: string) => (
-    <div key={title} className="space-y-2">
-      <h3 className="text-md print:text-sm font-semibold">{title}</h3>
+  const recommendationGroup = (recommendationPrompt: string) => (
+    <div key={recommendationPrompt} className="space-y-2">
+      <h3 className="text-md print:text-sm font-semibold">
+        {recommendationPrompt}{' '}
+        <Tooltip>
+          <TooltipTrigger>
+            <Info size={16} />
+          </TooltipTrigger>
+          <TooltipContent>
+            {
+              CONTEXT_DIAGNOSTIC_ITEMS[
+                (
+                  Object.keys(
+                    CONTEXT_DIAGNOSTIC_ITEMS,
+                  ) as (keyof typeof CONTEXT_DIAGNOSTIC_ITEMS)[]
+                ).find(
+                  (key) =>
+                    CONTEXT_DIAGNOSTIC_ITEMS[key].recommendationPrompt ===
+                    recommendationPrompt,
+                ) || ''
+              ]?.prompt
+            }
+          </TooltipContent>
+        </Tooltip>
+      </h3>
       {groupedRecommendations &&
-        groupedRecommendations[title].map((recommendation) =>
+        groupedRecommendations[recommendationPrompt].map((recommendation) =>
           recommendation.map((rec: string) => (
             <div
               className="flex flex-row items-center space-between p-4 bg-secondary rounded-lg text-left space-x-2"
@@ -289,25 +317,30 @@ export default async function SummaryReportPage({
                     {groupedRecommendations &&
                       Object.keys(groupedRecommendations)
                         .slice(
-                          0,
                           Object.keys(groupedRecommendations).length / 2,
+                          Object.keys(groupedRecommendations).length,
                         )
-                        .map((title) => recommendationGroup(title))}
+                        .map((recommendationPrompt) =>
+                          recommendationGroup(recommendationPrompt),
+                        )}
                   </div>
                   <div className="flex flex-col gap-4">
                     {groupedRecommendations &&
                       Object.keys(groupedRecommendations)
                         .slice(
+                          0,
                           Object.keys(groupedRecommendations).length / 2,
-                          Object.keys(groupedRecommendations).length,
                         )
-                        .map((title) => recommendationGroup(title))}
+                        .map((recommendationPrompt) =>
+                          recommendationGroup(recommendationPrompt),
+                        )}
                   </div>
                 </div>
                 <div className="flex flex-col lg:hidden gap-4">
                   {groupedRecommendations &&
-                    Object.keys(groupedRecommendations).map((title) =>
-                      recommendationGroup(title),
+                    Object.keys(groupedRecommendations).map(
+                      (recommendationPrompt) =>
+                        recommendationGroup(recommendationPrompt),
                     )}
                 </div>
               </>

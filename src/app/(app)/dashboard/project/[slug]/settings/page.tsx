@@ -54,7 +54,7 @@ export default async function SettingsPage({
         )}
         {
           // The example project should not be deleted
-          project && project.id != 1 && (
+          project && project.id != 1 && user?.id === project.owner_id && (
             <div>
               <h3 className="text-2xl mb-4">Delete</h3>
               <ProjectDeleteButton project={project} />
