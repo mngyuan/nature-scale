@@ -2,14 +2,9 @@
 
 import {useState, useEffect} from 'react';
 import {Button} from '@/components/ui/button';
-import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar';
 import {Card, CardContent} from '@/components/ui/card';
 import {X, User} from 'lucide-react';
-import {
-  getPublicStorageURL,
-  getProfileInitials,
-  getProfileDisplayName,
-} from '@/lib/utils';
+import {getProfileDisplayName} from '@/lib/utils';
 import {createClient} from '@/lib/supabase/client';
 import UserSearch from './UserSearch';
 import {
@@ -20,6 +15,7 @@ import {
   VisibleUsersQueryResult,
 } from '@/app/(app)/dashboard/project/[slug]/actions';
 import {useUpdateStates} from '@/lib/hooks';
+import ProfileHead from './ProfileHead';
 
 export default function CollaboratorManager({
   projectId,
@@ -102,23 +98,10 @@ export default function CollaboratorManager({
             <CardContent className="p-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={
-                        member.profiles.profile_picture_url
-                          ? getPublicStorageURL(
-                              supabase,
-                              'profile-photos',
-                              member.profiles.profile_picture_url,
-                            ) || undefined
-                          : undefined
-                      }
-                      alt={getProfileDisplayName(member.profiles)}
-                    />
-                    <AvatarFallback className="select-none">
-                      {getProfileInitials(member.profiles)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <ProfileHead
+                    profile={member.profiles}
+                    className="h-10 w-10"
+                  />
                   <div>
                     <div className="font-medium">
                       {getProfileDisplayName(member.profiles)}
