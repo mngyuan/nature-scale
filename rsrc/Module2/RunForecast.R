@@ -55,23 +55,19 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
   #### STEP 1: Load adoption data
   df<-csv
 
+  #Make time an ordered categorical
+  df<-df%>%mutate(Time=as.character(Time))%>%
+    mutate(Time=factor(Time,levels=df$Time)) 
+
   ##remove leading 0s
   # Find first non-zero value index
   first_non_zero_idx <- which(df[["Adopters"]] != 0)[1]
   # Clip leading zero rows
   df <- df[first_non_zero_idx:nrow(df), ]
 
-  # Replace remaining 0s in the column with 1 (a bit hacky)
-  Zeros<-which(df[["Adopters"]]==0)
-
-  if(length(Zeros)>=1){
-  df[Zeros,]$Adopters<-1}
-
-
-  df <- df %>% mutate(Time = as.character(Time)) %>%
-    mutate(Time = factor(Time, levels = df$Time)) #Make time an ordered categorical
-  df2 <- df #save full version
+  df2<-df #save full version
   df<-na.omit(df) #get rid of NAs
+
 
   #### STEP 2: Set potential adopters (total population)
 
@@ -94,14 +90,14 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
   #Set the number of time periods we have data for
   sample_days = nrow(df)
 
-  #For now we'll assume complete sampling
-  sample_time = 1:sample_days 
+  #which times do we have data for
+  sample_time<-as.integer(df$Time)
 
 
   #This is the length of time to fit the timeseries for
   #i.e., the full project duration. 
   #The full length of the data including NAs
-  t_max<-nrow(df2)
+  t_max<-max(as.integer(df2$Time))
 
   #Ideally we will create a custom csv for users to fill in
   #That has the project duration and fills in missing
@@ -131,7 +127,7 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
   MAX<-max(df$Adopters,na.rm=T)
 
   if(MAX/sample_n>=0.9){
-  # Fit and sample from the posterior
+    # Fit and sample from the posterior
     mod = stan(model_high,
                data = stan_d,
                pars = params_monitor,seed = 123,
@@ -139,7 +135,7 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
                warmup = 500,#8000
                iter = 1500) #10000
   }
-   
+
   if(MAX/sample_n<=0.1){
     # Fit and sample from the posterior
     mod = stan(model_low,
@@ -153,11 +149,11 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
   if(MAX/sample_n>0.1 & MAX/sample_n<0.9){
     # Fit and sample from the posterior
     mod = sampling(model,
-               data = stan_d,
-               pars = params_monitor,seed = 123,
-               chains = 3,cores=3,
-               warmup = 500,#8000
-               iter = 1500) #10000
+                   data = stan_d,
+                   pars = params_monitor,seed = 123,
+                   chains = 3,cores=3,
+                   warmup = 500,#8000
+                   iter = 1500) #10000
   }
 
   #### These are supplemental/diagnostic figs. Need to figure out 
@@ -181,28 +177,31 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
   draws<-as_tibble(posts$fake_I[,,2])%>%add_column(draw=1:3000)
   names(draws)[1:t_max]<-1:t_max
   draws <-  pivot_longer(draws, c(1:t_max) , names_to = "mod_time")
-  
+
   # Calculate probability of success and current adoption to send back
   successfulDraws<-nrow(draws%>%dplyr::filter(mod_time==t_max)%>%filter(value>=targetAdoption/sample_n))
   allDraws<-nrow(draws%>%dplyr::filter(mod_time==t_max))
   ProbabilityOfSuccess<-100*(successfulDraws/allDraws)
   lastReportedAdoption<-tail(csv%>%filter(is.na(csv[,3])==FALSE),n=1)[,3]
 
+
   #Plot forecast
+  LastSample<-as.integer(tail(df,n=1)$Time)
+
   p<-ggplot(draws, aes(x=as.integer(mod_time), y=value)) +
-    tidybayes::stat_lineribbon(data=filter(draws,as.integer(mod_time)<=sample_days),
+    tidybayes::stat_lineribbon(data=filter(draws,as.integer(mod_time)<=LastSample),
                                aes(fill_ramp = after_stat(.width)), 
                                .width = c(0.5,0.9), fill = "#969696",
                                color=alpha("gray",0.01),linetype="blank",
                                alpha=0.75) +
-    tidybayes::stat_lineribbon(data=filter(draws,as.integer(mod_time)>sample_days-1),
+    tidybayes::stat_lineribbon(data=filter(draws,as.integer(mod_time)>LastSample-1),
                                aes(fill_ramp = after_stat(.width)), 
                                .width = c(0.25,0.5,0.9), fill = "#252525",
                                color=alpha("gray",0.01),linetype="blank",
                                alpha=0.75) +
     geom_point(data=df2,aes(x=as.integer(Time),y=Adopters/sample_n),color="#cb181d",size=3.0,
                shape=16)+
-    geom_vline(xintercept = sample_days,linetype="longdash")+
+    geom_vline(xintercept = LastSample,linetype="longdash")+
     ggthemes::theme_clean()+
     scale_x_continuous(
       name = "Project time",
@@ -221,7 +220,7 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
                shape=23)+
       annotate(geom="label",x  = nrow(df2)*0.86, 
                y = targetAdoption/sample_n, colour="black",label="Target adoption" ,size=5,fontface="bold" )
-    }
+  }
   print(p)
 
   return(
@@ -235,6 +234,3 @@ RunForecast<-function(csv, potentialAdopters, targetAdoption=NA) {
 
 #c<-read.csv("./Module2/ExampleAdoptionK2CSettlements.csv")
 #RunForecast(c, 338, 152)
-
-
-
