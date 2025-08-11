@@ -41,3 +41,6 @@ Make sure to set the relevant environment variables, i.e.
 ```
 ALLOWED_ORIGINS=https://frontend-hosted.location
 ```
+
+Note that loading the stan models takes ~2min each, so the default timeout for the Cloud Run startup
+probe of 240s is likely not sufficient, and you'll want to length this or add a delay.

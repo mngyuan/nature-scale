@@ -46,7 +46,7 @@ RunForecastAPIWrapper<-function(csv, potentialAdopters, targetAdoption=NA, width
 
 
 # Save model otherwise docker will always recompile
-# This adds ~2min to loading the server
+# This adds ~2min to loading the server each on Cloud Run
 model = stan_model("./Module2/SIaM.stan")
 model_low = stan_model("./Module2/SIaM_Low.stan")
 model_high = stan_model("./Module2/SIaM_High.stan")
